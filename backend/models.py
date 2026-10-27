@@ -42,6 +42,7 @@ class MoveResult(BaseModel):
 class GameState(BaseModel):
     game_id: str
     league: str
+    min_answers: int = 2
     row_criteria: List[Criterion]
     col_criteria: List[Criterion]
     grid: List[List[Cell]]

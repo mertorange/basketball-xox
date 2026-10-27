@@ -3,239 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Basketball XOX - 2-Player Grid Trivia</title>
+  <title>Hoop Grid - 2-Player Basketball XOX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="court-background"></div>
-  <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="logo-area">
-        <div class="ball-icon">🏀</div>
-        <div>
-          <h1 class="game-title">HOOPS <span class="highlight">XOX</span></h1>
-          <p class="game-subtitle">2-Player Basketball Grid Tic-Tac-Toe</p>
-        </div>
-      </div>
+  <div class="site-wrapper">
 
-      <div class="controls-bar">
-        <!-- League Switcher -->
-        <div class="league-selector">
-          <button class="league-btn active" id="btn-league-nba" data-league="nba">
-            <span class="icon">🇺🇸</span> NBA
+    <!-- START MENU VIEW -->
+    <section class="view-panel" id="view-menu">
+      <div class="menu-container">
+        <header class="menu-header">
+          <div class="brand-badge">BASKETBALL TRIVIA GRID</div>
+          <h1 class="menu-title">HOOP <span class="brand-accent">GRID</span></h1>
+          <p class="menu-desc">Turn-based 2-player Tic-Tac-Toe. Claim squares by drafting players who match both row and column criteria.</p>
+        </header>
+
+        <div class="menu-form">
+          <!-- League Selection -->
+          <div class="form-group">
+            <label class="form-label">Select League</label>
+            <div class="league-grid">
+              <div class="league-card selected" data-league="nba" id="opt-nba">
+                <div class="league-card-header">
+                  <span class="league-tag">USA</span>
+                  <span class="league-check">✓</span>
+                </div>
+                <div class="league-card-title">NBA</div>
+                <div class="league-card-desc">Franchises, historic legends, and international stars</div>
+              </div>
+
+              <div class="league-card" data-league="euroleague" id="opt-euroleague">
+                <div class="league-card-header">
+                  <span class="league-tag">EUROPE</span>
+                  <span class="league-check">✓</span>
+                </div>
+                <div class="league-card-title">EuroLeague</div>
+                <div class="league-card-desc">Continental powerhouses and European basketball icons</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Answer Depth / Difficulty -->
+          <div class="form-group">
+            <label class="form-label">
+              Answer Density Filter
+              <span class="label-help">Guarantees a minimum number of valid players for every single box</span>
+            </label>
+            <div class="pill-group" id="min-answers-group">
+              <button type="button" class="pill-btn selected" data-min="2">Standard (2+ Answers / Box)</button>
+              <button type="button" class="pill-btn" data-min="3">High Density (3+ Answers / Box)</button>
+              <button type="button" class="pill-btn" data-min="1">Classic (1+ Answer / Box)</button>
+            </div>
+          </div>
+
+          <!-- Player Names -->
+          <div class="form-group">
+            <label class="form-label">Competitors</label>
+            <div class="players-input-row">
+              <div class="player-field">
+                <span class="player-mark mark-x">X</span>
+                <input type="text" id="input-p1" class="text-input" placeholder="Player 1" value="Player 1" maxlength="20">
+              </div>
+              <span class="input-divider">VS</span>
+              <div class="player-field">
+                <span class="player-mark mark-o">O</span>
+                <input type="text" id="input-p2" class="text-input" placeholder="Player 2" value="Player 2" maxlength="20">
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-start" id="btn-start-game">
+            Start Match
           </button>
-          <button class="league-btn" id="btn-league-euro" data-league="euroleague">
-            <span class="icon">🇪🇺</span> EuroLeague
-          </button>
-        </div>
-
-        <button class="btn btn-outline" id="btn-rules">📖 Rules</button>
-        <button class="btn btn-primary" id="btn-new-game">🔄 New Board</button>
-      </div>
-    </header>
-
-    <!-- Score & Turn Banner -->
-    <div class="scoreboard-banner">
-      <div class="player-card player-x" id="card-player-x">
-        <div class="player-avatar">X</div>
-        <div class="player-details">
-          <div class="player-name" id="label-player-x">Player 1</div>
-          <div class="player-score" id="score-player-x">0 Wins</div>
-        </div>
-        <div class="turn-indicator">ACTIVE TURN</div>
-      </div>
-
-      <div class="vs-divider">
-        <span class="vs-text">VS</span>
-      </div>
-
-      <div class="player-card player-o" id="card-player-o">
-        <div class="player-avatar">O</div>
-        <div class="player-details">
-          <div class="player-name" id="label-player-o">Player 2</div>
-          <div class="player-score" id="score-player-o">0 Wins</div>
-        </div>
-        <div class="turn-indicator">ACTIVE TURN</div>
-      </div>
-    </div>
-
-    <!-- Live Toast / Status Notification -->
-    <div class="status-alert" id="status-alert">
-      <span id="status-icon">📢</span>
-      <span id="status-message">Welcome to Hoops XOX! Player 1 (X) starts. Pick an open cell!</span>
-    </div>
-
-    <!-- The 3x3 Game Board Grid Container -->
-    <main class="board-wrapper">
-      <div class="grid-board" id="game-grid">
-        <!-- (0,0) Empty Corner -->
-        <div class="grid-corner">
-          <div class="court-logo">🏀</div>
-        </div>
-
-        <!-- Column Headers (Criteria) -->
-        <div class="col-header" id="col-header-0">
-          <div class="crit-type">COL 1</div>
-          <div class="crit-val" id="col-text-0">Loading...</div>
-        </div>
-        <div class="col-header" id="col-header-1">
-          <div class="crit-type">COL 2</div>
-          <div class="crit-val" id="col-text-1">Loading...</div>
-        </div>
-        <div class="col-header" id="col-header-2">
-          <div class="crit-type">COL 3</div>
-          <div class="crit-val" id="col-text-2">Loading...</div>
-        </div>
-
-        <!-- Row 0 -->
-        <div class="row-header" id="row-header-0">
-          <div class="crit-type">ROW 1</div>
-          <div class="crit-val" id="row-text-0">Loading...</div>
-        </div>
-        <div class="grid-cell" data-row="0" data-col="0" id="cell-0-0">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="0" data-col="1" id="cell-0-1">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="0" data-col="2" id="cell-0-2">
-          <div class="cell-inner"></div>
-        </div>
-
-        <!-- Row 1 -->
-        <div class="row-header" id="row-header-1">
-          <div class="crit-type">ROW 2</div>
-          <div class="crit-val" id="row-text-1">Loading...</div>
-        </div>
-        <div class="grid-cell" data-row="1" data-col="0" id="cell-1-0">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="1" data-col="1" id="cell-1-1">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="1" data-col="2" id="cell-1-2">
-          <div class="cell-inner"></div>
-        </div>
-
-        <!-- Row 2 -->
-        <div class="row-header" id="row-header-2">
-          <div class="crit-type">ROW 3</div>
-          <div class="crit-val" id="row-text-2">Loading...</div>
-        </div>
-        <div class="grid-cell" data-row="2" data-col="0" id="cell-2-0">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="2" data-col="1" id="cell-2-1">
-          <div class="cell-inner"></div>
-        </div>
-        <div class="grid-cell" data-row="2" data-col="2" id="cell-2-2">
-          <div class="cell-inner"></div>
         </div>
       </div>
-    </main>
+    </section>
 
-    <!-- Footer Stats / Used Players -->
-    <footer class="footer-info">
-      <div class="used-players-panel">
-        <span class="panel-title">Players Drafted This Game:</span>
-        <div class="used-chips-container" id="used-players-list">
-          <span class="empty-note">None yet.</span>
+    <!-- GAME BOARD VIEW -->
+    <section class="view-panel hidden" id="view-game">
+      <header class="game-navbar">
+        <div class="nav-brand">
+          <span class="nav-title">HOOP GRID</span>
+          <span class="nav-league-pill" id="game-league-pill">NBA</span>
+        </div>
+
+        <div class="nav-actions">
+          <button class="nav-btn" id="btn-rules">Rules</button>
+          <button class="nav-btn" id="btn-reset-board">New Board</button>
+          <button class="nav-btn nav-btn-outline" id="btn-return-menu">Main Menu</button>
+        </div>
+      </header>
+
+      <!-- Turn & Scoreboard -->
+      <div class="match-bar">
+        <div class="match-player match-player-x" id="match-card-x">
+          <span class="match-mark">X</span>
+          <div class="match-info">
+            <span class="match-name" id="display-name-x">Player 1</span>
+            <span class="match-score" id="display-score-x">0 wins</span>
+          </div>
+          <span class="turn-dot"></span>
+        </div>
+
+        <div class="match-center">
+          <div class="match-status-text" id="match-status">Game ready. Player 1's turn.</div>
+        </div>
+
+        <div class="match-player match-player-o" id="match-card-o">
+          <span class="turn-dot"></span>
+          <div class="match-info">
+            <span class="match-name" id="display-name-o">Player 2</span>
+            <span class="match-score" id="display-score-o">0 wins</span>
+          </div>
+          <span class="match-mark">O</span>
         </div>
       </div>
-    </footer>
+
+      <!-- 3x3 Grid Board -->
+      <main class="grid-container">
+        <div class="board-table" id="board-table">
+          <!-- Empty Top-Left Cell -->
+          <div class="cell-corner"></div>
+
+          <!-- Column Headers -->
+          <div class="cell-header col-header" id="col-head-0">
+            <span class="header-type" id="col-type-0">COL 1</span>
+            <span class="header-title" id="col-title-0">-</span>
+          </div>
+          <div class="cell-header col-header" id="col-head-1">
+            <span class="header-type" id="col-type-1">COL 2</span>
+            <span class="header-title" id="col-title-1">-</span>
+          </div>
+          <div class="cell-header col-header" id="col-head-2">
+            <span class="header-type" id="col-type-2">COL 3</span>
+            <span class="header-title" id="col-title-2">-</span>
+          </div>
+
+          <!-- Row 0 -->
+          <div class="cell-header row-header" id="row-head-0">
+            <span class="header-type" id="row-type-0">ROW 1</span>
+            <span class="header-title" id="row-title-0">-</span>
+          </div>
+          <div class="board-box" data-row="0" data-col="0" id="box-0-0">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="0" data-col="1" id="box-0-1">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="0" data-col="2" id="box-0-2">
+            <div class="box-content"></div>
+          </div>
+
+          <!-- Row 1 -->
+          <div class="cell-header row-header" id="row-head-1">
+            <span class="header-type" id="row-type-1">ROW 2</span>
+            <span class="header-title" id="row-title-1">-</span>
+          </div>
+          <div class="board-box" data-row="1" data-col="0" id="box-1-0">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="1" data-col="1" id="box-1-1">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="1" data-col="2" id="box-1-2">
+            <div class="box-content"></div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="cell-header row-header" id="row-head-2">
+            <span class="header-type" id="row-type-2">ROW 3</span>
+            <span class="header-title" id="row-title-2">-</span>
+          </div>
+          <div class="board-box" data-row="2" data-col="0" id="box-2-0">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="2" data-col="1" id="box-2-1">
+            <div class="box-content"></div>
+          </div>
+          <div class="board-box" data-row="2" data-col="2" id="box-2-2">
+            <div class="box-content"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Used Players List -->
+      <footer class="game-footer">
+        <div class="used-tray">
+          <span class="tray-label">Drafted this match:</span>
+          <div class="tray-tags" id="used-tags-container">
+            <span class="tray-empty">None</span>
+          </div>
+        </div>
+      </footer>
+    </section>
+
   </div>
 
-  <!-- Player Selection Modal -->
-  <div class="modal-overlay" id="player-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <h2 class="modal-title">Draft a Basketball Player</h2>
-          <p class="modal-subtitle">Pick a player satisfying both requirements</p>
-        </div>
-        <button class="btn-close" id="btn-close-modal">&times;</button>
+  <!-- PLAYER SELECTION MODAL -->
+  <div class="modal-backdrop" id="modal-draft">
+    <div class="modal-dialog">
+      <div class="dialog-header">
+        <h3 class="dialog-title">Select Basketball Player</h3>
+        <button class="dialog-close" id="btn-close-draft">&times;</button>
       </div>
 
-      <div class="modal-requirements">
-        <div class="req-box">
-          <span class="req-label">ROW REQUIREMENT</span>
-          <span class="req-value" id="modal-req-row">-</span>
+      <div class="criteria-preview">
+        <div class="crit-pill">
+          <span class="crit-tag">ROW</span>
+          <span class="crit-name" id="modal-crit-row">-</span>
         </div>
-        <div class="req-plus">+</div>
-        <div class="req-box">
-          <span class="req-label">COLUMN REQUIREMENT</span>
-          <span class="req-value" id="modal-req-col">-</span>
+        <span class="crit-cross">&times;</span>
+        <div class="crit-pill">
+          <span class="crit-tag">COLUMN</span>
+          <span class="crit-name" id="modal-crit-col">-</span>
         </div>
       </div>
 
-      <div class="search-section">
-        <label for="player-input" class="search-label">Type Player Name:</label>
-        <div class="input-wrapper">
-          <input 
-            type="text" 
-            id="player-input" 
-            placeholder="e.g. LeBron James, Luka Doncic, Spanoulis..." 
-            autocomplete="off" 
-            autofocus
-          >
-          <div class="spinner" id="search-spinner"></div>
-        </div>
-
-        <!-- Autocomplete Suggestions List -->
-        <div class="suggestions-list" id="suggestions-list"></div>
+      <div class="search-field-wrap">
+        <input 
+          type="text" 
+          id="player-search-input" 
+          class="search-input" 
+          placeholder="Search by player name..." 
+          autocomplete="off" 
+          autofocus
+        >
+        <div class="search-loader" id="search-loader"></div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-outline" id="btn-cancel-move">Cancel</button>
-        <button class="btn btn-primary" id="btn-submit-player" disabled>Confirm Draft</button>
-      </div>
-    </div>
-  </div>
+      <!-- Autocomplete Dropdown List -->
+      <div class="dropdown-results" id="dropdown-results"></div>
 
-  <!-- Game Over Winner Modal -->
-  <div class="modal-overlay" id="gameover-modal">
-    <div class="modal-card celebration-card">
-      <div class="trophy-icon">🏆</div>
-      <h2 class="gameover-title" id="gameover-title">PLAYER 1 WINS!</h2>
-      <p class="gameover-desc" id="gameover-desc">Triple in a row! What a game!</p>
-      
-      <div class="gameover-actions">
-        <button class="btn btn-primary btn-large" id="btn-play-again">🏀 Play Again</button>
+      <div class="dialog-footer">
+        <button class="btn-secondary" id="btn-cancel-draft">Cancel</button>
+        <button class="btn-primary" id="btn-confirm-draft" disabled>Submit Pick</button>
       </div>
     </div>
   </div>
 
-  <!-- Rules Modal -->
-  <div class="modal-overlay" id="rules-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2 class="modal-title">How To Play Basketball XOX</h2>
-        <button class="btn-close" id="btn-close-rules">&times;</button>
+  <!-- GAME OVER DIALOG -->
+  <div class="modal-backdrop" id="modal-winner">
+    <div class="modal-dialog dialog-winner">
+      <div class="winner-crest" id="winner-crest">🏆</div>
+      <h2 class="winner-title" id="winner-title">PLAYER 1 WINS</h2>
+      <p class="winner-sub" id="winner-sub">Connected 3 boxes in a row!</p>
+
+      <div class="winner-actions">
+        <button class="btn-primary" id="btn-rematch">Play Rematch</button>
+        <button class="btn-secondary" id="btn-winner-menu">Change League / Menu</button>
       </div>
-      <div class="rules-body">
-        <div class="rule-item">
-          <div class="rule-num">1</div>
-          <div class="rule-text"><strong>Tic-Tac-Toe Rules:</strong> 2 players (X and O) compete to get 3 claimed boxes in a horizontal, vertical, or diagonal row.</div>
+    </div>
+  </div>
+
+  <!-- RULES DIALOG -->
+  <div class="modal-backdrop" id="modal-rules">
+    <div class="modal-dialog">
+      <div class="dialog-header">
+        <h3 class="dialog-title">Rules & Instructions</h3>
+        <button class="dialog-close" id="btn-close-rules">&times;</button>
+      </div>
+      <div class="rules-list">
+        <div class="rule-row">
+          <span class="rule-index">1</span>
+          <div class="rule-text"><strong>Objective:</strong> Be the first player to form a horizontal, vertical, or diagonal line of 3 claimed boxes.</div>
         </div>
-        <div class="rule-item">
-          <div class="rule-num">2</div>
-          <div class="rule-text"><strong>Basketball Criteria:</strong> To claim a box, you must name a player who satisfies <em>both</em> the Row criterion and the Column criterion (e.g. played for Team A + Team B, or Team A + from Country C).</div>
+        <div class="rule-row">
+          <span class="rule-index">2</span>
+          <div class="rule-text"><strong>Criteria Matching:</strong> Click an open box and name a player who satisfies both the Row and Column requirements (e.g. played for both franchises, or played for Team X and represents Country Y).</div>
         </div>
-        <div class="rule-item">
-          <div class="rule-num">3</div>
-          <div class="rule-text"><strong>Turn Turnover:</strong> If you guess a player that doesn't match both criteria or was already picked, you commit a foul and forfeit your turn to the opponent!</div>
+        <div class="rule-row">
+          <span class="rule-index">3</span>
+          <div class="rule-text"><strong>Turnovers:</strong> If your guess is incorrect or you name a player already drafted this game, you commit a foul and your turn is forfeited to your opponent.</div>
         </div>
-        <div class="rule-item">
-          <div class="rule-num">4</div>
-          <div class="rule-text"><strong>No Re-use:</strong> Each basketball player can only be picked once per match!</div>
+        <div class="rule-row">
+          <span class="rule-index">4</span>
+          <div class="rule-text"><strong>No Duplicates:</strong> Each basketball player can only be used once per match.</div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" id="btn-rules-ok">Got It!</button>
+      <div class="dialog-footer">
+        <button class="btn-primary" id="btn-rules-ack">Understood</button>
       </div>
     </div>
   </div>

@@ -9,7 +9,7 @@ from typing import Optional, List
 from .models import GameState, MoveRequest, MoveResult
 from .game_engine import BasketballDataStore, GameManager
 
-app = FastAPI(title="Basketball XOX", description="2-Player Basketball Tic-Tac-Toe Trivia")
+app = FastAPI(title="Basketball XOX", description="2-Player Basketball Grid Tic-Tac-Toe")
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,13 +28,15 @@ class NewGameRequest(BaseModel):
     league: str = "nba"
     player1_name: str = "Player 1"
     player2_name: str = "Player 2"
+    min_answers: int = 2
 
 @app.post("/api/new-game", response_model=GameState)
 def create_new_game(req: NewGameRequest):
     return game_manager.create_game(
         league=req.league,
         player1_name=req.player1_name,
-        player2_name=req.player2_name
+        player2_name=req.player2_name,
+        min_answers=req.min_answers
     )
 
 @app.get("/api/game/{game_id}", response_model=GameState)
@@ -67,7 +69,7 @@ def get_cell_info(game_id: str, row: int, col: int):
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
     if not (0 <= row < 3 and 0 <= col < 3):
-        raise HTTPException(status_code=400, detail="Invalid row/col")
+        raise HTTPException(status_code=400, detail="Invalid coordinates")
 
     r_crit = game.row_criteria[row]
     c_crit = game.col_criteria[col]
@@ -81,7 +83,7 @@ def get_cell_info(game_id: str, row: int, col: int):
         "player_name": game.grid[row][col].player_name
     }
 
-# Mount frontend
+# Mount frontend static files
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
@@ -90,4 +92,4 @@ def serve_index():
     index_path = FRONTEND_DIR / "index.html"
     if index_path.exists():
         return FileResponse(index_path)
-    return {"message": "Basketball XOX API is running. Frontend index not found."}
+    return {"message": "Basketball XOX API is running."}

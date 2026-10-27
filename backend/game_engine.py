@@ -3,7 +3,7 @@ import random
 import uuid
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
-from .models import Criterion, CriterionType, PlayerInfo, Cell, GameState, MoveResult
+from .models import Criterion, CriterionType, Cell, GameState, MoveResult
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 
@@ -39,7 +39,7 @@ class BasketballDataStore:
                 return p
         return None
 
-    def search_players(self, league: str, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    def search_players(self, league: str, query: str, limit: int = 8) -> List[Dict[str, Any]]:
         clean_q = query.strip().lower()
         if not clean_q:
             return []
@@ -48,7 +48,6 @@ class BasketballDataStore:
         for p in self.get_players(league):
             p_name = p["name"].lower()
             if clean_q in p_name:
-                # Prioritize names starting with query
                 priority = 0 if p_name.startswith(clean_q) else 1
                 matches.append((priority, p))
 
@@ -84,13 +83,15 @@ class GameManager:
         self, 
         league: str = "nba", 
         player1_name: str = "Player 1", 
-        player2_name: str = "Player 2"
+        player2_name: str = "Player 2",
+        min_answers: int = 2
     ) -> GameState:
         league_clean = league.lower()
         if league_clean not in ["nba", "euroleague"]:
             league_clean = "nba"
 
-        row_criteria, col_criteria = self._generate_balanced_board(league_clean)
+        min_answers = max(1, min(min_answers, 4))
+        row_criteria, col_criteria = self._generate_balanced_board(league_clean, min_answers=min_answers)
 
         grid = [
             [Cell(row=r, col=c) for c in range(3)]
@@ -101,12 +102,13 @@ class GameManager:
         game_state = GameState(
             game_id=game_id,
             league=league_clean.upper(),
+            min_answers=min_answers,
             row_criteria=row_criteria,
             col_criteria=col_criteria,
             grid=grid,
             current_player="X",
-            player1_name=player1_name,
-            player2_name=player2_name,
+            player1_name=player1_name or "Player 1",
+            player2_name=player2_name or "Player 2",
             status="in_progress",
             winner=None,
             winning_line=None,
@@ -140,26 +142,25 @@ class GameManager:
         if target_cell.claimed_by is not None:
             return MoveResult(success=False, message="This cell is already claimed!")
 
-        # Check if player already used in this match
+        # Check duplicate
         clean_player_name = player_name.strip()
         if any(u.lower() == clean_player_name.lower() for u in game.used_players):
-            # Penalty: turn forfeits on duplicate
             curr_p = game.current_player
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False, 
-                message=f"{clean_player_name} has already been used in this game! Turn passed.",
+                message=f"'{clean_player_name}' was already picked this game! Turn forfeits to Player {game.current_player}.",
                 current_player=game.current_player
             )
 
-        # Validate player existence
+        # Validate existence
         player = self.data_store.find_player(game.league, clean_player_name)
         if not player:
             curr_p = game.current_player
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False, 
-                message=f"Player '{clean_player_name}' not found in the {game.league} database! Turn passed.",
+                message=f"'{clean_player_name}' not found in {game.league} records. Turn forfeits to Player {game.current_player}.",
                 current_player=game.current_player
             )
 
@@ -177,16 +178,15 @@ class GameManager:
             if not matches_col:
                 reasons.append(f"did not play for {col_crit.display}" if col_crit.type == CriterionType.TEAM else f"is not from {col_crit.display}")
 
-            # Missed guess: switches turn
             curr_p = game.current_player
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False,
-                message=f"Incorrect! {player['name']} {' and '.join(reasons)}. Turn passed to Player {game.current_player}!",
+                message=f"Miss! {player['name']} {' and '.join(reasons)}. Turn forfeits to Player {game.current_player}.",
                 current_player=game.current_player
             )
 
-        # Valid move! Claim cell
+        # Valid move
         claiming_player = game.current_player
         target_cell.claimed_by = claiming_player
         target_cell.player_name = player["name"]
@@ -194,15 +194,16 @@ class GameManager:
         target_cell.player_teams = player.get("teams", [])
         game.used_players.append(player["name"])
 
-        # Check for 3-in-a-row Tic-Tac-Toe
+        # Check win
         winning_line = self._check_winner(game.grid)
         if winning_line:
             game.status = "finished"
             game.winner = claiming_player
             game.winning_line = winning_line
+            winner_name = game.player1_name if claiming_player == "X" else game.player2_name
             return MoveResult(
                 success=True,
-                message=f"SWISH! {player['name']} secures the win for Player {claiming_player}!",
+                message=f"Game Over! {winner_name} ({claiming_player}) wins with 3 in a row!",
                 game_over=True,
                 winner=claiming_player,
                 winning_line=winning_line,
@@ -210,26 +211,26 @@ class GameManager:
                 current_player=game.current_player
             )
 
-        # Check for draw (all 9 cells claimed)
+        # Check draw
         all_claimed = all(game.grid[r][c].claimed_by is not None for r in range(3) for c in range(3))
         if all_claimed:
             game.status = "finished"
             game.winner = "DRAW"
             return MoveResult(
                 success=True,
-                message=f"Game ends in a Draw! All 9 boxes completed.",
+                message=f"Game Over! All 9 boxes completed with no 3 in a row. It's a draw!",
                 game_over=True,
                 winner="DRAW",
                 cell=target_cell,
                 current_player=game.current_player
             )
 
-        # Toggle turn
+        # Switch turn
         game.current_player = "O" if claiming_player == "X" else "X"
 
         return MoveResult(
             success=True,
-            message=f"Score! {player['name']} valid for {row_crit.display} & {col_crit.display}.",
+            message=f"Valid! {player['name']} matches {row_crit.display} & {col_crit.display}.",
             game_over=False,
             current_player=game.current_player,
             cell=target_cell
@@ -255,66 +256,72 @@ class GameManager:
 
         return None
 
-    def _generate_balanced_board(self, league: str) -> Tuple[List[Criterion], List[Criterion]]:
+    def _generate_balanced_board(self, league: str, min_answers: int = 2) -> Tuple[List[Criterion], List[Criterion]]:
         """
         Generates 3 row criteria and 3 col criteria such that
-        EVERY one of the 9 cells has at least 1 valid player in data_store.
-        Includes a mix of teams and countries.
+        EVERY one of the 9 cells has at least `min_answers` valid players.
+        Ensures never having Country x Country.
         """
-        all_teams = self.data_store.get_teams(league)
-        all_countries = self.data_store.get_countries(league)
+        teams = self.data_store.get_teams(league)
+        countries = self.data_store.get_countries(league)
 
-        team_criteria = [Criterion(type=CriterionType.TEAM, value=t, display=t) for t in all_teams]
-        country_criteria = [Criterion(type=CriterionType.COUNTRY, value=c, display=c) for c in all_countries]
+        team_crits = [Criterion(type=CriterionType.TEAM, value=t, display=t) for t in teams]
+        country_crits = [Criterion(type=CriterionType.COUNTRY, value=c, display=c) for c in countries]
 
-        for _ in range(500):  # Retry attempts
-            # Pick 2 teams and 1 country, or 3 teams for rows
-            selected_rows = random.sample(team_criteria, 2) + random.sample(country_criteria, 1)
-            random.shuffle(selected_rows)
+        # Try target threshold, and step down if needed
+        for target_min in [min_answers, max(1, min_answers - 1), 1]:
+            for _ in range(4000):
+                # Rows can have 2 teams + 1 country OR 3 teams
+                if random.random() < 0.6 and country_crits:
+                    rows = random.sample(team_crits, 2) + random.sample(country_crits, 1)
+                    random.shuffle(rows)
+                    # Columns will be teams only to avoid Country x Country
+                    avail_teams = [t for t in team_crits if t.value not in [r.value for r in rows]]
+                    cols = random.sample(avail_teams, 3)
+                else:
+                    # 3 teams vs 3 teams
+                    chosen = random.sample(team_crits, 6)
+                    rows = chosen[:3]
+                    cols = chosen[3:]
 
-            # Columns should not repeat the row criteria
-            avail_teams_for_cols = [t for t in team_criteria if t.value not in [r.value for r in selected_rows]]
-            avail_countries_for_cols = [c for c in country_criteria if c.value not in [r.value for r in selected_rows]]
-
-            selected_cols = random.sample(avail_teams_for_cols, 2) + random.sample(avail_countries_for_cols, 1)
-            random.shuffle(selected_cols)
-
-            # Check if all 9 cells are solvable
-            solvable = True
-            for r_crit in selected_rows:
-                for c_crit in selected_cols:
-                    matches = self.data_store.get_valid_players_for_cell(league, r_crit, c_crit)
-                    if len(matches) == 0:
-                        solvable = False
+                # Check if every single cell has >= target_min valid players
+                solvable = True
+                for r_crit in rows:
+                    for c_crit in cols:
+                        ans_count = len(self.data_store.get_valid_players_for_cell(league, r_crit, c_crit))
+                        if ans_count < target_min:
+                            solvable = False
+                            break
+                    if not solvable:
                         break
-                if not solvable:
-                    break
 
-            if solvable:
-                return selected_rows, selected_cols
+                if solvable:
+                    return rows, cols
 
-        # Fallback preset boards that are 100% guaranteed solvable
+        # Guaranteed high-density fallbacks
         if league == "nba":
-            rows = [
-                Criterion(type=CriterionType.TEAM, value="Los Angeles Lakers", display="Los Angeles Lakers"),
-                Criterion(type=CriterionType.TEAM, value="Miami Heat", display="Miami Heat"),
-                Criterion(type=CriterionType.COUNTRY, value="France", display="France")
-            ]
-            cols = [
-                Criterion(type=CriterionType.TEAM, value="Cleveland Cavaliers", display="Cleveland Cavaliers"),
-                Criterion(type=CriterionType.TEAM, value="San Antonio Spurs", display="San Antonio Spurs"),
-                Criterion(type=CriterionType.COUNTRY, value="USA", display="USA")
-            ]
-            return rows, cols
+            return (
+                [
+                    Criterion(type=CriterionType.TEAM, value="Los Angeles Lakers", display="Los Angeles Lakers"),
+                    Criterion(type=CriterionType.TEAM, value="Miami Heat", display="Miami Heat"),
+                    Criterion(type=CriterionType.COUNTRY, value="USA", display="USA"),
+                ],
+                [
+                    Criterion(type=CriterionType.TEAM, value="Cleveland Cavaliers", display="Cleveland Cavaliers"),
+                    Criterion(type=CriterionType.TEAM, value="Houston Rockets", display="Houston Rockets"),
+                    Criterion(type=CriterionType.TEAM, value="Dallas Mavericks", display="Dallas Mavericks"),
+                ]
+            )
         else:
-            rows = [
-                Criterion(type=CriterionType.TEAM, value="FC Barcelona", display="FC Barcelona"),
-                Criterion(type=CriterionType.TEAM, value="Fenerbahçe", display="Fenerbahçe"),
-                Criterion(type=CriterionType.COUNTRY, value="Greece", display="Greece")
-            ]
-            cols = [
-                Criterion(type=CriterionType.TEAM, value="Panathinaikos", display="Panathinaikos"),
-                Criterion(type=CriterionType.TEAM, value="Real Madrid", display="Real Madrid"),
-                Criterion(type=CriterionType.COUNTRY, value="USA", display="USA")
-            ]
-            return rows, cols
+            return (
+                [
+                    Criterion(type=CriterionType.TEAM, value="FC Barcelona", display="FC Barcelona"),
+                    Criterion(type=CriterionType.TEAM, value="Panathinaikos", display="Panathinaikos"),
+                    Criterion(type=CriterionType.COUNTRY, value="USA", display="USA"),
+                ],
+                [
+                    Criterion(type=CriterionType.TEAM, value="Real Madrid", display="Real Madrid"),
+                    Criterion(type=CriterionType.TEAM, value="Olympiacos", display="Olympiacos"),
+                    Criterion(type=CriterionType.TEAM, value="Fenerbahçe", display="Fenerbahçe"),
+                ]
+            )

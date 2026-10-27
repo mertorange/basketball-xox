@@ -1,74 +1,68 @@
 /**
- * Basketball XOX - Interactive Client Application
+ * Hoop Grid - Clean 2-Player Basketball XOX Client
  */
 
-// Web Audio sound synthesizer (Zero external dependencies)
+// Subtle Web Audio sound cues (clean, minimal)
 class SoundFX {
   constructor() {
     this.ctx = null;
   }
-
   init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) this.ctx = new AudioCtx();
     }
   }
-
-  playSwish() {
+  playSuccess() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(780, this.ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.2);
+    } catch (e) {}
+  }
+  playTurnover() {
     try {
       this.init();
       if (!this.ctx) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.25);
-      gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+      osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+      osc.frequency.setValueAtTime(180, this.ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.22);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.25);
-    } catch (e) {
-      // Audio autoplay policy fallback
-    }
-  }
-
-  playBuzzer() {
-    try {
-      this.init();
-      if (!this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(160, this.ctx.currentTime);
-      osc.frequency.setValueAtTime(140, this.ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + 0.35);
+      osc.stop(this.ctx.currentTime + 0.22);
     } catch (e) {}
   }
-
-  playFanfare() {
+  playWin() {
     try {
       this.init();
       if (!this.ctx) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
-      notes.forEach((freq, idx) => {
+      [440, 554.37, 659.25].forEach((freq, idx) => {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
+        osc.type = 'sine';
         osc.frequency.value = freq;
-        const start = this.ctx.currentTime + idx * 0.12;
-        gain.gain.setValueAtTime(0.2, start);
-        gain.gain.exponentialRampToValueAtTime(0.01, start + 0.3);
+        const start = this.ctx.currentTime + idx * 0.1;
+        gain.gain.setValueAtTime(0.15, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(start);
-        osc.stop(start + 0.3);
+        osc.stop(start + 0.35);
       });
     } catch (e) {}
   }
@@ -76,219 +70,279 @@ class SoundFX {
 
 const sfx = new SoundFX();
 
-// App State
+// Game State
 let currentGame = null;
-let currentLeague = 'nba';
+let selectedLeague = 'nba';
+let selectedMinAnswers = 2;
 let selectedCell = null;
 let searchDebounceTimer = null;
 let scores = { X: 0, O: 0 };
 
-// DOM Elements
-const gridBoard = document.getElementById('game-grid');
-const cardPlayerX = document.getElementById('card-player-x');
-const cardPlayerO = document.getElementById('card-player-o');
-const scorePlayerX = document.getElementById('score-player-x');
-const scorePlayerO = document.getElementById('score-player-o');
-const statusAlert = document.getElementById('status-alert');
-const statusMessage = document.getElementById('status-message');
-const statusIcon = document.getElementById('status-icon');
-const usedPlayersList = document.getElementById('used-players-list');
+// DOM References
+const viewMenu = document.getElementById('view-menu');
+const viewGame = document.getElementById('view-game');
 
-// League Buttons
-const btnLeagueNBA = document.getElementById('btn-league-nba');
-const btnLeagueEuro = document.getElementById('btn-league-euro');
-const btnNewGame = document.getElementById('btn-new-game');
+// Menu Controls
+const optNBA = document.getElementById('opt-nba');
+const optEuro = document.getElementById('opt-euroleague');
+const minAnswersGroup = document.getElementById('min-answers-group');
+const inputP1 = document.getElementById('input-p1');
+const inputP2 = document.getElementById('input-p2');
+const btnStartGame = document.getElementById('btn-start-game');
+
+// Game Navbar & Match bar
+const gameLeaguePill = document.getElementById('game-league-pill');
+const btnReturnMenu = document.getElementById('btn-return-menu');
+const btnResetBoard = document.getElementById('btn-reset-board');
 const btnRules = document.getElementById('btn-rules');
+const matchCardX = document.getElementById('match-card-x');
+const matchCardO = document.getElementById('match-card-o');
+const displayNameX = document.getElementById('display-name-x');
+const displayNameO = document.getElementById('display-name-o');
+const displayScoreX = document.getElementById('display-score-x');
+const displayScoreO = document.getElementById('display-score-o');
+const matchStatus = document.getElementById('match-status');
+const usedTagsContainer = document.getElementById('used-tags-container');
 
-// Player Modal
-const playerModal = document.getElementById('player-modal');
-const modalReqRow = document.getElementById('modal-req-row');
-const modalReqCol = document.getElementById('modal-req-col');
-const playerInput = document.getElementById('player-input');
-const suggestionsList = document.getElementById('suggestions-list');
-const btnSubmitPlayer = document.getElementById('btn-submit-player');
-const btnCancelMove = document.getElementById('btn-cancel-move');
-const btnCloseModal = document.getElementById('btn-close-modal');
-const searchSpinner = document.getElementById('search-spinner');
+// Selection Modal
+const modalDraft = document.getElementById('modal-draft');
+const modalCritRow = document.getElementById('modal-crit-row');
+const modalCritCol = document.getElementById('modal-crit-col');
+const playerSearchInput = document.getElementById('player-search-input');
+const dropdownResults = document.getElementById('dropdown-results');
+const searchLoader = document.getElementById('search-loader');
+const btnConfirmDraft = document.getElementById('btn-confirm-draft');
+const btnCancelDraft = document.getElementById('btn-cancel-draft');
+const btnCloseDraft = document.getElementById('btn-close-draft');
 
-// Game Over Modal
-const gameoverModal = document.getElementById('gameover-modal');
-const gameoverTitle = document.getElementById('gameover-title');
-const gameoverDesc = document.getElementById('gameover-desc');
-const btnPlayAgain = document.getElementById('btn-play-again');
+// Winner Modal
+const modalWinner = document.getElementById('modal-winner');
+const winnerTitle = document.getElementById('winner-title');
+const winnerSub = document.getElementById('winner-sub');
+const btnRematch = document.getElementById('btn-rematch');
+const btnWinnerMenu = document.getElementById('btn-winner-menu');
 
 // Rules Modal
-const rulesModal = document.getElementById('rules-modal');
+const modalRules = document.getElementById('modal-rules');
 const btnCloseRules = document.getElementById('btn-close-rules');
-const btnRulesOk = document.getElementById('btn-rules-ok');
+const btnRulesAck = document.getElementById('btn-rules-ack');
 
 // Initialize
 window.addEventListener('DOMContentLoaded', () => {
-  setupEventListeners();
-  startNewGame();
+  bindEvents();
 });
 
-function setupEventListeners() {
-  btnLeagueNBA.addEventListener('click', () => switchLeague('nba'));
-  btnLeagueEuro.addEventListener('click', () => switchLeague('euroleague'));
-  btnNewGame.addEventListener('click', () => startNewGame());
-  btnPlayAgain.addEventListener('click', () => {
-    closeModal(gameoverModal);
+function bindEvents() {
+  // League Card Toggle
+  optNBA.addEventListener('click', () => {
+    selectedLeague = 'nba';
+    optNBA.classList.add('selected');
+    optEuro.classList.remove('selected');
+  });
+
+  optEuro.addEventListener('click', () => {
+    selectedLeague = 'euroleague';
+    optEuro.classList.add('selected');
+    optNBA.classList.remove('selected');
+  });
+
+  // Min Answers Pill Toggle
+  minAnswersGroup.querySelectorAll('.pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      minAnswersGroup.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedMinAnswers = parseInt(btn.dataset.min) || 2;
+    });
+  });
+
+  // Start Game
+  btnStartGame.addEventListener('click', () => {
     startNewGame();
   });
 
-  // Modal close handlers
-  btnCancelMove.addEventListener('click', () => closeModal(playerModal));
-  btnCloseModal.addEventListener('click', () => closeModal(playerModal));
+  // Navigation
+  btnReturnMenu.addEventListener('click', () => {
+    viewGame.classList.add('hidden');
+    viewMenu.classList.remove('hidden');
+  });
 
-  btnRules.addEventListener('click', () => openModal(rulesModal));
-  btnCloseRules.addEventListener('click', () => closeModal(rulesModal));
-  btnRulesOk.addEventListener('click', () => closeModal(rulesModal));
+  btnResetBoard.addEventListener('click', () => {
+    startNewGame(false);
+  });
+
+  // Rules Dialog
+  btnRules.addEventListener('click', () => openModal(modalRules));
+  btnCloseRules.addEventListener('click', () => closeModal(modalRules));
+  btnRulesAck.addEventListener('click', () => closeModal(modalRules));
+
+  // Winner Actions
+  btnRematch.addEventListener('click', () => {
+    closeModal(modalWinner);
+    startNewGame(false);
+  });
+  btnWinnerMenu.addEventListener('click', () => {
+    closeModal(modalWinner);
+    viewGame.classList.add('hidden');
+    viewMenu.classList.remove('hidden');
+  });
+
+  // Draft Modal Handlers
+  btnCancelDraft.addEventListener('click', () => closeModal(modalDraft));
+  btnCloseDraft.addEventListener('click', () => closeModal(modalDraft));
 
   // Cell clicks
-  document.querySelectorAll('.grid-cell').forEach(cell => {
-    cell.addEventListener('click', () => {
-      const row = parseInt(cell.dataset.row);
-      const col = parseInt(cell.dataset.col);
-      handleCellClick(row, col);
+  document.querySelectorAll('.board-box').forEach(box => {
+    box.addEventListener('click', () => {
+      const r = parseInt(box.dataset.row);
+      const c = parseInt(box.dataset.col);
+      handleBoxClick(r, c);
     });
   });
 
   // Search input autocomplete
-  playerInput.addEventListener('input', (e) => {
-    const val = e.target.value.trim();
-    btnSubmitPlayer.disabled = val.length === 0;
+  playerSearchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    btnConfirmDraft.disabled = query.length === 0;
 
     clearTimeout(searchDebounceTimer);
-    if (val.length < 2) {
-      suggestionsList.innerHTML = '';
-      suggestionsList.classList.remove('visible');
+    if (query.length < 2) {
+      dropdownResults.innerHTML = '';
+      dropdownResults.classList.remove('visible');
       return;
     }
 
     searchDebounceTimer = setTimeout(() => {
-      fetchSuggestions(val);
-    }, 200);
+      fetchSuggestions(query);
+    }, 180);
   });
 
-  playerInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !btnSubmitPlayer.disabled) {
+  playerSearchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !btnConfirmDraft.disabled) {
       e.preventDefault();
-      confirmDraft(playerInput.value.trim());
+      confirmPlayerPick(playerSearchInput.value.trim());
     }
   });
 
-  btnSubmitPlayer.addEventListener('click', () => {
-    confirmDraft(playerInput.value.trim());
+  btnConfirmDraft.addEventListener('click', () => {
+    confirmPlayerPick(playerSearchInput.value.trim());
   });
 }
 
-function switchLeague(league) {
-  if (currentLeague === league) return;
-  currentLeague = league;
-  btnLeagueNBA.classList.toggle('active', league === 'nba');
-  btnLeagueEuro.classList.toggle('active', league === 'euroleague');
-  startNewGame();
-}
+async function startNewGame(switchView = true) {
+  const p1Name = inputP1.value.trim() || 'Player 1';
+  const p2Name = inputP2.value.trim() || 'Player 2';
 
-async function startNewGame() {
-  setStatus('Setting up a fresh basketball grid...', 'info', '🏀');
-  clearBoardHighlights();
+  setStatus('Generating balanced grid with guaranteed answers...', 'normal');
+  clearHighlights();
 
   try {
     const res = await fetch('/api/new-game', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        league: currentLeague,
-        player1_name: 'Player 1',
-        player2_name: 'Player 2'
+        league: selectedLeague,
+        player1_name: p1Name,
+        player2_name: p2Name,
+        min_answers: selectedMinAnswers
       })
     });
 
-    if (!res.ok) throw new Error('Failed to create new game');
+    if (!res.ok) throw new Error('Failed to generate match');
     currentGame = await res.json();
-    renderGame(currentGame);
-    setStatus(`Game started! Player 1 (X) turn. Click an open box!`, 'info', '🏀');
+
+    if (switchView) {
+      viewMenu.classList.add('hidden');
+      viewGame.classList.remove('hidden');
+    }
+
+    gameLeaguePill.textContent = currentGame.league;
+    displayNameX.textContent = currentGame.player1_name;
+    displayNameO.textContent = currentGame.player2_name;
+    displayScoreX.textContent = `${scores.X} wins`;
+    displayScoreO.textContent = `${scores.O} wins`;
+
+    renderBoard(currentGame);
+    setStatus(`${currentGame.player1_name}'s turn (X). Choose an empty square.`, 'normal');
   } catch (err) {
     console.error(err);
-    setStatus('Error connecting to backend server.', 'error', '⚠️');
+    setStatus('Error connecting to backend server.', 'error');
   }
 }
 
-function renderGame(game) {
-  // Render Headers
+function renderBoard(game) {
+  // Column criteria headers
   game.col_criteria.forEach((crit, idx) => {
-    const textEl = document.getElementById(`col-text-${idx}`);
-    if (textEl) textEl.textContent = crit.display;
+    const typeEl = document.getElementById(`col-type-${idx}`);
+    const titleEl = document.getElementById(`col-title-${idx}`);
+    if (typeEl) typeEl.textContent = crit.type.toUpperCase();
+    if (titleEl) titleEl.textContent = crit.display;
   });
 
+  // Row criteria headers
   game.row_criteria.forEach((crit, idx) => {
-    const textEl = document.getElementById(`row-text-${idx}`);
-    if (textEl) textEl.textContent = crit.display;
+    const typeEl = document.getElementById(`row-type-${idx}`);
+    const titleEl = document.getElementById(`row-title-${idx}`);
+    if (typeEl) typeEl.textContent = crit.type.toUpperCase();
+    if (titleEl) titleEl.textContent = crit.display;
   });
 
-  // Render Grid Cells
+  // Grid boxes
   for (let r = 0; r < 3; r++) {
     for (let c = 0; c < 3; c++) {
       const cellData = game.grid[r][c];
-      const cellEl = document.getElementById(`cell-${r}-${c}`);
-      const innerEl = cellEl.querySelector('.cell-inner');
+      const boxEl = document.getElementById(`box-${r}-${c}`);
+      const contentEl = boxEl.querySelector('.box-content');
 
-      cellEl.className = 'grid-cell';
-      innerEl.innerHTML = '';
+      boxEl.className = 'board-box';
+      contentEl.innerHTML = '';
 
       if (cellData.claimed_by) {
-        cellEl.classList.add('claimed', `claimed-${cellData.claimed_by.toLowerCase()}`);
-        innerEl.innerHTML = `
-          <div class="cell-badge">${cellData.claimed_by}</div>
-          <div class="cell-player-name">${escapeHtml(cellData.player_name || '')}</div>
-          <div class="cell-country">${escapeHtml(cellData.player_country || '')}</div>
+        boxEl.classList.add('claimed', `claimed-${cellData.claimed_by.toLowerCase()}`);
+        contentEl.innerHTML = `
+          <div class="box-mark">${cellData.claimed_by}</div>
+          <div class="box-player">${escapeHtml(cellData.player_name || '')}</div>
+          <div class="box-subtitle">${escapeHtml(cellData.player_country || '')}</div>
         `;
       } else {
-        innerEl.innerHTML = `<span class="cell-placeholder">➕</span>`;
+        contentEl.innerHTML = `<span class="box-empty-icon">+</span>`;
       }
     }
   }
 
-  // Update Turn Banner
-  updateTurnDisplay(game.current_player);
-
-  // Update Used Players
-  renderUsedPlayers(game.used_players);
-
-  // Highlight Winning line if present
-  if (game.winning_line) {
-    highlightWinningLine(game.winning_line);
-  }
-}
-
-function updateTurnDisplay(currentPlayer) {
-  if (currentPlayer === 'X') {
-    cardPlayerX.classList.add('active-turn');
-    cardPlayerO.classList.remove('active-turn');
+  // Active turn card highlight
+  if (game.current_player === 'X') {
+    matchCardX.classList.add('active-turn');
+    matchCardO.classList.remove('active-turn');
   } else {
-    cardPlayerO.classList.add('active-turn');
-    cardPlayerX.classList.remove('active-turn');
+    matchCardO.classList.add('active-turn');
+    matchCardX.classList.remove('active-turn');
+  }
+
+  // Used players
+  renderUsedTray(game.used_players);
+
+  // Winning line
+  if (game.winning_line) {
+    highlightLine(game.winning_line);
   }
 }
 
-function renderUsedPlayers(players) {
+function renderUsedTray(players) {
   if (!players || players.length === 0) {
-    usedPlayersList.innerHTML = '<span class="empty-note">None yet.</span>';
+    usedTagsContainer.innerHTML = '<span class="tray-empty">None</span>';
     return;
   }
-  usedPlayersList.innerHTML = players.map(p => `
-    <span class="player-chip">🏀 ${escapeHtml(p)}</span>
+  usedTagsContainer.innerHTML = players.map(p => `
+    <span class="tray-chip">${escapeHtml(p)}</span>
   `).join('');
 }
 
-function handleCellClick(row, col) {
+function handleBoxClick(row, col) {
   if (!currentGame || currentGame.status === 'finished') return;
 
   const cell = currentGame.grid[row][col];
   if (cell.claimed_by) {
-    setStatus('This square is already claimed! Pick another empty cell.', 'error', '🚫');
+    setStatus('This box is already claimed. Pick an open square.', 'error');
     return;
   }
 
@@ -296,60 +350,59 @@ function handleCellClick(row, col) {
   const rCrit = currentGame.row_criteria[row];
   const cCrit = currentGame.col_criteria[col];
 
-  modalReqRow.textContent = rCrit.display;
-  modalReqCol.textContent = cCrit.display;
+  modalCritRow.textContent = rCrit.display;
+  modalCritCol.textContent = cCrit.display;
 
-  playerInput.value = '';
-  suggestionsList.innerHTML = '';
-  suggestionsList.classList.remove('visible');
-  btnSubmitPlayer.disabled = true;
+  playerSearchInput.value = '';
+  dropdownResults.innerHTML = '';
+  dropdownResults.classList.remove('visible');
+  btnConfirmDraft.disabled = true;
 
-  openModal(playerModal);
-  setTimeout(() => playerInput.focus(), 100);
+  openModal(modalDraft);
+  setTimeout(() => playerSearchInput.focus(), 80);
 }
 
 async function fetchSuggestions(query) {
-  searchSpinner.style.display = 'block';
+  searchLoader.style.display = 'block';
   try {
-    const res = await fetch(`/api/search-players?league=${currentLeague}&q=${encodeURIComponent(query)}`);
+    const res = await fetch(`/api/search-players?league=${selectedLeague}&q=${encodeURIComponent(query)}`);
     const players = await res.json();
-    searchSpinner.style.display = 'none';
+    searchLoader.style.display = 'none';
 
     if (players.length === 0) {
-      suggestionsList.innerHTML = '<div class="suggestion-item"><em>No players found matching</em></div>';
-      suggestionsList.classList.add('visible');
+      dropdownResults.innerHTML = '<div class="dropdown-item"><em>No players found in database</em></div>';
+      dropdownResults.classList.add('visible');
       return;
     }
 
-    suggestionsList.innerHTML = players.map(p => `
-      <div class="suggestion-item" data-name="${escapeHtml(p.name)}">
-        <span class="suggestion-name">${escapeHtml(p.name)}</span>
-        <span class="suggestion-country">${escapeHtml(p.country)}</span>
+    dropdownResults.innerHTML = players.map(p => `
+      <div class="dropdown-item" data-name="${escapeHtml(p.name)}">
+        <span class="item-name">${escapeHtml(p.name)}</span>
+        <span class="item-sub">${escapeHtml(p.country)}</span>
       </div>
     `).join('');
-    suggestionsList.classList.add('visible');
+    dropdownResults.classList.add('visible');
 
-    // Attach click events
-    suggestionsList.querySelectorAll('.suggestion-item').forEach(item => {
+    dropdownResults.querySelectorAll('.dropdown-item').forEach(item => {
       item.addEventListener('click', () => {
         const name = item.dataset.name;
         if (name) {
-          playerInput.value = name;
-          btnSubmitPlayer.disabled = false;
-          confirmDraft(name);
+          playerSearchInput.value = name;
+          btnConfirmDraft.disabled = false;
+          confirmPlayerPick(name);
         }
       });
     });
   } catch (err) {
-    searchSpinner.style.display = 'none';
+    searchLoader.style.display = 'none';
   }
 }
 
-async function confirmDraft(playerName) {
+async function confirmPlayerPick(playerName) {
   if (!playerName || !selectedCell) return;
 
-  closeModal(playerModal);
-  setStatus(`Checking if ${playerName} satisfies the criteria...`, 'info', '⏳');
+  closeModal(modalDraft);
+  setStatus(`Validating ${playerName}...`, 'normal');
 
   try {
     const res = await fetch('/api/move', {
@@ -366,69 +419,67 @@ async function confirmDraft(playerName) {
     const result = await res.json();
 
     if (result.success) {
-      sfx.playSwish();
-      setStatus(result.message, 'success', '🎯');
+      sfx.playSuccess();
+      setStatus(result.message, 'success');
 
-      // Refresh game state
       const gRes = await fetch(`/api/game/${currentGame.game_id}`);
       currentGame = await gRes.json();
-      renderGame(currentGame);
+      renderBoard(currentGame);
 
       if (result.game_over) {
         handleGameOver(result);
       }
     } else {
-      // Missed / foul
-      sfx.playBuzzer();
-      setStatus(result.message, 'error', '❌');
+      // Turnover / missed pick
+      sfx.playTurnover();
+      setStatus(result.message, 'error');
 
-      // Refresh to reflect switched turn
       const gRes = await fetch(`/api/game/${currentGame.game_id}`);
       currentGame = await gRes.json();
-      renderGame(currentGame);
+      renderBoard(currentGame);
     }
   } catch (err) {
     console.error(err);
-    setStatus('Connection error while submitting move.', 'error', '⚠️');
+    setStatus('Connection error submitting pick.', 'error');
   }
 }
 
 function handleGameOver(result) {
   if (result.winner === 'X' || result.winner === 'O') {
-    sfx.playFanfare();
+    sfx.playWin();
     scores[result.winner]++;
-    scorePlayerX.textContent = `${scores.X} Wins`;
-    scorePlayerO.textContent = `${scores.O} Wins`;
+    displayScoreX.textContent = `${scores.X} wins`;
+    displayScoreO.textContent = `${scores.O} wins`;
 
-    gameoverTitle.textContent = `PLAYER ${result.winner} WINS!`;
-    gameoverDesc.textContent = `Spectacular 3-in-a-row victory!`;
+    const winnerName = result.winner === 'X' ? currentGame.player1_name : currentGame.player2_name;
+    winnerTitle.textContent = `${winnerName.toUpperCase()} WINS`;
+    winnerSub.textContent = `Three in a row! Claimed by Player ${result.winner}.`;
   } else {
-    gameoverTitle.textContent = `IT'S A DRAW!`;
-    gameoverDesc.textContent = `All 9 grid boxes completed with no 3-in-a-row.`;
+    winnerTitle.textContent = `MATCH DRAW`;
+    winnerSub.textContent = `All 9 grid boxes drafted with no 3 in a row.`;
   }
 
   setTimeout(() => {
-    openModal(gameoverModal);
-  }, 900);
+    openModal(modalWinner);
+  }, 750);
 }
 
-function highlightWinningLine(line) {
+function highlightLine(line) {
   line.forEach(([r, c]) => {
-    const el = document.getElementById(`cell-${r}-${c}`);
-    if (el) el.classList.add('winning-cell');
+    const el = document.getElementById(`box-${r}-${c}`);
+    if (el) el.classList.add('winning-box');
   });
 }
 
-function clearBoardHighlights() {
-  document.querySelectorAll('.grid-cell').forEach(el => {
-    el.classList.remove('winning-cell');
+function clearHighlights() {
+  document.querySelectorAll('.board-box').forEach(el => {
+    el.classList.remove('winning-box');
   });
 }
 
-function setStatus(msg, type = 'info', icon = '📢') {
-  statusMessage.textContent = msg;
-  statusIcon.textContent = icon;
-  statusAlert.className = 'status-alert ' + type;
+function setStatus(msg, type = 'normal') {
+  matchStatus.textContent = msg;
+  matchStatus.className = 'match-status-text ' + (type !== 'normal' ? type : '');
 }
 
 function openModal(modal) {
