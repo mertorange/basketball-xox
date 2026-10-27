@@ -84,7 +84,8 @@ class GameManager:
         league: str = "nba", 
         player1_name: str = "Player 1", 
         player2_name: str = "Player 2",
-        min_answers: int = 2
+        min_answers: int = 2,
+        shot_clock: Optional[int] = 60
     ) -> GameState:
         league_clean = league.lower()
         if league_clean not in ["nba", "euroleague"]:
@@ -103,6 +104,7 @@ class GameManager:
             game_id=game_id,
             league=league_clean.upper(),
             min_answers=min_answers,
+            shot_clock=shot_clock,
             row_criteria=row_criteria,
             col_criteria=col_criteria,
             grid=grid,
@@ -121,6 +123,13 @@ class GameManager:
     def get_game(self, game_id: str) -> Optional[GameState]:
         return self.active_games.get(game_id)
 
+    def trigger_shot_clock_violation(self, game_id: str) -> Optional[GameState]:
+        game = self.active_games.get(game_id)
+        if not game or game.status == "finished":
+            return None
+        game.current_player = "O" if game.current_player == "X" else "X"
+        return game
+
     def make_move(self, game_id: str, row: int, col: int, player_name: str) -> MoveResult:
         game = self.active_games.get(game_id)
         if not game:
@@ -129,7 +138,7 @@ class GameManager:
         if game.status == "finished":
             return MoveResult(
                 success=False, 
-                message=f"Game already finished. Winner: {game.winner}",
+                message=f"Game over. Winner: {game.winner}",
                 game_over=True,
                 winner=game.winner,
                 winning_line=game.winning_line
@@ -140,7 +149,7 @@ class GameManager:
 
         target_cell = game.grid[row][col]
         if target_cell.claimed_by is not None:
-            return MoveResult(success=False, message="This cell is already claimed!")
+            return MoveResult(success=False, message="This square is already claimed.")
 
         # Check duplicate
         clean_player_name = player_name.strip()
@@ -149,7 +158,7 @@ class GameManager:
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False, 
-                message=f"'{clean_player_name}' was already picked this game! Turn forfeits to Player {game.current_player}.",
+                message=f"Turnover! '{clean_player_name}' was already picked this match.",
                 current_player=game.current_player
             )
 
@@ -160,7 +169,7 @@ class GameManager:
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False, 
-                message=f"'{clean_player_name}' not found in {game.league} records. Turn forfeits to Player {game.current_player}.",
+                message=f"Turnover! '{clean_player_name}' not found in {game.league} records.",
                 current_player=game.current_player
             )
 
@@ -182,7 +191,7 @@ class GameManager:
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
                 success=False,
-                message=f"Miss! {player['name']} {' and '.join(reasons)}. Turn forfeits to Player {game.current_player}.",
+                message=f"Turnover! {player['name']} {' and '.join(reasons)}.",
                 current_player=game.current_player
             )
 
@@ -203,7 +212,7 @@ class GameManager:
             winner_name = game.player1_name if claiming_player == "X" else game.player2_name
             return MoveResult(
                 success=True,
-                message=f"Game Over! {winner_name} ({claiming_player}) wins with 3 in a row!",
+                message=f"{winner_name} ({claiming_player}) connects 3 in a row to win!",
                 game_over=True,
                 winner=claiming_player,
                 winning_line=winning_line,
@@ -218,7 +227,7 @@ class GameManager:
             game.winner = "DRAW"
             return MoveResult(
                 success=True,
-                message=f"Game Over! All 9 boxes completed with no 3 in a row. It's a draw!",
+                message=f"Match Draw! All 9 boxes completed.",
                 game_over=True,
                 winner="DRAW",
                 cell=target_cell,
@@ -230,24 +239,21 @@ class GameManager:
 
         return MoveResult(
             success=True,
-            message=f"Valid! {player['name']} matches {row_crit.display} & {col_crit.display}.",
+            message=f"{player['name']} confirmed for {row_crit.display} & {col_crit.display}.",
             game_over=False,
             current_player=game.current_player,
             cell=target_cell
         )
 
     def _check_winner(self, grid: List[List[Cell]]) -> Optional[List[List[int]]]:
-        # Rows
         for r in range(3):
             if grid[r][0].claimed_by and (grid[r][0].claimed_by == grid[r][1].claimed_by == grid[r][2].claimed_by):
                 return [[r, 0], [r, 1], [r, 2]]
 
-        # Columns
         for c in range(3):
             if grid[0][c].claimed_by and (grid[0][c].claimed_by == grid[1][c].claimed_by == grid[2][c].claimed_by):
                 return [[0, c], [1, c], [2, c]]
 
-        # Diagonals
         if grid[0][0].claimed_by and (grid[0][0].claimed_by == grid[1][1].claimed_by == grid[2][2].claimed_by):
             return [[0, 0], [1, 1], [2, 2]]
 
@@ -257,34 +263,24 @@ class GameManager:
         return None
 
     def _generate_balanced_board(self, league: str, min_answers: int = 2) -> Tuple[List[Criterion], List[Criterion]]:
-        """
-        Generates 3 row criteria and 3 col criteria such that
-        EVERY one of the 9 cells has at least `min_answers` valid players.
-        Ensures never having Country x Country.
-        """
         teams = self.data_store.get_teams(league)
         countries = self.data_store.get_countries(league)
 
         team_crits = [Criterion(type=CriterionType.TEAM, value=t, display=t) for t in teams]
         country_crits = [Criterion(type=CriterionType.COUNTRY, value=c, display=c) for c in countries]
 
-        # Try target threshold, and step down if needed
         for target_min in [min_answers, max(1, min_answers - 1), 1]:
             for _ in range(4000):
-                # Rows can have 2 teams + 1 country OR 3 teams
                 if random.random() < 0.6 and country_crits:
                     rows = random.sample(team_crits, 2) + random.sample(country_crits, 1)
                     random.shuffle(rows)
-                    # Columns will be teams only to avoid Country x Country
                     avail_teams = [t for t in team_crits if t.value not in [r.value for r in rows]]
                     cols = random.sample(avail_teams, 3)
                 else:
-                    # 3 teams vs 3 teams
                     chosen = random.sample(team_crits, 6)
                     rows = chosen[:3]
                     cols = chosen[3:]
 
-                # Check if every single cell has >= target_min valid players
                 solvable = True
                 for r_crit in rows:
                     for c_crit in cols:
@@ -298,7 +294,7 @@ class GameManager:
                 if solvable:
                     return rows, cols
 
-        # Guaranteed high-density fallbacks
+        # Guaranteed fallback
         if league == "nba":
             return (
                 [

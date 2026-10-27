@@ -17,163 +17,2580 @@
     "Zalgiris Kaunas",
     "FC Bayern Munich",
     "Virtus Segafredo Bologna",
-    "Valencia Basket"
+    "Valencia Basket",
+    "ALBA Berlin",
+    "LDLC ASVEL Villeurbanne",
+    "Paris Basketball"
   ],
   "countries": [
+    "Angola",
+    "Argentina",
+    "Bahamas",
+    "Belgium",
+    "Bosnia and Herzegovina",
+    "Brazil",
+    "Bulgaria",
+    "Canada",
+    "Cape Verde",
+    "Croatia",
+    "Czech Republic",
+    "Dominican Republic",
+    "Finland",
+    "France",
+    "Georgia",
+    "Germany",
     "Greece",
+    "Israel",
+    "Italy",
+    "Latvia",
+    "Lithuania",
+    "Mali",
+    "Montenegro",
+    "Nigeria",
+    "Senegal",
     "Serbia",
+    "Slovenia",
+    "South Sudan",
     "Spain",
     "Turkey",
-    "USA",
-    "France",
-    "Lithuania",
-    "Italy",
-    "Argentina",
-    "Croatia",
-    "Slovenia",
-    "Germany",
-    "Czech Republic",
-    "Montenegro",
-    "Georgia",
-    "Bulgaria",
-    "Bosnia and Herzegovina",
-    "Israel",
-    "Latvia"
+    "USA"
   ],
   "players": [
-    {"name": "Vassilis Spanoulis", "country": "Greece", "teams": ["Panathinaikos", "Olympiacos"]},
-    {"name": "Dimitris Diamantidis", "country": "Greece", "teams": ["Panathinaikos"]},
-    {"name": "Kostas Sloukas", "country": "Greece", "teams": ["Olympiacos", "Fenerbahçe", "Panathinaikos"]},
-    {"name": "Georgios Printezis", "country": "Greece", "teams": ["Olympiacos", "Valencia Basket"]},
-    {"name": "Nick Calathes", "country": "Greece", "teams": ["Panathinaikos", "FC Barcelona", "Fenerbahçe", "AS Monaco"]},
-    {"name": "Theo Papaloukas", "country": "Greece", "teams": ["Panathinaikos", "CSKA Moscow", "Olympiacos", "Maccabi Tel Aviv"]},
-    {"name": "Kostas Papanikolaou", "country": "Greece", "teams": ["Olympiacos", "FC Barcelona"]},
-    {"name": "Ioannis Bourousis", "country": "Greece", "teams": ["Olympiacos", "EA7 Emporio Armani Milan", "Real Madrid", "Baskonia", "Panathinaikos"]},
-    {"name": "Ioannis Papapetrou", "country": "Greece", "teams": ["Olympiacos", "Panathinaikos", "Partizan"]},
-    {"name": "Antonis Fotsis", "country": "Greece", "teams": ["Panathinaikos", "Real Madrid", "EA7 Emporio Armani Milan"]},
-    {"name": "Konstantinos Mitoglou", "country": "Greece", "teams": ["Panathinaikos", "EA7 Emporio Armani Milan"]},
-    {"name": "Giannoulis Larentzakis", "country": "Greece", "teams": ["Olympiacos"]},
-    {"name": "Thomas Walkup", "country": "Greece", "teams": ["Zalgiris Kaunas", "Olympiacos"]},
-    {"name": "Milos Teodosic", "country": "Serbia", "teams": ["Olympiacos", "CSKA Moscow", "Virtus Segafredo Bologna", "Crvena Zvezda"]},
-    {"name": "Bogdan Bogdanovic", "country": "Serbia", "teams": ["Partizan", "Fenerbahçe"]},
-    {"name": "Nemanja Bjelica", "country": "Serbia", "teams": ["Baskonia", "Fenerbahçe", "Crvena Zvezda"]},
-    {"name": "Nikola Kalinic", "country": "Serbia", "teams": ["Crvena Zvezda", "Fenerbahçe", "Valencia Basket", "FC Barcelona"]},
-    {"name": "Vasilije Micic", "country": "Serbia", "teams": ["FC Bayern Munich", "Crvena Zvezda", "Zalgiris Kaunas", "Anadolu Efes"]},
-    {"name": "Marko Guduric", "country": "Serbia", "teams": ["Crvena Zvezda", "Fenerbahçe"]},
-    {"name": "Vladimir Lucic", "country": "Serbia", "teams": ["Partizan", "Valencia Basket", "FC Bayern Munich"]},
-    {"name": "Nemanja Nedovic", "country": "Serbia", "teams": ["Crvena Zvezda", "Valencia Basket", "EA7 Emporio Armani Milan", "Panathinaikos"]},
-    {"name": "Stefan Markovic", "country": "Serbia", "teams": ["Valencia Basket", "Virtus Segafredo Bologna", "Crvena Zvezda"]},
-    {"name": "Ognjen Dobric", "country": "Serbia", "teams": ["Crvena Zvezda", "Virtus Segafredo Bologna"]},
-    {"name": "Nikola Milutinov", "country": "Serbia", "teams": ["Partizan", "Olympiacos", "CSKA Moscow"]},
-    {"name": "Dejan Bodiroga", "country": "Serbia", "teams": ["Real Madrid", "Panathinaikos", "FC Barcelona", "Virtus Segafredo Bologna"]},
-    {"name": "Zeljko Rebraca", "country": "Serbia", "teams": ["Partizan", "Panathinaikos"]},
-    {"name": "Sergio Llull", "country": "Spain", "teams": ["Real Madrid"]},
-    {"name": "Sergio Rodriguez", "country": "Spain", "teams": ["Real Madrid", "CSKA Moscow", "EA7 Emporio Armani Milan"]},
-    {"name": "Rudy Fernandez", "country": "Spain", "teams": ["Real Madrid"]},
-    {"name": "Juan Carlos Navarro", "country": "Spain", "teams": ["FC Barcelona"]},
-    {"name": "Nikola Mirotic", "country": "Spain", "teams": ["Real Madrid", "FC Barcelona", "EA7 Emporio Armani Milan"]},
-    {"name": "Pau Gasol", "country": "Spain", "teams": ["FC Barcelona"]},
-    {"name": "Ricky Rubio", "country": "Spain", "teams": ["FC Barcelona"]},
-    {"name": "Alex Abrines", "country": "Spain", "teams": ["FC Barcelona"]},
-    {"name": "Victor Claver", "country": "Spain", "teams": ["Valencia Basket", "FC Barcelona"]},
-    {"name": "Willy Hernangomez", "country": "Spain", "teams": ["Real Madrid", "FC Barcelona"]},
-    {"name": "Juancho Hernangomez", "country": "Spain", "teams": ["Panathinaikos"]},
-    {"name": "Alberto Abalde", "country": "Spain", "teams": ["Valencia Basket", "Real Madrid"]},
-    {"name": "Felipe Reyes", "country": "Spain", "teams": ["Real Madrid"]},
-    {"name": "Carlos Cabezas", "country": "Spain", "teams": ["Baskonia"]},
-    {"name": "Shane Larkin", "country": "Turkey", "teams": ["Baskonia", "Anadolu Efes"]},
-    {"name": "Scottie Wilbekin", "country": "Turkey", "teams": ["Maccabi Tel Aviv", "Fenerbahçe"]},
-    {"name": "Cedi Osman", "country": "Turkey", "teams": ["Anadolu Efes", "Panathinaikos"]},
-    {"name": "Furkan Korkmaz", "country": "Turkey", "teams": ["Anadolu Efes", "AS Monaco"]},
-    {"name": "Melih Mahmutoglu", "country": "Turkey", "teams": ["Fenerbahçe"]},
-    {"name": "Semih Erden", "country": "Turkey", "teams": ["Partizan", "Fenerbahçe", "Anadolu Efes"]},
-    {"name": "Oguz Savas", "country": "Turkey", "teams": ["Fenerbahçe", "Anadolu Efes"]},
-    {"name": "Ibrahim Kutluay", "country": "Turkey", "teams": ["Fenerbahçe", "Anadolu Efes", "Panathinaikos"]},
-    {"name": "Mirsad Turkcan", "country": "Turkey", "teams": ["Anadolu Efes", "CSKA Moscow", "Montepaschi Siena", "Fenerbahçe"]},
-    {"name": "Dogus Balbay", "country": "Turkey", "teams": ["Anadolu Efes"]},
-    {"name": "Tarik Biberovic", "country": "Turkey", "teams": ["Fenerbahçe"]},
-    {"name": "Mike James", "country": "USA", "teams": ["Baskonia", "Panathinaikos", "EA7 Emporio Armani Milan", "CSKA Moscow", "AS Monaco"]},
-    {"name": "Kyle Hines", "country": "USA", "teams": ["Olympiacos", "CSKA Moscow", "EA7 Emporio Armani Milan"]},
-    {"name": "Kendrick Nunn", "country": "USA", "teams": ["Panathinaikos"]},
-    {"name": "Nigel Hayes-Davis", "country": "USA", "teams": ["Zalgiris Kaunas", "FC Barcelona", "Fenerbahçe"]},
-    {"name": "Wade Baldwin IV", "country": "USA", "teams": ["Olympiacos", "FC Bayern Munich", "Baskonia", "Maccabi Tel Aviv", "Fenerbahçe"]},
-    {"name": "Kevin Punter", "country": "USA", "teams": ["Olympiacos", "Crvena Zvezda", "EA7 Emporio Armani Milan", "Partizan", "FC Barcelona"]},
-    {"name": "Zach LeDay", "country": "USA", "teams": ["Olympiacos", "Zalgiris Kaunas", "EA7 Emporio Armani Milan", "Partizan", "EA7 Emporio Armani Milan"]},
-    {"name": "Will Clyburn", "country": "USA", "teams": ["CSKA Moscow", "Anadolu Efes", "Virtus Segafredo Bologna"]},
-    {"name": "Bryant Dunston", "country": "USA", "teams": ["Olympiacos", "Anadolu Efes", "Virtus Segafredo Bologna", "Zalgiris Kaunas"]},
-    {"name": "Mike Batiste", "country": "USA", "teams": ["Panathinaikos", "Fenerbahçe"]},
-    {"name": "Ekpe Udoh", "country": "USA", "teams": ["Fenerbahçe", "Virtus Segafredo Bologna"]},
-    {"name": "Cory Higgins", "country": "USA", "teams": ["CSKA Moscow", "FC Barcelona"]},
-    {"name": "Anthony Parker", "country": "USA", "teams": ["Maccabi Tel Aviv", "Virtus Segafredo Bologna"]},
-    {"name": "Bobby Dixon", "country": "Turkey", "teams": ["ASVEL", "Fenerbahçe"]},
-    {"name": "Derrick Brown", "country": "USA", "teams": ["Anadolu Efes", "Crvena Zvezda"]},
-    {"name": "Malcolm Delaney", "country": "USA", "teams": ["FC Bayern Munich", "FC Barcelona", "EA7 Emporio Armani Milan"]},
-    {"name": "James Gist", "country": "USA", "teams": ["Partizan", "Fenerbahçe", "Panathinaikos", "Crvena Zvezda", "FC Bayern Munich", "ASVEL"]},
-    {"name": "Keith Langford", "country": "USA", "teams": ["Virtus Segafredo Bologna", "EA7 Emporio Armani Milan", "Maccabi Tel Aviv", "Panathinaikos"]},
-    {"name": "Devon Hall", "country": "USA", "teams": ["EA7 Emporio Armani Milan", "Fenerbahçe"]},
-    {"name": "Bonzie Colson", "country": "USA", "teams": ["Maccabi Tel Aviv", "Fenerbahçe"]},
-    {"name": "Jordan Loyd", "country": "USA", "teams": ["Valencia Basket", "Crvena Zvezda", "AS Monaco", "Maccabi Tel Aviv"]},
-    {"name": "Shavon Shields", "country": "USA", "teams": ["Baskonia", "EA7 Emporio Armani Milan"]},
-    {"name": "Nando De Colo", "country": "France", "teams": ["Valencia Basket", "CSKA Moscow", "Fenerbahçe"]},
-    {"name": "Mathias Lessort", "country": "France", "teams": ["Crvena Zvezda", "FC Bayern Munich", "AS Monaco", "Partizan", "Panathinaikos"]},
-    {"name": "Thomas Heurtel", "country": "France", "teams": ["Baskonia", "Anadolu Efes", "FC Barcelona", "Real Madrid"]},
-    {"name": "Vincent Poirier", "country": "France", "teams": ["Baskonia", "Real Madrid", "Anadolu Efes"]},
-    {"name": "Fabien Causeur", "country": "France", "teams": ["Baskonia", "Real Madrid", "EA7 Emporio Armani Milan"]},
-    {"name": "Guerschon Yabusele", "country": "France", "teams": ["Real Madrid"]},
-    {"name": "Adrien Moerman", "country": "France", "teams": ["FC Barcelona", "Anadolu Efes", "AS Monaco"]},
-    {"name": "Joffrey Lauvergne", "country": "France", "teams": ["Valencia Basket", "Partizan", "Fenerbahçe", "Zalgiris Kaunas"]},
-    {"name": "Petr Cornelie", "country": "France", "teams": ["Real Madrid", "AS Monaco"]},
-    {"name": "Sarunas Jasikevicius", "country": "Lithuania", "teams": ["FC Barcelona", "Maccabi Tel Aviv", "Panathinaikos", "Fenerbahçe", "Zalgiris Kaunas"]},
-    {"name": "Rokas Jokubaitis", "country": "Lithuania", "teams": ["Zalgiris Kaunas", "FC Barcelona", "Maccabi Tel Aviv"]},
-    {"name": "Edgaras Ulanovas", "country": "Lithuania", "teams": ["Zalgiris Kaunas", "Fenerbahçe"]},
-    {"name": "Paulius Jankunas", "country": "Lithuania", "teams": ["Zalgiris Kaunas"]},
-    {"name": "Ramunas Siskauskas", "country": "Lithuania", "teams": ["Panathinaikos", "CSKA Moscow"]},
-    {"name": "Robertas Javtokas", "country": "Lithuania", "teams": ["Panathinaikos", "Valencia Basket", "Zalgiris Kaunas"]},
-    {"name": "Arturas Gudaitis", "country": "Lithuania", "teams": ["Zalgiris Kaunas", "EA7 Emporio Armani Milan", "Panathinaikos"]},
-    {"name": "Lukas Lekavicius", "country": "Lithuania", "teams": ["Zalgiris Kaunas", "Panathinaikos"]},
-    {"name": "Mantas Kalnietis", "country": "Lithuania", "teams": ["Zalgiris Kaunas", "EA7 Emporio Armani Milan"]},
-    {"name": "Nicolo Melli", "country": "Italy", "teams": ["EA7 Emporio Armani Milan", "Fenerbahçe"]},
-    {"name": "Gigi Datome", "country": "Italy", "teams": ["Fenerbahçe", "EA7 Emporio Armani Milan"]},
-    {"name": "Daniel Hackett", "country": "Italy", "teams": ["EA7 Emporio Armani Milan", "Olympiacos", "CSKA Moscow", "Virtus Segafredo Bologna"]},
-    {"name": "Marco Belinelli", "country": "Italy", "teams": ["Virtus Segafredo Bologna"]},
-    {"name": "Alessandro Gentile", "country": "Italy", "teams": ["EA7 Emporio Armani Milan", "Panathinaikos", "Virtus Segafredo Bologna"]},
-    {"name": "Achille Polonara", "country": "Italy", "teams": ["Baskonia", "Fenerbahçe", "Anadolu Efes", "Zalgiris Kaunas", "Virtus Segafredo Bologna"]},
-    {"name": "Facundo Campazzo", "country": "Argentina", "teams": ["Real Madrid", "Crvena Zvezda"]},
-    {"name": "Luis Scola", "country": "Argentina", "teams": ["Baskonia", "EA7 Emporio Armani Milan"]},
-    {"name": "Andres Nocioni", "country": "Argentina", "teams": ["Baskonia", "Real Madrid"]},
-    {"name": "Pablo Prigioni", "country": "Argentina", "teams": ["Baskonia", "Real Madrid"]},
-    {"name": "Luca Vildoza", "country": "Argentina", "teams": ["Baskonia", "Crvena Zvezda", "Panathinaikos", "Olympiacos"]},
-    {"name": "Gabriel Deck", "country": "Argentina", "teams": ["Real Madrid"]},
-    {"name": "Nicolas Laprovittola", "country": "Argentina", "teams": ["Baskonia", "Real Madrid", "FC Barcelona"]},
-    {"name": "Mario Hezonja", "country": "Croatia", "teams": ["FC Barcelona", "Panathinaikos", "Real Madrid"]},
-    {"name": "Ante Tomic", "country": "Croatia", "teams": ["Real Madrid", "FC Barcelona"]},
-    {"name": "Krunoslav Simon", "country": "Croatia", "teams": ["EA7 Emporio Armani Milan", "Anadolu Efes"]},
-    {"name": "Bojan Bogdanovic", "country": "Croatia", "teams": ["Real Madrid", "Fenerbahçe"]},
-    {"name": "Ante Zizic", "country": "Croatia", "teams": ["Darussafaka", "Maccabi Tel Aviv", "Anadolu Efes", "Virtus Segafredo Bologna"]},
-    {"name": "Roko Ukic", "country": "Croatia", "teams": ["Baskonia", "FC Barcelona", "Fenerbahçe", "Panathinaikos"]},
-    {"name": "Luka Doncic", "country": "Slovenia", "teams": ["Real Madrid"]},
-    {"name": "Jaka Lakovic", "country": "Slovenia", "teams": ["Panathinaikos", "FC Barcelona"]},
-    {"name": "Erazem Lorbek", "country": "Slovenia", "teams": ["Virtus Segafredo Bologna", "CSKA Moscow", "FC Barcelona"]},
-    {"name": "Goran Dragic", "country": "Slovenia", "teams": ["Baskonia"]},
-    {"name": "Klemen Prepelic", "country": "Slovenia", "teams": ["Real Madrid", "Valencia Basket"]},
-    {"name": "Zoran Dragic", "country": "Slovenia", "teams": ["Unicaja", "EA7 Emporio Armani Milan", "Anadolu Efes", "Baskonia", "Zalgiris Kaunas"]},
-    {"name": "Johannes Voigtmann", "country": "Germany", "teams": ["Baskonia", "CSKA Moscow", "EA7 Emporio Armani Milan", "FC Bayern Munich"]},
-    {"name": "Tibor Pleiss", "country": "Germany", "teams": ["Baskonia", "FC Barcelona", "Valencia Basket", "Anadolu Efes"]},
-    {"name": "Maodo Lo", "country": "Germany", "teams": ["FC Bayern Munich", "EA7 Emporio Armani Milan"]},
-    {"name": "Niels Giffey", "country": "Germany", "teams": ["Zalgiris Kaunas", "FC Bayern Munich"]},
-    {"name": "Jan Vesely", "country": "Czech Republic", "teams": ["Partizan", "Fenerbahçe", "FC Barcelona"]},
-    {"name": "Ondrej Balvin", "country": "Czech Republic", "teams": ["FC Bayern Munich"]},
-    {"name": "Tornike Shengelia", "country": "Georgia", "teams": ["Valencia Basket", "Baskonia", "CSKA Moscow", "Virtus Segafredo Bologna"]},
-    {"name": "Giorgi Shermadini", "country": "Georgia", "teams": ["Panathinaikos", "Olympiacos", "Maccabi Tel Aviv"]},
-    {"name": "Sasha Vezenkov", "country": "Bulgaria", "teams": ["FC Barcelona", "Olympiacos"]},
-    {"name": "Dzanan Musa", "country": "Bosnia and Herzegovina", "teams": ["Anadolu Efes", "Real Madrid"]},
-    {"name": "Mirza Teletovic", "country": "Bosnia and Herzegovina", "teams": ["Baskonia"]},
-    {"name": "Nikola Pekovic", "country": "Montenegro", "teams": ["Partizan", "Panathinaikos"]},
-    {"name": "Bojan Dubljevic", "country": "Montenegro", "teams": ["Valencia Basket"]},
-    {"name": "Derrick Sharp", "country": "Israel", "teams": ["Maccabi Tel Aviv"]},
-    {"name": "Yovel Zoosman", "country": "Israel", "teams": ["Maccabi Tel Aviv"]},
-    {"name": "Omri Casspi", "country": "Israel", "teams": ["Maccabi Tel Aviv"]},
-    {"name": "Rolands Smits", "country": "Latvia", "teams": ["FC Barcelona", "Zalgiris Kaunas", "Anadolu Efes"]},
-    {"name": "Janis Strelnieks", "country": "Latvia", "teams": ["Olympiacos", "CSKA Moscow", "Zalgiris Kaunas"]}
+    {
+      "name": "Abramo Canka",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Achille Polonara",
+      "country": "Italy",
+      "teams": [
+        "Baskonia",
+        "Fenerbahçe",
+        "Virtus Segafredo Bologna",
+        "Anadolu Efes",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Adam Atamna",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Adrien Moerman",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes",
+        "FC Barcelona",
+        "AS Monaco"
+      ]
+    },
+    {
+      "name": "Alberto Abalde",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid",
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Alec Peters",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Aleksej Nedeljkovic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Aleksej Pokusevski",
+      "country": "Serbia",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Alen Smailagic",
+      "country": "Serbia",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Alessandro Gentile",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Alessandro Pajola",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Alex Abrines",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Alex Blanco",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Alexandros Samodurov",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Aliou Diarra",
+      "country": "Mali",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Allan Dokossi",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Amath M'Baye",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Andres Feliz",
+      "country": "Dominican Republic",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Andres Nocioni",
+      "country": "Argentina",
+      "teams": [
+        "Baskonia",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Ante Tomic",
+      "country": "Croatia",
+      "teams": [
+        "FC Barcelona",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Ante Zizic",
+      "country": "Croatia",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Darussafaka",
+        "Maccabi Tel Aviv",
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Anthony Parker",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Antonis Fotsis",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Arijan Lakic",
+      "country": "Serbia",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Armando Bacot",
+      "country": "USA",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Armel Traore",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Arnas Butkevicius",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Arturas Gudaitis",
+      "country": "Lithuania",
+      "teams": [
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Arturs Zagars",
+      "country": "Latvia",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Azuolas Tubelis",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Bastien Vautier",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Bobby Dixon",
+      "country": "Turkey",
+      "teams": [
+        "ASVEL",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Bodian Massa",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Bogdan Bogdanovic",
+      "country": "Serbia",
+      "teams": [
+        "Fenerbahçe",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Bojan Bogdanovic",
+      "country": "Croatia",
+      "teams": [
+        "Real Madrid",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Bojan Dubljevic",
+      "country": "Montenegro",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Bonzie Colson",
+      "country": "USA",
+      "teams": [
+        "Fenerbahçe",
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Brancou Badio",
+      "country": "Senegal",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Brandon Boston",
+      "country": "USA",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Brandon Taylor",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Brice Dessert",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Bruno Fernando",
+      "country": "Angola",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Bryant Dunston",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Olympiacos",
+        "Anadolu Efes",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Burakcan Yildizli",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Carlik Jones",
+      "country": "South Sudan",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Carlos Cabezas",
+      "country": "Spain",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Carsen Edwards",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Cedi Osman",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Chiek Diallo",
+      "country": "Spain",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Chima Moneke",
+      "country": "Nigeria",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Chuma Okeke",
+      "country": "USA",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Clement Frisch",
+      "country": "France",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Clifford Omoruyi",
+      "country": "Nigeria",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Codi Miller-McIntyre",
+      "country": "Bulgaria",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Cole Swider",
+      "country": "USA",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Cory Higgins",
+      "country": "USA",
+      "teams": [
+        "CSKA Moscow",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Daniel Hackett",
+      "country": "Italy",
+      "teams": [
+        "CSKA Moscow",
+        "EA7 Emporio Armani Milan",
+        "Olympiacos",
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Darius Thompson",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Daulton Hommes",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "David Kramer",
+      "country": "Germany",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "David Lighty",
+      "country": "USA",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "David Mutaf",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Deividas Sirvydis",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Dejan Bodiroga",
+      "country": "Serbia",
+      "teams": [
+        "FC Barcelona",
+        "Virtus Segafredo Bologna",
+        "Panathinaikos",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Dejan Davidovac",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Derek Willis",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Derrick Alston Jr.",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Derrick Brown",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda",
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Derrick Sharp",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Devon Hall",
+      "country": "USA",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Devonte' Graham",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Dimitris Diamantidis",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Dinos Mitoglou",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Dogus Balbay",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Donta Hall",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Dovydas Buika",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Dovydas Giedraitis",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Duane Washington",
+      "country": "Germany",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Dustin Sleva",
+      "country": "USA",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Dylan Osetkowski",
+      "country": "Germany",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Dzanan Musa",
+      "country": "Bosnia and Herzegovina",
+      "teams": [
+        "Anadolu Efes",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Ebuka Izundu",
+      "country": "Nigeria",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Edgaras Ulanovas",
+      "country": "Lithuania",
+      "teams": [
+        "Fenerbahçe",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Edwin Jackson",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Edy Tavares",
+      "country": "Cape Verde",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Egor Amosov",
+      "country": "USA",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Ekpe Udoh",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Enzo Shahrvin",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Erazem Lorbek",
+      "country": "Slovenia",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "CSKA Moscow",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Ercan Osmani",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Erkan Yilmaz",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Ethan Happ",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Evan Fournier",
+      "country": "France",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Fabien Causeur",
+      "country": "France",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "Baskonia",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Facundo Campazzo",
+      "country": "Argentina",
+      "teams": [
+        "Crvena Zvezda",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Felipe Reyes",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Frank Ntilikina",
+      "country": "France",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Furkan Korkmaz",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "AS Monaco"
+      ]
+    },
+    {
+      "name": "Gabriel Deck",
+      "country": "Argentina",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Gabriele Procida",
+      "country": "Italy",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Georgios Papagiannis",
+      "country": "Greece",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Georgios Printezis",
+      "country": "Greece",
+      "teams": [
+        "Valencia Basket",
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Giannoulis Larentzakis",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Gigi Datome",
+      "country": "Italy",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Giorgi Shermadini",
+      "country": "Georgia",
+      "teams": [
+        "Olympiacos",
+        "Panathinaikos",
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Glynn Watson Jr.",
+      "country": "USA",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Goran Dragic",
+      "country": "Slovenia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Guerschon Yabusele",
+      "country": "France",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Gur Lavy",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Hamidou Diallo",
+      "country": "USA",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Hamza Mestoglu",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Ibrahim Kutluay",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "Panathinaikos",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Ignas Brazdeikis",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Ignas Stombergas",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Ike Iroegbu",
+      "country": "Nigeria",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Ilian Moungalla",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Ioannis Bourousis",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos",
+        "Baskonia",
+        "Real Madrid",
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Ioannis Kouzeloglou",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Ioannis Papapetrou",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos",
+        "Panathinaikos",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Isaac Bonga",
+      "country": "Germany",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Isaac Nogues",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Isaia Cordinier",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Isaiah Canaan",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Ismael Bako",
+      "country": "Belgium",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Izan Almansa",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Jabari Parker",
+      "country": "USA",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Jaime Pradilla",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Jaka Lakovic",
+      "country": "Slovenia",
+      "teams": [
+        "Panathinaikos",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "James Gist",
+      "country": "USA",
+      "teams": [
+        "Partizan",
+        "Crvena Zvezda",
+        "Panathinaikos",
+        "Fenerbahçe",
+        "ASVEL",
+        "FC Bayern Munich"
+      ]
+    },
+    {
+      "name": "Jan Vesely",
+      "country": "Czech Republic",
+      "teams": [
+        "Fenerbahçe",
+        "FC Barcelona",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Janis Strelnieks",
+      "country": "Latvia",
+      "teams": [
+        "Olympiacos",
+        "CSKA Moscow",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Jasiel Rivero",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Jaylen Hoard",
+      "country": "France",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Jean Montero",
+      "country": "Dominican Republic",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Jeff Dowtin Jr.",
+      "country": "USA",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Jeremy Morgan",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Jerian Grant",
+      "country": "USA",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Jilson Bango",
+      "country": "Angola",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Jimmy Clark III",
+      "country": "USA",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Joel Ayayi",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Joel Bolomboy",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Joffrey Lauvergne",
+      "country": "France",
+      "teams": [
+        "Valencia Basket",
+        "Zalgiris Kaunas",
+        "Fenerbahçe",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Johannes Voigtmann",
+      "country": "Germany",
+      "teams": [
+        "CSKA Moscow",
+        "FC Bayern Munich",
+        "Baskonia",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "John DiBartolomeo",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Jordan Loyd",
+      "country": "USA",
+      "teams": [
+        "AS Monaco",
+        "Anadolu Efes",
+        "Crvena Zvezda",
+        "Maccabi Tel Aviv",
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Jordan Nwora",
+      "country": "Nigeria",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Jorge Carot",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Joseba Querejeta",
+      "country": "Spain",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Josep Puerto",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Juan Carlos Navarro",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Juancho Hernangomez",
+      "country": "Spain",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Juom Bol",
+      "country": "Spain",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Justin Robinson",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Kai Jones",
+      "country": "Bahamas",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Kameron Taylor",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Karim Jallow",
+      "country": "Germany",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Keenan Evans",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Keith Langford",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Maccabi Tel Aviv",
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Kendrick Nunn",
+      "country": "USA",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Kevin Punter",
+      "country": "USA",
+      "teams": [
+        "Olympiacos",
+        "Partizan",
+        "Crvena Zvezda",
+        "FC Barcelona",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Khalifa Diop",
+      "country": "Senegal",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Khem Birch",
+      "country": "Canada",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Klemen Prepelic",
+      "country": "Slovenia",
+      "teams": [
+        "Valencia Basket",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Konstantinos Mitoglou",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Kostas Antetokounmpo",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Kostas Papanikolaou",
+      "country": "Greece",
+      "teams": [
+        "FC Barcelona",
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Kostas Sloukas",
+      "country": "Greece",
+      "teams": [
+        "Fenerbahçe",
+        "Olympiacos",
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Krunoslav Simon",
+      "country": "Croatia",
+      "teams": [
+        "Anadolu Efes",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Kyle Hines",
+      "country": "USA",
+      "teams": [
+        "Olympiacos",
+        "CSKA Moscow",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Lamar Stevens",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Laurynas Birutis",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Lazar Stojkovic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Leo Cavaliere",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Lonnie Walker IV",
+      "country": "USA",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Luca Vildoza",
+      "country": "Argentina",
+      "teams": [
+        "Baskonia",
+        "Crvena Zvezda",
+        "Olympiacos",
+        "Panathinaikos",
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Luis Scola",
+      "country": "Argentina",
+      "teams": [
+        "Baskonia",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Luka Doncic",
+      "country": "Slovenia",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Luka Samanic",
+      "country": "Croatia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Lukas Lekavicius",
+      "country": "Lithuania",
+      "teams": [
+        "Panathinaikos",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Malcolm Delaney",
+      "country": "USA",
+      "teams": [
+        "FC Bayern Munich",
+        "EA7 Emporio Armani Milan",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Mamadi Diakite",
+      "country": "USA",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Mantas Kalnietis",
+      "country": "Lithuania",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Mantas Rubstavicius",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Maodo Lo",
+      "country": "Germany",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "FC Bayern Munich",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Marcio Santos",
+      "country": "Brazil",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Marco Belinelli",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Mario Hezonja",
+      "country": "Croatia",
+      "teams": [
+        "FC Barcelona",
+        "Panathinaikos",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Mario Nakic",
+      "country": "Serbia",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Marius Grigonis",
+      "country": "Lithuania",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Marko Guduric",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Markquis Nowell",
+      "country": "USA",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Markus Howard",
+      "country": "USA",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Marvyn Wade",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Mate Khatiashvili",
+      "country": "Georgia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Mathias Lessort",
+      "country": "France",
+      "teams": [
+        "AS Monaco",
+        "Crvena Zvezda",
+        "FC Bayern Munich",
+        "Panathinaikos",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Matt Costello",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Matt Morgan",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Matteo Spagnolo",
+      "country": "Italy",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Mbaye Ndiaye",
+      "country": "Senegal",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Melih Mahmutoglu",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Melvin Ajinca",
+      "country": "France",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Mert Eksioglu",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Metecan Birsen",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Miikka Muurinen",
+      "country": "Finland",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Mikael Jantunen",
+      "country": "Finland",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Mike Batiste",
+      "country": "USA",
+      "teams": [
+        "Panathinaikos",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Mike James",
+      "country": "USA",
+      "teams": [
+        "Baskonia",
+        "AS Monaco",
+        "Panathinaikos",
+        "CSKA Moscow",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Milos Teodosic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Virtus Segafredo Bologna",
+        "Olympiacos",
+        "CSKA Moscow"
+      ]
+    },
+    {
+      "name": "Mirsad Turkcan",
+      "country": "Turkey",
+      "teams": [
+        "Montepaschi Siena",
+        "Anadolu Efes",
+        "CSKA Moscow",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Mirza Teletovic",
+      "country": "Bosnia and Herzegovina",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Mitar Bosnjakovic",
+      "country": "Serbia",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Moses Wright",
+      "country": "USA",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Mouhamed Faye",
+      "country": "Senegal",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Mouhamet Diouf",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Moustapha Fall",
+      "country": "France",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Nadir Hifi",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Nando De Colo",
+      "country": "France",
+      "teams": [
+        "CSKA Moscow",
+        "Fenerbahçe",
+        "LDLC ASVEL Villeurbanne",
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Nate Reuvers",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Nate Sestina",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Neal Sako",
+      "country": "France",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Nemanja Bjelica",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Baskonia",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Nemanja Nedovic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Valencia Basket",
+        "Panathinaikos",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Nick Calathes",
+      "country": "Greece",
+      "teams": [
+        "AS Monaco",
+        "Panathinaikos",
+        "FC Barcelona",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Nick Weiler-Babb",
+      "country": "Germany",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Nicola Akele",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Nicolas Laprovittola",
+      "country": "Argentina",
+      "teams": [
+        "FC Barcelona",
+        "Baskonia",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Nicolo Melli",
+      "country": "Italy",
+      "teams": [
+        "EA7 Emporio Armani Milan",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Niels Giffey",
+      "country": "Germany",
+      "teams": [
+        "FC Bayern Munich",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Nigel Hayes-Davis",
+      "country": "USA",
+      "teams": [
+        "Fenerbahçe",
+        "FC Barcelona",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Nigel Williams-Goss",
+      "country": "USA",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Nikola Dzepina",
+      "country": "Serbia",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Nikola Kalinic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "FC Barcelona",
+        "Fenerbahçe",
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Nikola Milutinov",
+      "country": "Serbia",
+      "teams": [
+        "CSKA Moscow",
+        "Olympiacos",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Nikola Mirotic",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona",
+        "EA7 Emporio Armani Milan",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Nikola Pekovic",
+      "country": "Montenegro",
+      "teams": [
+        "Panathinaikos",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Nikos Rogkavopoulos",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Ognjen Dobric",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Ognjen Radosic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Oguz Savas",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Omari Moore",
+      "country": "USA",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Omer Yurtseven",
+      "country": "Turkey",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Omiros Netzipoglou",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Omri Casspi",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Ondrej Balvin",
+      "country": "Czech Republic",
+      "teams": [
+        "FC Bayern Munich"
+      ]
+    },
+    {
+      "name": "Onuralp Bitim",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Oren Sahar",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Oshae Brissett",
+      "country": "Canada",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "PJ Dozier",
+      "country": "USA",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Pablo Prigioni",
+      "country": "Argentina",
+      "teams": [
+        "Baskonia",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Panagiotis Kalaitzakis",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Pau Gasol",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Paulius Jankunas",
+      "country": "Lithuania",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Pedro Souza",
+      "country": "Brazil",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Petr Cornelie",
+      "country": "France",
+      "teams": [
+        "Real Madrid",
+        "AS Monaco"
+      ]
+    },
+    {
+      "name": "Rafa Villar",
+      "country": "Spain",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Ramunas Siskauskas",
+      "country": "Lithuania",
+      "teams": [
+        "Panathinaikos",
+        "CSKA Moscow"
+      ]
+    },
+    {
+      "name": "Richaun Holmes",
+      "country": "USA",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Ricky Rubio",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Robertas Javtokas",
+      "country": "Lithuania",
+      "teams": [
+        "Valencia Basket",
+        "Panathinaikos",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Rodions Kurucs",
+      "country": "Latvia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Rodrigue Beaubois",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Rokas Jokubaitis",
+      "country": "Lithuania",
+      "teams": [
+        "Maccabi Tel Aviv",
+        "FC Barcelona",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Roko Ukic",
+      "country": "Croatia",
+      "teams": [
+        "Panathinaikos",
+        "Baskonia",
+        "FC Barcelona",
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Rolands Smits",
+      "country": "Latvia",
+      "teams": [
+        "Anadolu Efes",
+        "FC Barcelona",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Roman Sorkin",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Rudy Fernandez",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Saben Lee",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Saliou Niang",
+      "country": "Italy",
+      "teams": [
+        "Virtus Segafredo Bologna"
+      ]
+    },
+    {
+      "name": "Sarunas Jasikevicius",
+      "country": "Lithuania",
+      "teams": [
+        "Maccabi Tel Aviv",
+        "Panathinaikos",
+        "Fenerbahçe",
+        "FC Barcelona",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Sasha Vezenkov",
+      "country": "Bulgaria",
+      "teams": [
+        "FC Barcelona",
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Scottie Wilbekin",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe",
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Sebastian Herrera",
+      "country": "USA",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Sehmus Hazer",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes"
+      ]
+    },
+    {
+      "name": "Semi Ojeleye",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Semih Erden",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "Fenerbahçe",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Sergio De Larrea",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Sergio Llull",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Sergio Rodriguez",
+      "country": "Spain",
+      "teams": [
+        "CSKA Moscow",
+        "EA7 Emporio Armani Milan",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Shake Milton",
+      "country": "USA",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Shane Larkin",
+      "country": "Turkey",
+      "teams": [
+        "Anadolu Efes",
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Shaquielle McKissic",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Shaquille Harrison",
+      "country": "USA",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Shavon Shields",
+      "country": "USA",
+      "teams": [
+        "Baskonia",
+        "EA7 Emporio Armani Milan"
+      ]
+    },
+    {
+      "name": "Stefan Joksimovic",
+      "country": "Slovenia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Stefan Markovic",
+      "country": "Serbia",
+      "teams": [
+        "Valencia Basket",
+        "Virtus Segafredo Bologna",
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Stefan Miljenovic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Sterling Brown",
+      "country": "USA",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Sylvain Francisco",
+      "country": "France",
+      "teams": [
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "TJ Leaf",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "TJ Shorts",
+      "country": "USA",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Tadas Sedekerskis",
+      "country": "Lithuania",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Talen Horton-Tucker",
+      "country": "USA",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Tamir Blatt",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Tamir Gold",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Tarik Biberovic",
+      "country": "Turkey",
+      "teams": [
+        "Fenerbahçe"
+      ]
+    },
+    {
+      "name": "Theo Maledon",
+      "country": "France",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Theo Papaloukas",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos",
+        "Panathinaikos",
+        "CSKA Moscow",
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Thomas Heurtel",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes",
+        "Baskonia",
+        "FC Barcelona",
+        "LDLC ASVEL Villeurbanne",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Thomas Walkup",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Tibor Pleiss",
+      "country": "Germany",
+      "teams": [
+        "Valencia Basket",
+        "Anadolu Efes",
+        "Baskonia",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Timothe Luwawu-Cabarrot",
+      "country": "France",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Tomas Talcis",
+      "country": "Lithuania",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Tornike Shengelia",
+      "country": "Georgia",
+      "teams": [
+        "Valencia Basket",
+        "Virtus Segafredo Bologna",
+        "CSKA Moscow",
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Trent Forrest",
+      "country": "USA",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Trey Lyles",
+      "country": "Canada",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Tyler Dorsey",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Tyrique Jones",
+      "country": "USA",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Tyson Carter",
+      "country": "USA",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Tyson Ward",
+      "country": "USA",
+      "teams": [
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Uros Plavsic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda"
+      ]
+    },
+    {
+      "name": "Uros Trifunovic",
+      "country": "Serbia",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Usman Garuba",
+      "country": "Spain",
+      "teams": [
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Vanja Marinkovic",
+      "country": "Serbia",
+      "teams": [
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Vasilije Micic",
+      "country": "Serbia",
+      "teams": [
+        "Crvena Zvezda",
+        "Anadolu Efes",
+        "FC Bayern Munich",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Vassilis Spanoulis",
+      "country": "Greece",
+      "teams": [
+        "Olympiacos",
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Vassilis Toliopoulos",
+      "country": "Greece",
+      "teams": [
+        "Panathinaikos"
+      ]
+    },
+    {
+      "name": "Victor Claver",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket",
+        "FC Barcelona"
+      ]
+    },
+    {
+      "name": "Vincent Poirier",
+      "country": "France",
+      "teams": [
+        "Anadolu Efes",
+        "Baskonia",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Vit Hrabar",
+      "country": "Slovenia",
+      "teams": [
+        "Baskonia"
+      ]
+    },
+    {
+      "name": "Vladimir Lucic",
+      "country": "Serbia",
+      "teams": [
+        "Valencia Basket",
+        "FC Bayern Munich",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Wade Baldwin IV",
+      "country": "USA",
+      "teams": [
+        "Baskonia",
+        "FC Bayern Munich",
+        "Fenerbahçe",
+        "Maccabi Tel Aviv",
+        "Olympiacos"
+      ]
+    },
+    {
+      "name": "Will Clyburn",
+      "country": "USA",
+      "teams": [
+        "Virtus Segafredo Bologna",
+        "Anadolu Efes",
+        "CSKA Moscow"
+      ]
+    },
+    {
+      "name": "Will Rayman",
+      "country": "USA",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Willy Hernangomez",
+      "country": "Spain",
+      "teams": [
+        "FC Barcelona",
+        "Real Madrid"
+      ]
+    },
+    {
+      "name": "Xabi Lopez-Arostegui",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Yakuba Ouattara",
+      "country": "France",
+      "teams": [
+        "Paris Basketball"
+      ]
+    },
+    {
+      "name": "Yankuba Sima",
+      "country": "Spain",
+      "teams": [
+        "Valencia Basket"
+      ]
+    },
+    {
+      "name": "Yovel Zoosman",
+      "country": "Israel",
+      "teams": [
+        "Maccabi Tel Aviv"
+      ]
+    },
+    {
+      "name": "Zac Seljaas",
+      "country": "USA",
+      "teams": [
+        "LDLC ASVEL Villeurbanne"
+      ]
+    },
+    {
+      "name": "Zach LeDay",
+      "country": "USA",
+      "teams": [
+        "Olympiacos",
+        "EA7 Emporio Armani Milan",
+        "Partizan",
+        "Zalgiris Kaunas"
+      ]
+    },
+    {
+      "name": "Zeljko Rebraca",
+      "country": "Serbia",
+      "teams": [
+        "Panathinaikos",
+        "Partizan"
+      ]
+    },
+    {
+      "name": "Zoran Dragic",
+      "country": "Slovenia",
+      "teams": [
+        "Baskonia",
+        "Anadolu Efes",
+        "Unicaja",
+        "EA7 Emporio Armani Milan",
+        "Zalgiris Kaunas"
+      ]
+    }
   ]
 }

@@ -43,12 +43,13 @@ class GameState(BaseModel):
     game_id: str
     league: str
     min_answers: int = 2
+    shot_clock: Optional[int] = 60
     row_criteria: List[Criterion]
     col_criteria: List[Criterion]
     grid: List[List[Cell]]
     current_player: Literal["X", "O"]
-    player1_name: str = "Player 1 (X)"
-    player2_name: str = "Player 2 (O)"
+    player1_name: str = "Player 1"
+    player2_name: str = "Player 2"
     status: Literal["in_progress", "finished"] = "in_progress"
     winner: Optional[Literal["X", "O", "DRAW"]] = None
     winning_line: Optional[List[List[int]]] = None

@@ -29,6 +29,10 @@ class NewGameRequest(BaseModel):
     player1_name: str = "Player 1"
     player2_name: str = "Player 2"
     min_answers: int = 2
+    shot_clock: Optional[int] = 60
+
+class ShotClockViolationRequest(BaseModel):
+    game_id: str
 
 @app.post("/api/new-game", response_model=GameState)
 def create_new_game(req: NewGameRequest):
@@ -36,7 +40,8 @@ def create_new_game(req: NewGameRequest):
         league=req.league,
         player1_name=req.player1_name,
         player2_name=req.player2_name,
-        min_answers=req.min_answers
+        min_answers=req.min_answers,
+        shot_clock=req.shot_clock
     )
 
 @app.get("/api/game/{game_id}", response_model=GameState)
@@ -54,6 +59,17 @@ def submit_move(req: MoveRequest):
         col=req.col,
         player_name=req.player_name
     )
+
+@app.post("/api/shot-clock-violation")
+def handle_shot_clock_violation(req: ShotClockViolationRequest):
+    game = game_manager.trigger_shot_clock_violation(req.game_id)
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found or finished")
+    return {
+        "success": True,
+        "message": f"Shot clock expired! Turn forfeited to Player {game.current_player}.",
+        "current_player": game.current_player
+    }
 
 @app.get("/api/search-players")
 def search_players(
@@ -83,7 +99,7 @@ def get_cell_info(game_id: str, row: int, col: int):
         "player_name": game.grid[row][col].player_name
     }
 
-# Mount frontend static files
+# Mount static frontend
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
