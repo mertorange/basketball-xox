@@ -4,10 +4,16 @@ Runs the FastAPI backend and opens the game directly in your web browser.
 """
 
 import sys
+import os
 import webbrowser
 import threading
 import time
-from pathlib import Path
+
+# Ensure UTF-8 output on Windows consoles
+if sys.platform == "win32":
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
 def launch_server():
     try:
@@ -21,14 +27,14 @@ def launch_server():
     def open_browser():
         time.sleep(1.2)
         url = "http://localhost:8000"
-        print(f"\n🏀 Opening Basketball XOX at {url} ...")
+        print(f"Opening Basketball XOX in browser: {url}")
         webbrowser.open(url)
 
     threading.Thread(target=open_browser, daemon=True).start()
 
     print("==================================================")
-    print("🏀 BASKETBALL XOX - 2-PLAYER GRID TRIVIA 🏀")
-    print("Starting server at http://localhost:8000")
+    print("BASKETBALL XOX - 2-PLAYER GRID TRIVIA")
+    print("Server running at: http://localhost:8000")
     print("Press Ctrl+C to stop.")
     print("==================================================")
 
