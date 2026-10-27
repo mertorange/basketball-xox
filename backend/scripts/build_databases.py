@@ -1,7 +1,7 @@
 """
 Database Builder & Enrichment Script for Basketball XOX
 Fetches and merges deep historical and modern rosters from verified basketball data sources.
-Outputs enriched, massive JSON datasets for both NBA and EuroLeague.
+Includes official 2026-27 EuroLeague season data directly from the EuroLeague API.
 """
 
 import json
@@ -139,9 +139,9 @@ STANDARD_EUROLEAGUE_CLUBS = [
     "FC Bayern Munich",
     "Virtus Segafredo Bologna",
     "Valencia Basket",
+    "Paris Basketball",
     "ALBA Berlin",
-    "LDLC ASVEL Villeurbanne",
-    "Paris Basketball"
+    "LDLC ASVEL Villeurbanne"
 ]
 
 EUROLEAGUE_NORMALIZER = {
@@ -150,29 +150,40 @@ EUROLEAGUE_NORMALIZER = {
     "barcelona": "FC Barcelona",
     "fc barcelona": "FC Barcelona",
     "panathinaikos": "Panathinaikos",
+    "panathinaikos aktor athens": "Panathinaikos",
     "pao": "Panathinaikos",
     "olympiacos": "Olympiacos",
     "olympiakos": "Olympiacos",
+    "olympiacos piraeus": "Olympiacos",
     "fenerbahce": "Fenerbahçe",
     "fenerbahçe": "Fenerbahçe",
+    "fenerbahce istanbul": "Fenerbahçe",
     "anadolu efes": "Anadolu Efes",
+    "anadolu efes istanbul": "Anadolu Efes",
     "efes": "Anadolu Efes",
     "maccabi": "Maccabi Tel Aviv",
     "maccabi tel aviv": "Maccabi Tel Aviv",
+    "maccabi rapyd tel aviv": "Maccabi Tel Aviv",
+    "maccabi playtika tel aviv": "Maccabi Tel Aviv",
     "cska": "CSKA Moscow",
     "cska moscow": "CSKA Moscow",
     "baskonia": "Baskonia",
+    "baskonia vitoria-gasteiz": "Baskonia",
     "laboral kutxa": "Baskonia",
     "tau ceramica": "Baskonia",
     "monaco": "AS Monaco",
     "as monaco": "AS Monaco",
     "partizan": "Partizan",
+    "partizan mozzart bet belgrade": "Partizan",
+    "partizan belgrade": "Partizan",
     "crvena zvezda": "Crvena Zvezda",
+    "crvena zvezda meridianbet belgrade": "Crvena Zvezda",
     "red star": "Crvena Zvezda",
     "milan": "EA7 Emporio Armani Milan",
     "milano": "EA7 Emporio Armani Milan",
     "olimpia milano": "EA7 Emporio Armani Milan",
     "armani milan": "EA7 Emporio Armani Milan",
+    "armani olimpia milan": "EA7 Emporio Armani Milan",
     "ea7 emporio armani milan": "EA7 Emporio Armani Milan",
     "zalgiris": "Zalgiris Kaunas",
     "zalgiris kaunas": "Zalgiris Kaunas",
@@ -205,7 +216,8 @@ COUNTRY_MAP = {
     "angola": "Angola", "dr congo": "DR Congo", "congo": "DR Congo", "south sudan": "South Sudan",
     "jamaica": "Jamaica", "ukraine": "Ukraine", "poland": "Poland", "bulgaria": "Bulgaria",
     "cape verde": "Cape Verde", "sweden": "Sweden", "belgium": "Belgium", "portugal": "Portugal",
-    "china": "China", "mali": "Mali", "estonia": "Estonia", "iceland": "Iceland", "netherlands": "Netherlands"
+    "china": "China", "mali": "Mali", "estonia": "Estonia", "iceland": "Iceland", "netherlands": "Netherlands",
+    "azerbaijan": "Azerbaijan", "armenia": "Armenia", "cyprus": "Cyprus"
 }
 
 def resolve_country(loc_str):
@@ -215,7 +227,6 @@ def resolve_country(loc_str):
     for pattern, official in COUNTRY_MAP.items():
         if pattern in loc_lower:
             return official
-    # If 2-letter US State abbreviation at the end (e.g. "Chicago, IL", "Austin, TX")
     parts = str(loc_str).split(",")
     if len(parts) >= 2 and len(parts[-1].strip()) == 2:
         return "USA"
@@ -224,7 +235,6 @@ def resolve_country(loc_str):
 def clean_player_name(raw_name):
     if not raw_name:
         return ""
-    # remove suffixes like Jr., Sr., III, II, etc. if needed, but keep canonical name
     name = raw_name.strip()
     name = re.sub(r"\s+", " ", name)
     return name
@@ -234,7 +244,6 @@ def build_nba_database():
     existing_file = DATA_DIR / "nba_data.json"
     players_dict = {}
 
-    # Load existing hand-curated dataset first
     if existing_file.exists():
         with open(existing_file, "r", encoding="utf-8") as f:
             d = json.load(f)
@@ -285,7 +294,6 @@ def build_nba_database():
                 p_name = clean_player_name(p_name)
                 key = p_name.lower()
 
-                # Collect teams
                 p_teams = set()
                 curr_tid = p.get("tid")
                 if curr_tid in teams_map:
@@ -303,7 +311,6 @@ def build_nba_database():
                 country = resolve_country(born_loc)
 
                 if key in players_dict:
-                    # Merge teams and update country if currently USA and found more specific
                     existing_teams = set(players_dict[key]["teams"])
                     existing_teams.update(p_teams)
                     players_dict[key]["teams"] = sorted(list(existing_teams))
@@ -319,11 +326,8 @@ def build_nba_database():
         except Exception as e:
             print(f"  Error processing {filename}: {e}")
 
-    # Deduplicate and sort
     final_players = list(players_dict.values())
     final_players.sort(key=lambda x: x["name"])
-
-    # Collect countries that are actually represented
     represented_countries = sorted(list(set(p["country"] for p in final_players)))
 
     output_data = {
@@ -340,10 +344,11 @@ def build_nba_database():
 
 
 def build_euroleague_database():
-    print("\nBuilding expanded EuroLeague database...")
+    print("\nBuilding expanded EuroLeague database with 2026-27 live season...")
     existing_file = DATA_DIR / "euroleague_data.json"
     players_dict = {}
 
+    # Load existing hand-curated dataset first
     if existing_file.exists():
         with open(existing_file, "r", encoding="utf-8") as f:
             d = json.load(f)
@@ -355,74 +360,84 @@ def build_euroleague_database():
                     "teams": list(set(p.get("teams", [])))
                 }
 
-    euro_urls = [
-        "https://raw.githubusercontent.com/TheOfficialKG7/BBGM-Euroleague-Rosters/main/Euroleague_2025-26.json"
-    ]
+    # Fetch official EuroLeague API data for modern seasons, especially 2026-27 (season=2026)
+    try:
+        from euroleague_api.player_stats import PlayerStats
+        ps = PlayerStats()
+        for season_year in [2026, 2025, 2024, 2023]:
+            season_label = f"{season_year}-{str(season_year+1)[-2:]}"
+            print(f"Querying official EuroLeague API for Season {season_label} ...")
+            try:
+                df = ps.get_player_stats_single_season(endpoint="traditional", season=season_year)
+                print(f"  Retrieved {len(df)} players for Season {season_label}")
+                for _, row in df.iterrows():
+                    raw_name = str(row.get("player.name", "")).strip()
+                    if not raw_name or len(raw_name) < 3:
+                        continue
 
-    for url in euro_urls:
-        filename = url.split("/")[-1]
-        print(f"Fetching EuroLeague roster: {filename} ...")
-        try:
-            r = requests.get(url, timeout=20)
-            if r.status_code != 200:
-                print(f"  Failed status: {r.status_code}")
-                continue
+                    # Euroleague API format is 'LASTNAME, FIRSTNAME'
+                    parts = raw_name.split(",")
+                    if len(parts) == 2:
+                        name = f"{parts[1].strip().title()} {parts[0].strip().title()}"
+                    else:
+                        name = raw_name.title()
 
-            data = r.json()
-            teams_map = {}
-            for t in data.get("teams", []):
-                tid = t.get("tid")
-                t_raw = f"{t.get('region', '')} {t.get('name', '')}".strip()
-                norm = EUROLEAGUE_NORMALIZER.get(t_raw.lower()) or EUROLEAGUE_NORMALIZER.get(t.get("name", "").lower())
-                if norm:
-                    teams_map[tid] = norm
+                    name = clean_player_name(name)
+                    key = name.lower()
 
-            for p in data.get("players", []):
-                p_name = p.get("name")
-                if not p_name:
-                    fn = p.get("firstName", "").strip()
-                    ln = p.get("lastName", "").strip()
-                    if fn or ln:
-                        p_name = f"{fn} {ln}".strip()
+                    # Raw team
+                    raw_team = str(row.get("player.team.name", "")).strip()
+                    norm_team = EUROLEAGUE_NORMALIZER.get(raw_team.lower())
+                    if not norm_team:
+                        for k, v in EUROLEAGUE_NORMALIZER.items():
+                            if k in raw_team.lower():
+                                norm_team = v
+                                break
 
-                if not p_name or len(p_name) < 4:
-                    continue
+                    if not norm_team:
+                        continue
 
-                p_name = clean_player_name(p_name)
-                key = p_name.lower()
+                    p_code = row.get("player.code")
 
-                p_teams = set()
-                curr_tid = p.get("tid")
-                if curr_tid in teams_map:
-                    p_teams.add(teams_map[curr_tid])
+                    if key in players_dict:
+                        if norm_team not in players_dict[key]["teams"]:
+                            players_dict[key]["teams"].append(norm_team)
+                    else:
+                        # Resolve country via bio API if needed
+                        country = "USA"
+                        if p_code:
+                            try:
+                                bio_res = requests.get(
+                                    f"https://api-live.euroleague.net/v1/players?seasonCode=E{season_year}&playerCode={p_code}",
+                                    timeout=3
+                                )
+                                if bio_res.status_code == 200:
+                                    import xmltodict
+                                    parsed = xmltodict.parse(bio_res.text)
+                                    raw_c = parsed.get("player", {}).get("country", "")
+                                    if raw_c:
+                                        country = resolve_country(raw_c)
+                            except Exception:
+                                pass
 
-                for s in p.get("stats", []):
-                    tid = s.get("tid")
-                    if tid in teams_map:
-                        p_teams.add(teams_map[tid])
+                        players_dict[key] = {
+                            "name": name,
+                            "country": country,
+                            "teams": [norm_team]
+                        }
 
-                if not p_teams:
-                    continue
+            except Exception as se:
+                print(f"  Error querying season {season_year}: {se}")
 
-                born_loc = p.get("born", {}).get("loc", "")
-                country = resolve_country(born_loc)
+    except Exception as e:
+        print(f"EuroLeague API import/query error: {e}")
 
-                if key in players_dict:
-                    existing_teams = set(players_dict[key]["teams"])
-                    existing_teams.update(p_teams)
-                    players_dict[key]["teams"] = sorted(list(existing_teams))
-                else:
-                    players_dict[key] = {
-                        "name": p_name,
-                        "country": country,
-                        "teams": sorted(list(p_teams))
-                    }
-
-        except Exception as e:
-            print(f"  Error processing {filename}: {e}")
-
+    # Deduplicate teams and sort
     final_players = list(players_dict.values())
+    for p in final_players:
+        p["teams"] = sorted(list(set(p["teams"])))
     final_players.sort(key=lambda x: x["name"])
+
     represented_countries = sorted(list(set(p["country"] for p in final_players)))
 
     output_data = {
@@ -435,8 +450,7 @@ def build_euroleague_database():
     with open(existing_file, "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent=2, ensure_ascii=False)
 
-    print(f"SUCCESS: EuroLeague database written with {len(final_players)} players across {len(represented_countries)} countries!")
+    print(f"SUCCESS: EuroLeague database updated with 2026-27 season! Total: {len(final_players)} players across {len(represented_countries)} countries!")
 
 if __name__ == "__main__":
-    build_nba_database()
     build_euroleague_database()
