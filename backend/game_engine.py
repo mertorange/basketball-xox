@@ -32,12 +32,10 @@ class BasketballDataStore:
     def get_countries(self, league: str) -> List[str]:
         return self.leagues.get(league.lower(), {}).get("countries", [])
 
-    def find_player(self, league: str, player_name: str) -> Optional[Dict[str, Any]]:
+    def find_players(self, league: str, player_name: str) -> List[Dict[str, Any]]:
+        """All players with this name; a few names belong to two different players."""
         clean_name = player_name.strip().lower()
-        for p in self.get_players(league):
-            if p["name"].lower() == clean_name:
-                return p
-        return None
+        return [p for p in self.get_players(league) if p["name"].lower() == clean_name]
 
     def search_players(self, league: str, query: str, limit: int = 8) -> List[Dict[str, Any]]:
         clean_q = query.strip().lower()
@@ -45,9 +43,11 @@ class BasketballDataStore:
             return []
         
         matches = []
+        seen_names = set()
         for p in self.get_players(league):
             p_name = p["name"].lower()
-            if clean_q in p_name:
+            if clean_q in p_name and p_name not in seen_names:
+                seen_names.add(p_name)
                 priority = 0 if p_name.startswith(clean_q) else 1
                 matches.append((priority, p))
 
@@ -163,8 +163,8 @@ class GameManager:
             )
 
         # Validate existence
-        player = self.data_store.find_player(game.league, clean_player_name)
-        if not player:
+        candidates = self.data_store.find_players(game.league, clean_player_name)
+        if not candidates:
             curr_p = game.current_player
             game.current_player = "O" if curr_p == "X" else "X"
             return MoveResult(
@@ -177,6 +177,12 @@ class GameManager:
         row_crit = game.row_criteria[row]
         col_crit = game.col_criteria[col]
 
+        # Same-named players: accept the one that fits the cell, if any
+        player = next(
+            (p for p in candidates
+             if self.data_store.matches_criterion(p, row_crit) and self.data_store.matches_criterion(p, col_crit)),
+            candidates[0]
+        )
         matches_row = self.data_store.matches_criterion(player, row_crit)
         matches_col = self.data_store.matches_criterion(player, col_crit)
 

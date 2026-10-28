@@ -9,7 +9,7 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 ## 🎮 Game Rules
 1. **The Grid:** 3 rows and 3 columns (9 boxes total).
 2. **Turn-based 1v1:** Player 1 (`X`) vs Player 2 (`O`).
-3. **Drafting a Player:** To claim a box, you must pick a basketball player who matches **BOTH** the row and column criteria.
+3. **Drafting a Player:** To claim a box, you must pick a basketball player who matches **BOTH** the row and column criteria. Country criteria use the player's country of birth (Kyrie Irving counts for Australia).
 4. **Fouls / Turnovers:** If you make an invalid guess or name a player that was already picked, you commit a turnover and forfeit your turn to your opponent!
 5. **No Re-use:** Each basketball player can only be picked once per match.
 6. **Winning:** The first player to get 3 claimed boxes in a row (horizontally, vertically, or diagonally) wins the game! If all 9 boxes are claimed without 3-in-a-row, it's a draw.
