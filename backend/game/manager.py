@@ -1,0 +1,114 @@
+"""Running games: creation, moves, turnovers and results."""
+
+import uuid
+from typing import Dict, Optional
+
+from ..catalog.criteria import CriteriaIndex, CriterionSpec
+from ..models import Cell, Criterion, GameState, MoveResult
+from .board import BoardGenerator
+from .rules import is_full, other_player, winning_line
+
+LEAGUE_LABELS = {"nba": "NBA", "euroleague": "EUROLEAGUE"}
+
+
+def to_criterion(spec: CriterionSpec) -> Criterion:
+    return Criterion(type=spec.kind, value=spec.value, display=spec.label)
+
+
+class GameManager:
+    def __init__(self, indexes: Dict[str, CriteriaIndex]):
+        self.indexes = indexes
+        self.generators = {league: BoardGenerator(index) for league, index in indexes.items()}
+        self.active_games: Dict[str, GameState] = {}
+
+    def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
+                    min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed") -> GameState:
+        rows, cols = self.generators[league].generate(grid_style, min_answers)
+        game = GameState(
+            game_id=uuid.uuid4().hex[:8],
+            league=LEAGUE_LABELS[league],
+            grid_style=grid_style,
+            min_answers=min_answers,
+            shot_clock=shot_clock,
+            row_criteria=[to_criterion(s) for s in rows],
+            col_criteria=[to_criterion(s) for s in cols],
+            grid=[[Cell(row=r, col=c) for c in range(3)] for r in range(3)],
+            current_player="X",
+            player1_name=player1_name.strip() or "Player 1",
+            player2_name=player2_name.strip() or "Player 2",
+        )
+        self.active_games[game.game_id] = game
+        return game
+
+    def get_game(self, game_id: str) -> Optional[GameState]:
+        return self.active_games.get(game_id)
+
+    def index_for(self, game: GameState) -> CriteriaIndex:
+        return self.indexes[game.league.lower()]
+
+    def trigger_shot_clock_violation(self, game_id: str) -> Optional[GameState]:
+        game = self.active_games.get(game_id)
+        if not game or game.status == "finished":
+            return None
+        game.current_player = other_player(game.current_player)
+        return game
+
+    def make_move(self, game_id: str, row: int, col: int, player_name: str) -> MoveResult:
+        game = self.active_games.get(game_id)
+        if not game:
+            return MoveResult(success=False, message="Game not found")
+        if game.status == "finished":
+            return MoveResult(success=False, message=f"Game over. Winner: {game.winner}", game_over=True,
+                              winner=game.winner, winning_line=game.winning_line,
+                              current_player=game.current_player)
+
+        cell = game.grid[row][col]
+        if cell.claimed_by is not None:
+            return MoveResult(success=False, message="This square is already claimed.",
+                              current_player=game.current_player)
+
+        name = player_name.strip()
+        if any(used.lower() == name.lower() for used in game.used_players):
+            return self._turnover(game, f"Turnover! '{name}' was already picked this match.")
+
+        index = self.index_for(game)
+        candidates = index.catalog.find(name)
+        if not candidates:
+            return self._turnover(game, f"Turnover! '{name}' not found in {game.league} records.")
+
+        row_spec = index.get(game.row_criteria[row].type.value, game.row_criteria[row].value)
+        col_spec = index.get(game.col_criteria[col].type.value, game.col_criteria[col].value)
+        # Same-named players: accept the one that fits the box, if any
+        player = next((p for p in candidates if row_spec.matches(p) and col_spec.matches(p)), candidates[0])
+        misses = [spec.miss for spec in (row_spec, col_spec) if not spec.matches(player)]
+        if misses:
+            return self._turnover(game, f"Turnover! {player['name']} {' and '.join(misses)}.")
+
+        mover = game.current_player
+        cell.claimed_by = mover
+        cell.player_name = player["name"]
+        cell.player_country = player.get("country", "")
+        cell.player_teams = player.get("teams", [])
+        game.used_players.append(player["name"])
+
+        marks = [[c.claimed_by for c in grid_row] for grid_row in game.grid]
+        line = winning_line(marks)
+        if line:
+            game.status, game.winner, game.winning_line = "finished", mover, line
+            winner_name = game.player1_name if mover == "X" else game.player2_name
+            return MoveResult(success=True, message=f"{winner_name} ({mover}) connects 3 in a row to win!",
+                              game_over=True, winner=mover, winning_line=line, cell=cell,
+                              current_player=game.current_player)
+        if is_full(marks):
+            game.status, game.winner = "finished", "DRAW"
+            return MoveResult(success=True, message="Match Draw! All 9 boxes completed.", game_over=True,
+                              winner="DRAW", cell=cell, current_player=game.current_player)
+
+        game.current_player = other_player(mover)
+        return MoveResult(success=True, message=f"{player['name']} confirmed for {row_spec.label} & {col_spec.label}.",
+                          current_player=game.current_player, cell=cell)
+
+    @staticmethod
+    def _turnover(game: GameState, message: str) -> MoveResult:
+        game.current_player = other_player(game.current_player)
+        return MoveResult(success=False, message=message, current_player=game.current_player)

@@ -1,111 +1,47 @@
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from fastapi.middleware.cors import CORSMiddleware
+"""FastAPI application: loads the player catalogs once and serves the API and the frontend."""
+
 from pathlib import Path
-from pydantic import BaseModel
-from typing import Optional, List
 
-from .models import GameState, MoveRequest, MoveResult
-from .game_engine import BasketballDataStore, GameManager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="Basketball XOX", description="2-Player Basketball Grid Tic-Tac-Toe")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-data_store = BasketballDataStore()
-game_manager = GameManager(data_store)
+from .api import build_router
+from .catalog.criteria import build_index
+from .catalog.players import load_catalogs
+from .game.manager import GameManager
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
-class NewGameRequest(BaseModel):
-    league: str = "nba"
-    player1_name: str = "Player 1"
-    player2_name: str = "Player 2"
-    min_answers: int = 2
-    shot_clock: Optional[int] = 60
 
-class ShotClockViolationRequest(BaseModel):
-    game_id: str
+def create_app() -> FastAPI:
+    app = FastAPI(title="Hoop Grid", description="2-Player Basketball Grid Tic-Tac-Toe")
+    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-@app.post("/api/new-game", response_model=GameState)
-def create_new_game(req: NewGameRequest):
-    return game_manager.create_game(
-        league=req.league,
-        player1_name=req.player1_name,
-        player2_name=req.player2_name,
-        min_answers=req.min_answers,
-        shot_clock=req.shot_clock
-    )
+    indexes = {league: build_index(catalog) for league, catalog in load_catalogs().items()}
+    app.state.game_manager = GameManager(indexes)
+    app.include_router(build_router(app.state.game_manager))
 
-@app.get("/api/game/{game_id}", response_model=GameState)
-def get_game(game_id: str):
-    game = game_manager.get_game(game_id)
-    if not game:
-        raise HTTPException(status_code=404, detail="Game not found")
-    return game
+    if FRONTEND_DIR.exists():
+        app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
-@app.post("/api/move", response_model=MoveResult)
-def submit_move(req: MoveRequest):
-    return game_manager.make_move(
-        game_id=req.game_id,
-        row=req.row,
-        col=req.col,
-        player_name=req.player_name
-    )
+    @app.middleware("http")
+    async def revalidate_static(request, call_next):
+        # ES modules are imported without version strings; make browsers check for changes
+        response = await call_next(request)
+        if request.url.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
 
-@app.post("/api/shot-clock-violation")
-def handle_shot_clock_violation(req: ShotClockViolationRequest):
-    game = game_manager.trigger_shot_clock_violation(req.game_id)
-    if not game:
-        raise HTTPException(status_code=404, detail="Game not found or finished")
-    return {
-        "success": True,
-        "message": f"Shot clock expired! Turn forfeited to Player {game.current_player}.",
-        "current_player": game.current_player
-    }
+    @app.get("/", include_in_schema=False)
+    def serve_index():
+        index_path = FRONTEND_DIR / "index.html"
+        if index_path.exists():
+            return FileResponse(index_path)
+        return {"message": "Hoop Grid API is running."}
 
-@app.get("/api/search-players")
-def search_players(
-    q: str = Query(..., min_length=1),
-    league: str = Query("nba")
-):
-    results = data_store.search_players(league=league, query=q, limit=8)
-    return results
+    return app
 
-@app.get("/api/cell-info/{game_id}/{row}/{col}")
-def get_cell_info(game_id: str, row: int, col: int):
-    game = game_manager.get_game(game_id)
-    if not game:
-        raise HTTPException(status_code=404, detail="Game not found")
-    if not (0 <= row < 3 and 0 <= col < 3):
-        raise HTTPException(status_code=400, detail="Invalid coordinates")
 
-    r_crit = game.row_criteria[row]
-    c_crit = game.col_criteria[col]
-    valid_players = data_store.get_valid_players_for_cell(game.league, r_crit, c_crit)
-
-    return {
-        "row_criteria": r_crit.display,
-        "col_criteria": c_crit.display,
-        "count_valid_players": len(valid_players),
-        "claimed_by": game.grid[row][col].claimed_by,
-        "player_name": game.grid[row][col].player_name
-    }
-
-# Mount static frontend
-if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
-
-@app.get("/")
-def serve_index():
-    index_path = FRONTEND_DIR / "index.html"
-    if index_path.exists():
-        return FileResponse(index_path)
-    return {"message": "Basketball XOX API is running."}
+app = create_app()

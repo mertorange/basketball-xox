@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=4">
+  <link rel="stylesheet" href="/static/style.css?v=5">
 </head>
 <body>
   <main class="sheet">
@@ -29,12 +29,28 @@
             <label class="choice">
               <input type="radio" name="league" value="nba" checked>
               <span class="choice-box" aria-hidden="true"></span>
-              <span class="choice-text">NBA<small>30 franchises &middot; 4,700+ players since 1946</small></span>
+              <span class="choice-text">NBA<small>30 franchises &middot; 4,900+ players since 1946</small></span>
             </label>
             <label class="choice">
               <input type="radio" name="league" value="euroleague">
               <span class="choice-box" aria-hidden="true"></span>
               <span class="choice-text">EuroLeague<small>23 clubs &middot; 2,300+ players since 2000</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="field-label">Grid</legend>
+          <div class="choices choices-wide">
+            <label class="choice">
+              <input type="radio" name="style" value="mixed" checked>
+              <span class="choice-box" aria-hidden="true"></span>
+              <span class="choice-text">Mixed<small>teams with awards, draft, college, eras and career marks</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="style" value="classic">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span class="choice-text">Classic<small>teams and countries of birth only</small></span>
             </label>
           </div>
         </fieldset>
@@ -208,7 +224,7 @@
       <ol class="rules">
         <li>Two players share the device. Team A plays <b class="ink-x">X</b>, Team B plays <b class="ink-o">O</b>.</li>
         <li>Pick an open box and name a player who fits both its row and its column.</li>
-        <li>Country criteria mean the player's country of birth.</li>
+        <li>Country criteria mean the player's country of birth. Awards, draft slots, colleges, eras and career totals work the same way: the player must fit both.</li>
         <li>A wrong name, a player already used, or an expired shot clock is a turnover: the turn passes.</li>
         <li>Three boxes in a row, column or diagonal wins. Nine boxes without a line is a draw.</li>
       </ol>
@@ -218,6 +234,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=2"></script>
+  <script type="module" src="/static/js/main.js?v=5"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 A competitive 2-player basketball trivia game blending **Tic-Tac-Toe (XOX)** with **Grid Trivia** (Immaculate Grid style).
 
-Two players compete head-to-head on a 3x3 board. Each box is determined by the intersection of a **Row Criterion** and a **Column Criterion** (e.g. *Los Angeles Lakers* + *Miami Heat*, or *France* + *Dallas Mavericks*).
+Two players compete head-to-head on a 3x3 board. Each box is determined by the intersection of a **Row Criterion** and a **Column Criterion** (e.g. *Los Angeles Lakers* + *Miami Heat*, *France* + *Dallas Mavericks*, or *MVP* + *Boston Celtics*).
 
 ---
 
@@ -20,10 +20,11 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 - **Two League Modes:** 
   - 🏀 **NBA Mode:** Star players, historic franchises, and international NBA talents.
   - 🏆 **EuroLeague Mode:** Continental giants (Real Madrid, Panathinaikos, Fenerbahçe, Olympiacos, Barcelona, etc.) and European legends.
-- **Smart Balanced Board Generation:** Ensures every generated 3x3 grid is 100% solvable with valid players for each box.
+- **Two Grid Styles:** *Mixed* (default) crosses teams with awards (champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP; EuroLeague title, Final Four), draft slots (#1 pick, top 10, second round, undrafted), colleges, eras and career marks (5+ franchises; 1,000+ EuroLeague points…). *Classic* keeps to teams and countries of birth.
+- **Smart Balanced Board Generation:** Every grid is checked so each box has at least the chosen number of valid answers.
 - **Real-Time Autocomplete Search:** Search player names smoothly with keyboard navigation and typo-free selection.
 - **Sound Effects:** Dynamic audio cues (swish on correct answers, referee buzzer on fouls, and victory fanfares) synthesized via Web Audio API with zero external audio assets.
-- **Modular Data Architecture:** Separated JSON datasets ready to be upgraded to SQLite, PostgreSQL, or live basketball APIs (NBA/EuroLeague data).
+- **Modular Architecture:** A criteria registry, board generator, rules and game manager on the backend; one ES module per screen part on the frontend; one builder module per data source.
 
 ---
 
@@ -45,25 +46,41 @@ Alternatively, run manually with uvicorn:
 uvicorn backend.app:app --reload --port 8000
 ```
 
+### 3. Tests
+```bash
+pip install pytest
+python -m pytest tests
+```
+`HOOPGRID_DATA_DIR=/some/dir` points the server (and the real-data tests) at another set of dataset files.
+
 ---
 
 ## 📁 Project Structure
 ```
 basketball-xox/
 ├── backend/
-│   ├── app.py                # FastAPI endpoints and static file serving
-│   ├── game_engine.py        # Board generation, rules, turns, Tic-Tac-Toe checks
-│   ├── models.py             # Pydantic models for GameState, Criteria, Cell, Moves
-│   └── data/
-│       ├── nba_data.json     # Curated NBA players, teams, and nationalities
-│       └── euroleague_data.json # Curated EuroLeague players, clubs, and nationalities
+│   ├── app.py                # App factory: loads catalogs, mounts API and frontend
+│   ├── api.py                # HTTP routes
+│   ├── models.py             # Pydantic request/response models
+│   ├── catalog/
+│   │   ├── players.py        # Dataset loading, name lookup, autocomplete
+│   │   └── criteria.py       # Criterion registry: team, country, college, draft, award, career, era
+│   ├── game/
+│   │   ├── board.py          # Grid generation (classic / mixed) with answer checks
+│   │   ├── rules.py          # Lines, draws, turns
+│   │   └── manager.py        # Running games, moves, turnovers
+│   ├── data/                 # Generated datasets (see DATA.md)
+│   └── scripts/
+│       ├── build_databases.py   # CLI
+│       └── builder/             # common.py, nba.py, euroleague.py, sources/<one per source>
 ├── frontend/
-│   ├── index.html            # Game board interface, scoreboard, turn indicators
-│   ├── style.css             # Stadium court dark mode styling and animations
-│   └── app.js                # Game client controller, sound effects, API calls
-├── requirements.txt          # Python dependencies
-├── run.py                    # One-click launcher script
-└── README.md
+│   ├── index.html            # Scoresheet layout
+│   ├── style.css             # Paper-and-ink styling
+│   └── js/                   # main.js (game flow), api, board, clock, slip, scoresheet, sound, dom
+├── tests/                    # pytest: criteria, board, game, builder helpers
+├── DATA.md                   # Data sources, pipeline, rules, gaps, licensing
+├── requirements.txt
+└── run.py                    # One-click launcher
 ```
 
 ---
@@ -78,6 +95,7 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 ---
 
 ## 🛠️ Upcoming Roadmap / Future Extensions
+- [x] Stat & award criteria: NBA champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP, draft slots, colleges, eras; EuroLeague champion, Final Four, career totals. Not yet: *EuroLeague MVP* and *50+ Pt Game* (no source; see DATA.md).
+- [ ] Daily data refresh (cron) once the game runs on a server.
 - [ ] Connect SQLite / PostgreSQL database for full career player stats.
-- [ ] Stat & award criteria (e.g. *NBA Champion*, *EuroLeague MVP*, *50+ Pt Game*, *Drafted 1st overall*).
 - [ ] Online multiplayer room codes via WebSockets.
