@@ -7,6 +7,8 @@ NBA
     give each player's name, birth year, birthplace and team.
   - FiveThirtyEight's player-season table (1977-2020) fills in full career team
     histories, matched on name + birth year.
+  - Wikidata (CC0) adds players the snapshots miss (mostly retired before 1995),
+    pre-1977 team stints and birth countries, matched on name + birth year.
 
 EuroLeague
   - Official EuroLeague API season registrations (2000-01 to the current season)
@@ -191,9 +193,9 @@ NBA_ROSTER_FILES = ["1995-96.NBA.Roster.json", "2009-10 Rosters.json"] + [
 # Birth years in this file are shifted by about nine years and most birthplaces are
 # college names, so births come from FiveThirtyEight and countries from fallbacks.
 NBA_ROSTERS_WITH_BAD_BIOS = {"2009-10 Rosters.json"}
-# Players whose only roster entry is in that file: either no birthplace at all
-# (straight-from-high-school or international signings) or an American college that
-# would otherwise make them USA
+# Birth countries set by hand; they win over every source. Mostly players whose only
+# roster entry is in that file: either no birthplace at all (straight-from-high-school
+# or international signings) or an American college that would otherwise make them USA.
 NBA_COUNTRY_OVERRIDES = {
     "Al Harrington": "USA", "Andray Blatche": "USA", "Andrew Bynum": "USA", "Andris Biedrins": "Latvia",
     "Darko Milicic": "Serbia", "DeSagana Diop": "Senegal", "DeShawn Stevenson": "USA", "Eddy Curry": "USA",
@@ -203,10 +205,62 @@ NBA_COUNTRY_OVERRIDES = {
     "Eduardo Najera": "Mexico", "Francisco Garcia": "Dominican Republic", "Hasheem Thabeet": "Tanzania",
     "Jamaal Magloire": "Canada", "Kelenna Azubuike": "UK", "Nathan Jawai": "Australia", "Ronny Turiaf": "France",
     "Samuel Dalembert": "Haiti",
+    # Roster lists where they grew up; Wikidata has the birthplace
+    "Ben Gordon": "UK", "Carlos Boozer": "Germany",
+    # Wikidata links the wrong Horsham (Australia, not Pennsylvania)
+    "Matt Carroll": "USA",
 }
 FIVETHIRTYEIGHT_URL = (
     "https://raw.githubusercontent.com/fivethirtyeight/nba-player-advanced-metrics/master/nba-data-historical.csv"
 )
+
+WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql"
+# Wikidata team items -> current franchise (current teams plus former names with their own item)
+WIKIDATA_NBA_TEAMS = {
+    "Q131364": "New York Knicks", "Q131371": "Boston Celtics", "Q159893": "Atlanta Hawks",
+    "Q169661": "Detroit Pistons", "Q138089": "Philadelphia 76ers", "Q157376": "Golden State Warriors",
+    "Q121783": "Los Angeles Lakers", "Q976396": "LA Clippers", "Q169637": "Milwaukee Bucks",
+    "Q164177": "Phoenix Suns", "Q572134": "Brooklyn Nets", "Q162954": "Denver Nuggets",
+    "Q128109": "Chicago Bulls", "Q161345": "Houston Rockets", "Q159729": "San Antonio Spurs",
+    "Q167253": "Portland Trail Blazers", "Q170329": "Indiana Pacers", "Q166105": "Sacramento Kings",
+    "Q132893": "Dallas Mavericks", "Q162990": "Cleveland Cavaliers", "Q169165": "Washington Wizards",
+    "Q169138": "Miami Heat", "Q161337": "Orlando Magic", "Q163480": "Charlotte Hornets",
+    "Q170558": "Minnesota Timberwolves", "Q170649": "Utah Jazz", "Q172339": "New Orleans Pelicans",
+    "Q132880": "Toronto Raptors", "Q165529": "Memphis Grizzlies", "Q180950": "Oklahoma City Thunder",
+    "Q235326": "Oklahoma City Thunder",   # Seattle SuperSonics
+    "Q3307390": "Memphis Grizzlies",      # Vancouver Grizzlies
+    "Q18691677": "Golden State Warriors", # Philadelphia Warriors
+    "Q12870869": "Sacramento Kings",      # Cincinnati Royals
+    "Q5397091": "Philadelphia 76ers",     # Syracuse Nationals
+    "Q1100222": "LA Clippers",            # Buffalo Braves
+    "Q29996625": "LA Clippers",           # San Diego Clippers
+    "Q4852796": "Washington Wizards",     # Baltimore Bullets (1963-73)
+    "Q2928103": "Washington Wizards",     # Washington Bullets
+    "Q115657357": "Brooklyn Nets",        # New Jersey Nets
+    "Q6020894": "Atlanta Hawks",          # St. Louis Hawks
+}
+# Undated memberships mix in coaching jobs (Phil Jackson 'joins' the Bulls), and the
+# Pelicans item also carries some 1988-2002 Charlotte Hornets stints, so Wikidata teams
+# are only trusted for the years before FiveThirtyEight's coverage starts.
+FIVETHIRTYEIGHT_FIRST_SEASON = 1977
+BASKETBALL_COACH = "Q5137571"
+US_TERRITORIES = {"Puerto Rico", "U.S. Virgin Islands", "Guam"}
+WIKIDATA_QUERY = """
+SELECT ?p ?pLabel ?dob ?team ?start ?countryLabel ?coach WHERE {
+  VALUES ?team { %s }
+  ?p p:P54 ?st . ?st ps:P54 ?team .
+  ?p wdt:P31 wd:Q5 .
+  OPTIONAL { ?st pq:P580 ?start }
+  OPTIONAL { ?p wdt:P569 ?dob }
+  OPTIONAL {
+    ?p wdt:P19 ?pob . ?pob wdt:P17 ?country .
+    FILTER NOT EXISTS { ?country wdt:P576 ?dissolved }
+    ?country rdfs:label ?countryLabel FILTER(LANG(?countryLabel) = "en")
+  }
+  BIND(EXISTS { ?p wdt:P106 wd:%s } AS ?coach)
+  ?p rdfs:label ?pLabel FILTER(LANG(?pLabel) = "en")
+}
+""" % (" ".join("wd:" + q for q in WIKIDATA_NBA_TEAMS), BASKETBALL_COACH)
 
 STANDARD_EUROLEAGUE_CLUBS = [
     "Real Madrid",
@@ -301,7 +355,10 @@ EUROLEAGUE_CLUB_NORMALIZER = {
     alias: club for club, aliases in EUROLEAGUE_CLUB_ALIASES.items() for alias in aliases
 }
 
-EUROLEAGUE_PEOPLE_URL = "https://api-live.euroleague.net/v2/competitions/E/seasons/E{season}/people?personType=J"
+# The API returns 500 records unless asked for more (2001-02 has 527 registrations)
+EUROLEAGUE_PEOPLE_URL = (
+    "https://api-live.euroleague.net/v2/competitions/E/seasons/E{season}/people?personType=J&limit=2000"
+)
 EUROLEAGUE_FIRST_SEASON = 2000
 
 US_STATE_CODES = {
@@ -336,6 +393,9 @@ COUNTRY_ALIASES = {
     "czechia": "Czech Republic",
     "cabo verde": "Cape Verde",
     "cote d’ivoire": "Ivory Coast", "cote d'ivoire": "Ivory Coast",
+    "the bahamas": "Bahamas", "people's republic of china": "China", "kingdom of the netherlands": "Netherlands",
+    "united states virgin islands": "U.S. Virgin Islands", "republic of ireland": "Ireland",
+    "the gambia": "Gambia",
     "no country": None,
 }
 
@@ -482,6 +542,53 @@ def load_fivethirtyeight():
     return career, season_births
 
 
+def load_wikidata_players():
+    """NBA franchise members from Wikidata with birth year, birth country and team stints."""
+    print("Querying Wikidata for NBA players ...")
+    url = WIKIDATA_SPARQL_URL + "?" + urllib.parse.urlencode({"query": WIKIDATA_QUERY, "format": "json"})
+    rows = json.loads(http_get(url))["results"]["bindings"]
+    players = {}
+    for row in rows:
+        qid = row["p"]["value"].rsplit("/", 1)[1]
+        dob = row.get("dob", {}).get("value", "")
+        entry = players.setdefault(qid, {
+            "name": clean_player_name(row["pLabel"]["value"]),
+            "born": int(dob[:4]) if dob[:4].isdigit() else None,
+            "countries": set(), "dated": set(), "undated": set(),
+            "coach": row["coach"]["value"] == "true",
+        })
+        team = WIKIDATA_NBA_TEAMS[row["team"]["value"].rsplit("/", 1)[1]]
+        start = row.get("start", {}).get("value", "")[:4]
+        if start.isdigit():
+            if team == "New Orleans Pelicans" and int(start) < 2002:
+                team = "Charlotte Hornets"
+            entry["dated"].add((int(start), team))
+        else:
+            entry["undated"].add(team)
+        if "countryLabel" in row:
+            entry["countries"].add(canonical_country(row["countryLabel"]["value"]))
+    for entry in players.values():
+        # A few birthplaces list several current countries (or a US state); USA wins ties
+        countries = entry.pop("countries")
+        entry["country"] = "USA" if "USA" in countries else (min(countries) if countries else None)
+    print(f"  {len(players)} players")
+    return players
+
+
+def wikidata_teams(entry, before=None, include_undated=True):
+    """Franchises from Wikidata stints; undated stints count only for non-coaches."""
+    teams = {team for start, team in entry["dated"] if before is None or start < before}
+    if include_undated and not entry["coach"]:
+        undated = set(entry["undated"])
+        if "New Orleans Pelicans" in undated and (entry["born"] or 0) < 1975:
+            undated.discard("New Orleans Pelicans")
+            # Born before 1965: retired before the 2002 move, so a Charlotte-era stint
+            if entry["born"] and entry["born"] < 1965:
+                undated.add("Charlotte Hornets")
+        teams |= undated
+    return teams
+
+
 _euroleague_people = None
 
 
@@ -498,7 +605,10 @@ def fetch_euroleague_people():
 
     for season in range(EUROLEAGUE_FIRST_SEASON, date.today().year + 1):
         text = http_get(EUROLEAGUE_PEOPLE_URL.format(season=season))
-        rows = (json.loads(text).get("data") or []) if text else []
+        payload = json.loads(text) if text else {}
+        rows = payload.get("data") or []
+        if (payload.get("total") or 0) > len(rows):
+            print(f"  WARNING: only {len(rows)} of {payload['total']} registrations returned")
         print(f"EuroLeague {season}-{str(season + 1)[-2:]}: {len(rows)} player registrations")
         for row in rows:
             person = row.get("person") or {}
@@ -669,6 +779,27 @@ def build_nba_database(out_dir):
             person["teams"] |= teams
     print(f"  Career history added teams for {enriched} players")
 
+    # Wikidata, matched on name + birth year: birth country, and stints from before
+    # FiveThirtyEight's coverage (a 1970s Buck who finished his career in the 1980s)
+    wikidata = load_wikidata_players()
+    wikidata_index = defaultdict(list)
+    for qid, entry in wikidata.items():
+        if entry["born"]:
+            for year in (entry["born"] - 1, entry["born"], entry["born"] + 1):
+                wikidata_index[(base_name_key(entry["name"]), year)].append(qid)
+    matched_qids = set()
+    for person in people:
+        if not person["born"]:
+            continue
+        qids = wikidata_index.get((base_name_key(max(person["names"])[1]), person["born"]), [])
+        if len(qids) != 1:
+            continue
+        entry = wikidata[qids[0]]
+        matched_qids.add(qids[0])
+        person["wikidata_country"] = entry["country"]
+        person["teams"] |= wikidata_teams(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON, include_undated=False)
+    print(f"  Wikidata matched {len(matched_qids)} roster players")
+
     # Country fallbacks for players whose only roster entry has no birthplace:
     # EuroLeague birth country, then a non-default country from the previous dataset,
     # then USA when the roster lists an American college instead of a birthplace.
@@ -680,14 +811,27 @@ def build_nba_database(out_dir):
     previous_country = {name_key(p["name"]): p.get("country") for p in load_previous_players("nba_data.json")}
 
     players = []
-    fallback_counts = defaultdict(int)
+    country_sources = defaultdict(int)
+    conflicts = []
     for person in people:
         name = max(person["names"])[1]  # latest spelling
         country = max(person["countries"])[1] if person["countries"] else None  # newest snapshot wins
-        if not country:
-            if name in NBA_COUNTRY_OVERRIDES:
-                country, source = NBA_COUNTRY_OVERRIDES[name], "override"
-            elif (base_name_key(name), person["born"]) in euroleague_country:
+        source = "roster"
+        # Wikidata settles foreign birthplaces (Pekovic: Montenegro, not Serbia) and fills
+        # gaps, but some of its American-born players point at a same-named foreign town
+        # (Kendall Gill in Paisley, Scotland), and it files Puerto Rico under the USA.
+        # A roster USA against a Wikidata foreign country is left alone; known cases of
+        # that conflict are in NBA_COUNTRY_OVERRIDES.
+        wikidata_country = person.get("wikidata_country")
+        if wikidata_country and wikidata_country != country:
+            if country == "USA" or (wikidata_country == "USA" and country in US_TERRITORIES):
+                conflicts.append(f"{name} (roster {country}, Wikidata {wikidata_country})")
+            else:
+                country, source = wikidata_country, "wikidata" if not country else "wikidata correction"
+        if name in NBA_COUNTRY_OVERRIDES:
+            country, source = NBA_COUNTRY_OVERRIDES[name], "override"
+        elif not country:
+            if (base_name_key(name), person["born"]) in euroleague_country:
                 country, source = euroleague_country[(base_name_key(name), person["born"])], "euroleague"
             elif previous_country.get(name_key(name)) not in (None, "", "USA", "Georgia"):
                 country, source = previous_country[name_key(name)], "previous dataset"
@@ -695,9 +839,36 @@ def build_nba_database(out_dir):
                 country, source = "USA", "US college"
             else:
                 country, source = "", "unknown"
-            fallback_counts[source] += 1
+        country_sources[source] += 1
         players.append({"name": name, "country": country, "teams": sorted(person["teams"])})
-    print(f"  Country fallbacks used: {dict(fallback_counts)}")
+    print(f"  Country sources: {dict(country_sources)}")
+    if conflicts:
+        print(f"  Kept roster country over Wikidata for {len(conflicts)}: {', '.join(conflicts)}")
+
+    # Players no roster snapshot covers (retired before 1995 or between snapshots), from
+    # Wikidata. FiveThirtyEight supplies their 1977+ teams when it knows them.
+    roster_keys = {(base_name_key(max(p["names"])[1]), year)
+                   for p in people if p["born"] for year in (p["born"] - 1, p["born"], p["born"] + 1)}
+    roster_names = {name_key(p["name"]) for p in players}
+    added = 0
+    for qid, entry in wikidata.items():
+        if qid in matched_qids or not entry["born"]:
+            continue
+        base = base_name_key(entry["name"])
+        if (base, entry["born"]) in roster_keys or name_key(entry["name"]) in roster_names:
+            continue
+        stints = career.get((base, entry["born"]), {})
+        if len(stints) == 1:
+            teams = next(iter(stints.values())) | wikidata_teams(
+                entry, before=FIVETHIRTYEIGHT_FIRST_SEASON, include_undated=entry["born"] < 1957)
+        else:
+            teams = wikidata_teams(entry)
+        if not teams:
+            continue
+        players.append({"name": entry["name"], "country": entry["country"] or "", "teams": sorted(teams)})
+        roster_names.add(name_key(entry["name"]))
+        added += 1
+    print(f"  {added} players added from Wikidata")
 
     # Carry over previous entries (hand-curated legends) that no roster snapshot covers.
     # A suffix variant only counts as covered when its teams fit: 'Tim Hardaway' is not
