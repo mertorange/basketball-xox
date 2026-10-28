@@ -214,6 +214,11 @@ FIVETHIRTYEIGHT_URL = (
     "https://raw.githubusercontent.com/fivethirtyeight/nba-player-advanced-metrics/master/nba-data-historical.csv"
 )
 
+# Current-season rosters (the community snapshots lag a season behind: summer signings
+# such as Marcus Smart to Houston in July 2026 are missing from them)
+ESPN_TEAMS_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams"
+ESPN_ROSTER_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{team_id}/roster"
+
 WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql"
 # Wikidata team items -> current franchise (current teams plus former names with their own item)
 WIKIDATA_NBA_TEAMS = {
@@ -395,7 +400,7 @@ COUNTRY_ALIASES = {
     "cote d’ivoire": "Ivory Coast", "cote d'ivoire": "Ivory Coast",
     "the bahamas": "Bahamas", "people's republic of china": "China", "kingdom of the netherlands": "Netherlands",
     "united states virgin islands": "U.S. Virgin Islands", "republic of ireland": "Ireland",
-    "the gambia": "Gambia",
+    "the gambia": "Gambia", "democratic republic of congo": "DR Congo",
     "no country": None,
 }
 
@@ -439,10 +444,12 @@ def clean_player_name(raw_name):
 
 
 def name_key(name):
-    """Comparison key: 'R.J. Barrett' and 'RJ Barrett' share one."""
+    """Comparison key: 'R.J. Barrett', 'RJ Barrett' and 'R. J. Barrett' share one."""
     key = ascii_fold(name).lower()
     key = re.sub(r"[.'’`]", "", key)
-    return re.sub(r"[-\s]+", " ", key).strip()
+    key = re.sub(r"[-\s]+", " ", key).strip()
+    # Join spaced initials: 'a c green' -> 'ac green'
+    return re.sub(r"\b([a-z]) (?=[a-z]\b)", r"\1", key)
 
 
 def base_name_key(name):
@@ -540,6 +547,30 @@ def load_fivethirtyeight():
             career[(base, year)][row["player_id"]].add(team)
         season_births[(base, int(row["year_id"]))][row["player_id"]] = birth_year - 1
     return career, season_births
+
+
+def load_espn_rosters():
+    """Current NBA rosters from ESPN as (season, name, birth year, birthplace, team) rows."""
+    print("Fetching current NBA rosters from ESPN ...")
+    teams = json.loads(http_get(ESPN_TEAMS_URL))["sports"][0]["leagues"][0]["teams"]
+    rows = []
+    for item in teams:
+        team = TEAM_NAME_NORMALIZER.get(item["team"]["displayName"].lower())
+        if not team:
+            print(f"  Unknown ESPN team {item['team']['displayName']!r}, skipped")
+            continue
+        roster = json.loads(http_get(ESPN_ROSTER_URL.format(team_id=item["team"]["id"])))
+        season = (roster.get("season") or {}).get("year")
+        for athlete in roster.get("athletes", []):
+            born = athlete.get("dateOfBirth", "")[:4]
+            place = athlete.get("birthPlace") or {}
+            # Same shape as the roster snapshots: 'City, ST' for Americans, 'City, Country' otherwise
+            region = place.get("state") if place.get("country") == "USA" and place.get("state") else place.get("country")
+            loc = f"{place.get('city', '')}, {region}" if region else ""
+            rows.append((season, clean_player_name(athlete.get("fullName", "")),
+                         int(born) if born.isdigit() else None, loc, team))
+    print(f"  {len(rows)} players on {len(teams)} rosters")
+    return rows
 
 
 def load_wikidata_players():
@@ -646,9 +677,9 @@ def merge_roster_duplicates(people):
     """Merges roster entries that describe the same player.
 
     Snapshots disagree on details: birth years drift by up to two years, suffixes come
-    and go ('Kelly Oubre' / 'Kelly Oubre Jr.') and surnames grow ('Timothe Luwawu' /
-    'Timothe Luwawu-Cabarrot'). Entries without a usable birth year join the only
-    same-named player, if there is one.
+    and go ('Kelly Oubre' / 'Kelly Oubre Jr.'), surnames grow ('Timothe Luwawu' /
+    'Timothe Luwawu-Cabarrot') and first names shorten ('Svi' / 'Sviatoslav'). Entries
+    without a usable birth year join the only same-named player, if there is one.
     """
     dated = [(key[0], p) for key, p in people.items() if p["born"] is not None]
     undated = [(key[0], p) for key, p in people.items() if p["born"] is None]
@@ -665,22 +696,31 @@ def merge_roster_duplicates(people):
     for i, (key, _) in enumerate(dated):
         by_base[base_name_key(key)].append(i)
     by_first_two = defaultdict(list)
+    by_surname = defaultdict(list)
     for i, (key, _) in enumerate(dated):
         by_first_two[" ".join(key.split()[:2])].append(i)
+        by_surname[" ".join(base_name_key(key).split()[1:])].append(i)
 
     def same_player(i, j):
         (key_i, a), (key_j, b) = dated[i], dated[j]
         gap = abs(a["born"] - b["born"])
+        shared_team = bool(a["teams"] & b["teams"])
         if key_i == key_j:
             return gap <= 2
-        if base_name_key(key_i) == base_name_key(key_j):
+        base_i, base_j = base_name_key(key_i), base_name_key(key_j)
+        if base_i == base_j:
             return gap <= 1
         words_i, words_j = key_i.split(), key_j.split()
         shorter, longer = sorted((words_i, words_j), key=len)
-        return (len(shorter) >= 2 and longer[:len(shorter)] == shorter and gap <= 2
-                and bool(a["teams"] & b["teams"]))
+        if len(shorter) >= 2 and longer[:len(shorter)] == shorter:
+            return gap <= 2 and shared_team
+        # Short first names: 'Svi Mykhailiuk' / 'Sviatoslav Mykhailiuk', 'Ron Holland II' / 'Ronald Holland II'
+        first_i, *rest_i = base_i.split()
+        first_j, *rest_j = base_j.split()
+        short, full = sorted((first_i, first_j), key=len)
+        return rest_i == rest_j and len(short) >= 2 and full.startswith(short) and gap <= 1 and shared_team
 
-    for group in list(by_base.values()) + list(by_first_two.values()):
+    for group in list(by_base.values()) + list(by_first_two.values()) + list(by_surname.values()):
         for x in range(len(group)):
             for y in range(x + 1, len(group)):
                 if same_player(group[x], group[y]):
@@ -766,6 +806,21 @@ def build_nba_database(out_dir):
             elif loc:
                 person["college_only"] = True
 
+    for _season, name, birth_year, loc, team in load_espn_rosters():
+        if len(name) < 3 or not birth_year:
+            continue
+        person = people.setdefault((name_key(name), birth_year), {
+            "names": [], "teams": set(), "countries": [], "born": birth_year, "college_only": False})
+        # Season 0: the display name stays the familiar roster spelling ('Ron Holland II',
+        # not ESPN's 'Ronald Holland II'); ESPN names only show for brand-new players
+        person["names"].append((0, name))
+        person["teams"].add(team)
+        country = resolve_birthplace(loc)
+        if country:
+            # Lowest priority: ESPN sometimes lists the national team as the birth country
+            # (Sandro Mamukelashvili, born in New York, shows up as Georgia)
+            person["countries"].append((0, country))
+
     people = merge_roster_duplicates(people)
 
     enriched = 0
@@ -791,11 +846,13 @@ def build_nba_database(out_dir):
     for person in people:
         if not person["born"]:
             continue
-        qids = wikidata_index.get((base_name_key(max(person["names"])[1]), person["born"]), [])
+        qids = {qid for _, spelling in person["names"]
+                for qid in wikidata_index.get((base_name_key(spelling), person["born"]), [])}
         if len(qids) != 1:
             continue
-        entry = wikidata[qids[0]]
-        matched_qids.add(qids[0])
+        qid = qids.pop()
+        entry = wikidata[qid]
+        matched_qids.add(qid)
         person["wikidata_country"] = entry["country"]
         person["teams"] |= wikidata_teams(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON, include_undated=False)
     print(f"  Wikidata matched {len(matched_qids)} roster players")
@@ -847,8 +904,9 @@ def build_nba_database(out_dir):
 
     # Players no roster snapshot covers (retired before 1995 or between snapshots), from
     # Wikidata. FiveThirtyEight supplies their 1977+ teams when it knows them.
-    roster_keys = {(base_name_key(max(p["names"])[1]), year)
-                   for p in people if p["born"] for year in (p["born"] - 1, p["born"], p["born"] + 1)}
+    roster_keys = {(base_name_key(spelling), year)
+                   for p in people if p["born"] for _, spelling in p["names"]
+                   for year in (p["born"] - 1, p["born"], p["born"] + 1)}
     roster_names = {name_key(p["name"]) for p in players}
     added = 0
     for qid, entry in wikidata.items():
@@ -877,10 +935,14 @@ def build_nba_database(out_dir):
     for (base, _), by_id in career.items():
         for pid, teams in by_id.items():
             career_by_base[base][pid] |= teams
-    exact = {name_key(p["name"]) for p in players}
+    # Every spelling a roster used counts ('Sviatoslav Mykhailiuk' is now 'Svi Mykhailiuk')
+    exact = {name_key(p["name"]) for p in players} | {name_key(s) for p in people for _, s in p["names"]}
     by_base = defaultdict(list)
     for p in players:
         by_base[base_name_key(p["name"])].append(set(p["teams"]))
+    for p in people:
+        for _, spelling in p["names"]:
+            by_base[base_name_key(spelling)].append(p["teams"])
     carried = []
     for old in load_previous_players("nba_data.json"):
         teams = {t for t in old.get("teams", []) if t in STANDARD_NBA_TEAMS}

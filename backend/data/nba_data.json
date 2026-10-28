@@ -125,30 +125,18 @@
   ],
   "players": [
     {
-      "name": "A. C. Green",
-      "country": "USA",
-      "teams": [
-        "Dallas Mavericks",
-        "Los Angeles Lakers",
-        "Miami Heat",
-        "Phoenix Suns"
-      ]
-    },
-    {
       "name": "A. J. Guyton",
       "country": "USA",
       "teams": [
-        "Chicago Bulls"
+        "Chicago Bulls",
+        "Golden State Warriors"
       ]
     },
     {
-      "name": "A. J. Price",
+      "name": "A. J. Wynder",
       "country": "USA",
       "teams": [
-        "Indiana Pacers",
-        "Minnesota Timberwolves",
-        "Phoenix Suns",
-        "Washington Wizards"
+        "Boston Celtics"
       ]
     },
     {
@@ -203,6 +191,13 @@
       ]
     },
     {
+      "name": "AJ Dybantsa",
+      "country": "USA",
+      "teams": [
+        "Washington Wizards"
+      ]
+    },
+    {
       "name": "AJ Griffin",
       "country": "USA",
       "teams": [
@@ -215,7 +210,15 @@
       "teams": [
         "Dallas Mavericks",
         "Milwaukee Bucks",
+        "New Orleans Pelicans",
         "Washington Wizards"
+      ]
+    },
+    {
+      "name": "AK Okereke",
+      "country": "USA",
+      "teams": [
+        "Los Angeles Lakers"
       ]
     },
     {
@@ -318,6 +321,7 @@
       "name": "Aaron Wiggins",
       "country": "USA",
       "teams": [
+        "Atlanta Hawks",
         "Oklahoma City Thunder"
       ]
     },
@@ -953,7 +957,7 @@
     },
     {
       "name": "Alex Karaban",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Sacramento Kings"
       ]
@@ -1050,13 +1054,6 @@
       ]
     },
     {
-      "name": "Alexandre Sarr",
-      "country": "France",
-      "teams": [
-        "Washington Wizards"
-      ]
-    },
-    {
       "name": "Alexey Shved",
       "country": "Russia",
       "teams": [
@@ -1148,7 +1145,7 @@
     },
     {
       "name": "Allen Graves",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Toronto Raptors"
       ]
@@ -1233,6 +1230,13 @@
       "country": "Turkey",
       "teams": [
         "Houston Rockets"
+      ]
+    },
+    {
+      "name": "Alpha Diallo",
+      "country": "USA",
+      "teams": [
+        "Denver Nuggets"
       ]
     },
     {
@@ -1450,6 +1454,7 @@
         "Cleveland Cavaliers",
         "Detroit Pistons",
         "Los Angeles Lakers",
+        "New York Knicks",
         "Philadelphia 76ers"
       ]
     },
@@ -1767,6 +1772,7 @@
       "country": "USA",
       "teams": [
         "Chicago Bulls",
+        "Philadelphia 76ers",
         "Portland Trail Blazers"
       ]
     },
@@ -2304,7 +2310,8 @@
       "name": "Ariel Hukporti",
       "country": "Germany",
       "teams": [
-        "New York Knicks"
+        "New York Knicks",
+        "Philadelphia 76ers"
       ]
     },
     {
@@ -2484,6 +2491,13 @@
       "teams": [
         "Boston Celtics",
         "Houston Rockets"
+      ]
+    },
+    {
+      "name": "Arthur Kaluma",
+      "country": "USA",
+      "teams": [
+        "Los Angeles Lakers"
       ]
     },
     {
@@ -2681,23 +2695,6 @@
       "teams": [
         "Chicago Bulls",
         "Minnesota Timberwolves"
-      ]
-    },
-    {
-      "name": "B. J. Armstrong",
-      "country": "USA",
-      "teams": [
-        "Charlotte Hornets",
-        "Chicago Bulls",
-        "Golden State Warriors",
-        "Orlando Magic"
-      ]
-    },
-    {
-      "name": "B. J. Tyler",
-      "country": "USA",
-      "teams": [
-        "Philadelphia 76ers"
       ]
     },
     {
@@ -2955,7 +2952,8 @@
       "teams": [
         "Brooklyn Nets",
         "LA Clippers",
-        "Philadelphia 76ers"
+        "Philadelphia 76ers",
+        "Sacramento Kings"
       ]
     },
     {
@@ -2992,7 +2990,8 @@
       "country": "Canada",
       "teams": [
         "Indiana Pacers",
-        "LA Clippers"
+        "LA Clippers",
+        "New Orleans Pelicans"
       ]
     },
     {
@@ -4280,6 +4279,7 @@
       "country": "USA",
       "teams": [
         "Chicago Bulls",
+        "Miami Heat",
         "Milwaukee Bucks",
         "New York Knicks",
         "Washington Wizards"
@@ -4324,8 +4324,16 @@
       "country": "Serbia",
       "teams": [
         "Atlanta Hawks",
+        "Houston Rockets",
         "LA Clippers",
         "Sacramento Kings"
+      ]
+    },
+    {
+      "name": "Bogoljub Markovic",
+      "country": "",
+      "teams": [
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -4508,7 +4516,7 @@
     },
     {
       "name": "Braden Smith",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Indiana Pacers"
       ]
@@ -4553,7 +4561,8 @@
       "name": "Branden Carlson",
       "country": "USA",
       "teams": [
-        "Oklahoma City Thunder"
+        "Oklahoma City Thunder",
+        "Portland Trail Blazers"
       ]
     },
     {
@@ -4640,6 +4649,7 @@
       "name": "Brandon Ingram",
       "country": "USA",
       "teams": [
+        "LA Clippers",
         "Los Angeles Lakers",
         "New Orleans Pelicans",
         "Toronto Raptors"
@@ -4719,6 +4729,7 @@
       "country": "USA",
       "teams": [
         "Dallas Mavericks",
+        "Golden State Warriors",
         "Portland Trail Blazers"
       ]
     },
@@ -5115,7 +5126,7 @@
     },
     {
       "name": "Bruce Thornton",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Houston Rockets"
       ]
@@ -5337,6 +5348,7 @@
       "country": "Bahamas",
       "teams": [
         "Atlanta Hawks",
+        "Chicago Bulls",
         "Golden State Warriors",
         "Indiana Pacers",
         "New Orleans Pelicans",
@@ -5442,37 +5454,6 @@
       "teams": [
         "Houston Rockets",
         "Los Angeles Lakers"
-      ]
-    },
-    {
-      "name": "C. J. Miles",
-      "country": "USA",
-      "teams": [
-        "Cleveland Cavaliers",
-        "Indiana Pacers",
-        "Memphis Grizzlies",
-        "Toronto Raptors",
-        "Utah Jazz"
-      ]
-    },
-    {
-      "name": "C. J. Watson",
-      "country": "USA",
-      "teams": [
-        "Brooklyn Nets",
-        "Chicago Bulls",
-        "Golden State Warriors",
-        "Indiana Pacers",
-        "Orlando Magic"
-      ]
-    },
-    {
-      "name": "C. J. Wilcox",
-      "country": "USA",
-      "teams": [
-        "LA Clippers",
-        "Orlando Magic",
-        "Portland Trail Blazers"
       ]
     },
     {
@@ -5598,6 +5579,7 @@
       "name": "Caleb Love",
       "country": "USA",
       "teams": [
+        "Philadelphia 76ers",
         "Portland Trail Blazers"
       ]
     },
@@ -5714,6 +5696,7 @@
       "name": "Cam Whitmore",
       "country": "USA",
       "teams": [
+        "Denver Nuggets",
         "Houston Rockets",
         "Washington Wizards"
       ]
@@ -5778,13 +5761,6 @@
       ]
     },
     {
-      "name": "Cameron Thomas",
-      "country": "Japan",
-      "teams": [
-        "Brooklyn Nets"
-      ]
-    },
-    {
       "name": "Campy Russell",
       "country": "USA",
       "teams": [
@@ -5808,7 +5784,8 @@
         "Brooklyn Nets",
         "Cleveland Cavaliers",
         "Detroit Pistons",
-        "Indiana Pacers"
+        "Indiana Pacers",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -5997,6 +5974,13 @@
       ]
     },
     {
+      "name": "Carson Cooper",
+      "country": "USA",
+      "teams": [
+        "Memphis Grizzlies"
+      ]
+    },
+    {
       "name": "Carter Bryant",
       "country": "USA",
       "teams": [
@@ -6112,8 +6096,8 @@
       "name": "Cedric Henderson",
       "country": "USA",
       "teams": [
-        "Atlanta Hawks",
-        "Milwaukee Bucks"
+        "Cleveland Cavaliers",
+        "Golden State Warriors"
       ]
     },
     {
@@ -7650,6 +7634,7 @@
       "name": "Cody Williams",
       "country": "USA",
       "teams": [
+        "Minnesota Timberwolves",
         "Utah Jazz"
       ]
     },
@@ -7732,6 +7717,7 @@
       "teams": [
         "Chicago Bulls",
         "Cleveland Cavaliers",
+        "Los Angeles Lakers",
         "Utah Jazz"
       ]
     },
@@ -8217,20 +8203,6 @@
       ]
     },
     {
-      "name": "D. J. Augustin",
-      "country": "USA",
-      "teams": [
-        "Charlotte Hornets",
-        "Chicago Bulls",
-        "Denver Nuggets",
-        "Detroit Pistons",
-        "Indiana Pacers",
-        "Oklahoma City Thunder",
-        "Orlando Magic",
-        "Toronto Raptors"
-      ]
-    },
-    {
       "name": "D. J. Kennedy",
       "country": "USA",
       "teams": [
@@ -8241,6 +8213,7 @@
       "name": "D. J. Stephens",
       "country": "USA",
       "teams": [
+        "Memphis Grizzlies",
         "Milwaukee Bucks"
       ]
     },
@@ -8249,15 +8222,6 @@
       "country": "USA",
       "teams": [
         "Phoenix Suns"
-      ]
-    },
-    {
-      "name": "D. J. White",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics",
-        "Charlotte Hornets",
-        "Oklahoma City Thunder"
       ]
     },
     {
@@ -8492,7 +8456,8 @@
       "name": "Dalton Knecht",
       "country": "USA",
       "teams": [
-        "Los Angeles Lakers"
+        "Los Angeles Lakers",
+        "New York Knicks"
       ]
     },
     {
@@ -9922,6 +9887,7 @@
       "country": "USA",
       "teams": [
         "Chicago Bulls",
+        "Denver Nuggets",
         "Sacramento Kings",
         "San Antonio Spurs",
         "Toronto Raptors"
@@ -10039,7 +10005,8 @@
       "name": "Dean Wade",
       "country": "USA",
       "teams": [
-        "Cleveland Cavaliers"
+        "Cleveland Cavaliers",
+        "Philadelphia 76ers"
       ]
     },
     {
@@ -10048,7 +10015,8 @@
       "teams": [
         "Los Angeles Lakers",
         "Phoenix Suns",
-        "Portland Trail Blazers"
+        "Portland Trail Blazers",
+        "Washington Wizards"
       ]
     },
     {
@@ -10298,6 +10266,7 @@
         "Atlanta Hawks",
         "Boston Celtics",
         "Brooklyn Nets",
+        "Charlotte Hornets",
         "Cleveland Cavaliers",
         "Detroit Pistons",
         "Golden State Warriors",
@@ -10729,6 +10698,7 @@
       "name": "Devin Carter",
       "country": "USA",
       "teams": [
+        "Boston Celtics",
         "Sacramento Kings"
       ]
     },
@@ -11680,6 +11650,7 @@
       "name": "Dorian Finney-Smith",
       "country": "USA",
       "teams": [
+        "Atlanta Hawks",
         "Brooklyn Nets",
         "Dallas Mavericks",
         "Houston Rockets",
@@ -11884,7 +11855,8 @@
       "country": "USA",
       "teams": [
         "Brooklyn Nets",
-        "Los Angeles Lakers"
+        "Los Angeles Lakers",
+        "Phoenix Suns"
       ]
     },
     {
@@ -11976,6 +11948,7 @@
       "name": "Duop Reath",
       "country": "South Sudan",
       "teams": [
+        "Phoenix Suns",
         "Portland Trail Blazers"
       ]
     },
@@ -12346,7 +12319,7 @@
     },
     {
       "name": "Ebuka Okorie",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Detroit Pistons"
       ]
@@ -12815,6 +12788,7 @@
       "name": "Elijah Harkless",
       "country": "USA",
       "teams": [
+        "Detroit Pistons",
         "Utah Jazz"
       ]
     },
@@ -14766,6 +14740,7 @@
       "teams": [
         "Atlanta Hawks",
         "Cleveland Cavaliers",
+        "Golden State Warriors",
         "Indiana Pacers",
         "Philadelphia 76ers",
         "Utah Jazz"
@@ -14916,6 +14891,7 @@
       "name": "Giannis Antetokounmpo",
       "country": "Greece",
       "teams": [
+        "Miami Heat",
         "Milwaukee Bucks"
       ]
     },
@@ -15081,6 +15057,7 @@
       "name": "Gradey Dick",
       "country": "USA",
       "teams": [
+        "LA Clippers",
         "Toronto Raptors"
       ]
     },
@@ -15089,6 +15066,13 @@
       "country": "USA",
       "teams": [
         "Atlanta Hawks"
+      ]
+    },
+    {
+      "name": "Graham Ike",
+      "country": "USA",
+      "teams": [
+        "Golden State Warriors"
       ]
     },
     {
@@ -15129,6 +15113,13 @@
       ]
     },
     {
+      "name": "Grant Nelson",
+      "country": "USA",
+      "teams": [
+        "Brooklyn Nets"
+      ]
+    },
+    {
       "name": "Grant Riller",
       "country": "USA",
       "teams": [
@@ -15164,6 +15155,7 @@
       "name": "Grayson Allen",
       "country": "USA",
       "teams": [
+        "Charlotte Hornets",
         "Memphis Grizzlies",
         "Milwaukee Bucks",
         "Phoenix Suns",
@@ -15776,7 +15768,8 @@
       "name": "Harrison Ingram",
       "country": "USA",
       "teams": [
-        "San Antonio Spurs"
+        "San Antonio Spurs",
+        "Utah Jazz"
       ]
     },
     {
@@ -16578,6 +16571,7 @@
       "name": "Isaiah Joe",
       "country": "USA",
       "teams": [
+        "Detroit Pistons",
         "Oklahoma City Thunder",
         "Philadelphia 76ers"
       ]
@@ -16637,7 +16631,8 @@
       "name": "Isaiah Stewart",
       "country": "USA",
       "teams": [
-        "Detroit Pistons"
+        "Detroit Pistons",
+        "Memphis Grizzlies"
       ]
     },
     {
@@ -16722,13 +16717,6 @@
       ]
     },
     {
-      "name": "Ishmail Wainright",
-      "country": "USA",
-      "teams": [
-        "Phoenix Suns"
-      ]
-    },
-    {
       "name": "Isiah Thomas",
       "country": "USA",
       "teams": [
@@ -16783,42 +16771,17 @@
     },
     {
       "name": "Izaiyah Nelson",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Orlando Magic"
       ]
     },
     {
-      "name": "J. J. Barea",
+      "name": "J. J. Anderson",
       "country": "USA",
       "teams": [
-        "Dallas Mavericks",
-        "Minnesota Timberwolves"
-      ]
-    },
-    {
-      "name": "J. J. Hickson",
-      "country": "USA",
-      "teams": [
-        "Cleveland Cavaliers",
-        "Denver Nuggets",
-        "Portland Trail Blazers",
-        "Sacramento Kings"
-      ]
-    },
-    {
-      "name": "J. P. Macura",
-      "country": "USA",
-      "teams": [
-        "Charlotte Hornets"
-      ]
-    },
-    {
-      "name": "J. R. Giddens",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics",
-        "New York Knicks"
+        "Philadelphia 76ers",
+        "Utah Jazz"
       ]
     },
     {
@@ -16826,17 +16789,6 @@
       "country": "USA",
       "teams": [
         "Memphis Grizzlies"
-      ]
-    },
-    {
-      "name": "J. R. Smith",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics",
-        "Cleveland Cavaliers",
-        "Denver Nuggets",
-        "New Orleans Pelicans",
-        "New York Knicks"
       ]
     },
     {
@@ -16939,7 +16891,8 @@
       "name": "Ja Morant",
       "country": "USA",
       "teams": [
-        "Memphis Grizzlies"
+        "Memphis Grizzlies",
+        "Portland Trail Blazers"
       ]
     },
     {
@@ -17330,8 +17283,15 @@
       ]
     },
     {
+      "name": "Jaden Akins",
+      "country": "USA",
+      "teams": [
+        "New York Knicks"
+      ]
+    },
+    {
       "name": "Jaden Bradley",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Toronto Raptors"
       ]
@@ -17341,6 +17301,7 @@
       "country": "USA",
       "teams": [
         "Dallas Mavericks",
+        "Los Angeles Lakers",
         "Washington Wizards"
       ]
     },
@@ -17436,7 +17397,8 @@
       "name": "Jaime Jaquez Jr.",
       "country": "USA",
       "teams": [
-        "Miami Heat"
+        "Miami Heat",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -17632,7 +17594,8 @@
       "name": "Jalen Pickett",
       "country": "USA",
       "teams": [
-        "Denver Nuggets"
+        "Denver Nuggets",
+        "LA Clippers"
       ]
     },
     {
@@ -17682,6 +17645,7 @@
       "name": "Jalen Wilson",
       "country": "USA",
       "teams": [
+        "Atlanta Hawks",
         "Brooklyn Nets"
       ]
     },
@@ -18109,7 +18073,8 @@
       "teams": [
         "Detroit Pistons",
         "Golden State Warriors",
-        "Indiana Pacers"
+        "Indiana Pacers",
+        "New York Knicks"
       ]
     },
     {
@@ -18376,7 +18341,7 @@
     },
     {
       "name": "Jaron Pierre Jr.",
-      "country": "",
+      "country": "USA",
       "teams": [
         "New Orleans Pelicans"
       ]
@@ -18719,7 +18684,8 @@
       "country": "USA",
       "teams": [
         "Los Angeles Lakers",
-        "New Orleans Pelicans"
+        "New Orleans Pelicans",
+        "Utah Jazz"
       ]
     },
     {
@@ -18818,7 +18784,7 @@
     },
     {
       "name": "Jayden Quaintance",
-      "country": "",
+      "country": "USA",
       "teams": [
         "San Antonio Spurs"
       ]
@@ -18836,7 +18802,8 @@
       "name": "Jaylen Brown",
       "country": "USA",
       "teams": [
-        "Boston Celtics"
+        "Boston Celtics",
+        "Philadelphia 76ers"
       ]
     },
     {
@@ -18898,6 +18865,13 @@
       "country": "USA",
       "teams": [
         "Milwaukee Bucks"
+      ]
+    },
+    {
+      "name": "Jaylin Sellers",
+      "country": "USA",
+      "teams": [
+        "Chicago Bulls"
       ]
     },
     {
@@ -19261,6 +19235,7 @@
       "teams": [
         "Denver Nuggets",
         "Detroit Pistons",
+        "Memphis Grizzlies",
         "Oklahoma City Thunder",
         "Philadelphia 76ers",
         "Portland Trail Blazers"
@@ -19774,6 +19749,7 @@
       "name": "Jett Howard",
       "country": "USA",
       "teams": [
+        "Dallas Mavericks",
         "Orlando Magic"
       ]
     },
@@ -20914,6 +20890,7 @@
       "country": "USA",
       "teams": [
         "Atlanta Hawks",
+        "Detroit Pistons",
         "LA Clippers",
         "Utah Jazz"
       ]
@@ -21372,7 +21349,8 @@
       "name": "John Tonje",
       "country": "USA",
       "teams": [
-        "Boston Celtics"
+        "Boston Celtics",
+        "Portland Trail Blazers"
       ]
     },
     {
@@ -21795,13 +21773,15 @@
       "country": "DR Congo",
       "teams": [
         "Atlanta Hawks",
-        "Golden State Warriors"
+        "Golden State Warriors",
+        "Minnesota Timberwolves"
       ]
     },
     {
       "name": "Jonathan Mogbo",
       "country": "USA",
       "teams": [
+        "Sacramento Kings",
         "Toronto Raptors"
       ]
     },
@@ -21927,6 +21907,7 @@
       "name": "Jordan Hawkins",
       "country": "USA",
       "teams": [
+        "Chicago Bulls",
         "New Orleans Pelicans"
       ]
     },
@@ -22134,6 +22115,13 @@
       ]
     },
     {
+      "name": "Josh Dix",
+      "country": "USA",
+      "teams": [
+        "Oklahoma City Thunder"
+      ]
+    },
+    {
       "name": "Josh Giddey",
       "country": "Australia",
       "teams": [
@@ -22161,7 +22149,8 @@
       "country": "Australia",
       "teams": [
         "Charlotte Hornets",
-        "Dallas Mavericks"
+        "Dallas Mavericks",
+        "Utah Jazz"
       ]
     },
     {
@@ -22260,7 +22249,8 @@
         "Charlotte Hornets",
         "Houston Rockets",
         "Minnesota Timberwolves",
-        "Phoenix Suns"
+        "Phoenix Suns",
+        "Utah Jazz"
       ]
     },
     {
@@ -22315,7 +22305,7 @@
     },
     {
       "name": "Joshua Jefferson",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Brooklyn Nets"
       ]
@@ -22453,6 +22443,7 @@
       "country": "USA",
       "teams": [
         "Chicago Bulls",
+        "Houston Rockets",
         "Minnesota Timberwolves"
       ]
     },
@@ -22460,6 +22451,7 @@
       "name": "Julian Reese",
       "country": "USA",
       "teams": [
+        "New Orleans Pelicans",
         "Washington Wizards"
       ]
     },
@@ -22518,6 +22510,7 @@
       "name": "Julius Randle",
       "country": "USA",
       "teams": [
+        "Brooklyn Nets",
         "Los Angeles Lakers",
         "Minnesota Timberwolves",
         "New Orleans Pelicans",
@@ -22768,14 +22761,6 @@
       ]
     },
     {
-      "name": "K. J. McDaniels",
-      "country": "USA",
-      "teams": [
-        "Houston Rockets",
-        "Philadelphia 76ers"
-      ]
-    },
-    {
       "name": "K.J. McDaniels",
       "country": "USA",
       "teams": [
@@ -22839,7 +22824,8 @@
       "name": "Kam Jones",
       "country": "USA",
       "teams": [
-        "Indiana Pacers"
+        "Indiana Pacers",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -22918,7 +22904,8 @@
       "name": "Kasparas Jakucionis",
       "country": "Lithuania",
       "teams": [
-        "Miami Heat"
+        "Miami Heat",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -23168,7 +23155,8 @@
       "name": "Kel'el Ware",
       "country": "USA",
       "teams": [
-        "Miami Heat"
+        "Miami Heat",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -23229,6 +23217,7 @@
       "teams": [
         "Charlotte Hornets",
         "Golden State Warriors",
+        "Indiana Pacers",
         "Philadelphia 76ers",
         "Phoenix Suns",
         "Washington Wizards"
@@ -23689,6 +23678,7 @@
         "Los Angeles Lakers",
         "Memphis Grizzlies",
         "Orlando Magic",
+        "Philadelphia 76ers",
         "Washington Wizards"
       ]
     },
@@ -23735,6 +23725,7 @@
       "name": "Keon Ellis",
       "country": "USA",
       "teams": [
+        "Brooklyn Nets",
         "Cleveland Cavaliers",
         "Sacramento Kings"
       ]
@@ -24137,6 +24128,7 @@
       "country": "USA",
       "teams": [
         "Golden State Warriors",
+        "Los Angeles Lakers",
         "New Orleans Pelicans"
       ]
     },
@@ -24333,7 +24325,8 @@
       "country": "USA",
       "teams": [
         "Dallas Mavericks",
-        "Golden State Warriors"
+        "Golden State Warriors",
+        "Miami Heat"
       ]
     },
     {
@@ -24491,6 +24484,7 @@
       "name": "Kris Murray",
       "country": "USA",
       "teams": [
+        "Memphis Grizzlies",
         "Portland Trail Blazers"
       ]
     },
@@ -24562,6 +24556,13 @@
       ]
     },
     {
+      "name": "Kylan Boswell",
+      "country": "USA",
+      "teams": [
+        "Charlotte Hornets"
+      ]
+    },
+    {
       "name": "Kyle Alexander",
       "country": "Canada",
       "teams": [
@@ -24576,7 +24577,8 @@
         "Memphis Grizzlies",
         "Miami Heat",
         "Minnesota Timberwolves",
-        "San Antonio Spurs"
+        "San Antonio Spurs",
+        "Toronto Raptors"
       ]
     },
     {
@@ -24735,7 +24737,8 @@
       "name": "LaMelo Ball",
       "country": "USA",
       "teams": [
-        "Charlotte Hornets"
+        "Charlotte Hornets",
+        "Minnesota Timberwolves"
       ]
     },
     {
@@ -24767,7 +24770,7 @@
     },
     {
       "name": "Labaron Philon Jr.",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Philadelphia 76ers"
       ]
@@ -25097,6 +25100,7 @@
       "teams": [
         "Atlanta Hawks",
         "Cleveland Cavaliers",
+        "Indiana Pacers",
         "Los Angeles Lakers",
         "New Orleans Pelicans",
         "Portland Trail Blazers"
@@ -25258,7 +25262,8 @@
       "teams": [
         "Cleveland Cavaliers",
         "Los Angeles Lakers",
-        "Miami Heat"
+        "Miami Heat",
+        "Philadelphia 76ers"
       ]
     },
     {
@@ -25285,6 +25290,7 @@
       "country": "USA",
       "teams": [
         "Charlotte Hornets",
+        "Sacramento Kings",
         "Washington Wizards"
       ]
     },
@@ -25947,14 +25953,6 @@
       ]
     },
     {
-      "name": "Louis Williams",
-      "country": "USA",
-      "teams": [
-        "Houston Rockets",
-        "Los Angeles Lakers"
-      ]
-    },
-    {
       "name": "Lowes Moore",
       "country": "USA",
       "teams": [
@@ -26054,6 +26052,7 @@
       "name": "Luguentz Dort",
       "country": "Canada",
       "teams": [
+        "Atlanta Hawks",
         "Oklahoma City Thunder"
       ]
     },
@@ -26151,7 +26150,8 @@
         "Detroit Pistons",
         "LA Clippers",
         "Los Angeles Lakers",
-        "Memphis Grizzlies"
+        "Memphis Grizzlies",
+        "Phoenix Suns"
       ]
     },
     {
@@ -26295,6 +26295,14 @@
       ]
     },
     {
+      "name": "M. L. Carr",
+      "country": "USA",
+      "teams": [
+        "Boston Celtics",
+        "Detroit Pistons"
+      ]
+    },
+    {
       "name": "M.J. Walker",
       "country": "USA",
       "teams": [
@@ -26414,7 +26422,8 @@
       "name": "Malachi Smith",
       "country": "USA",
       "teams": [
-        "Brooklyn Nets"
+        "Brooklyn Nets",
+        "Toronto Raptors"
       ]
     },
     {
@@ -26516,6 +26525,13 @@
         "Milwaukee Bucks",
         "Minnesota Timberwolves",
         "Utah Jazz"
+      ]
+    },
+    {
+      "name": "Malik Dia",
+      "country": "USA",
+      "teams": [
+        "New Orleans Pelicans"
       ]
     },
     {
@@ -26885,6 +26901,7 @@
       "name": "Marcus Sasser",
       "country": "USA",
       "teams": [
+        "Dallas Mavericks",
         "Detroit Pistons"
       ]
     },
@@ -26893,6 +26910,7 @@
       "country": "USA",
       "teams": [
         "Boston Celtics",
+        "Houston Rockets",
         "Los Angeles Lakers",
         "Memphis Grizzlies",
         "Washington Wizards"
@@ -26976,6 +26994,7 @@
       "name": "Mario Hezonja",
       "country": "Croatia",
       "teams": [
+        "Cleveland Cavaliers",
         "New York Knicks",
         "Orlando Magic",
         "Portland Trail Blazers"
@@ -27532,6 +27551,7 @@
       "country": "USA",
       "teams": [
         "Dallas Mavericks",
+        "Denver Nuggets",
         "Detroit Pistons",
         "Memphis Grizzlies",
         "Sacramento Kings",
@@ -27612,6 +27632,7 @@
       "name": "Matisse Thybulle",
       "country": "USA",
       "teams": [
+        "Los Angeles Lakers",
         "Philadelphia 76ers",
         "Portland Trail Blazers"
       ]
@@ -27937,6 +27958,7 @@
       "teams": [
         "Chicago Bulls",
         "Cleveland Cavaliers",
+        "LA Clippers",
         "Miami Heat"
       ]
     },
@@ -28095,7 +28117,7 @@
     },
     {
       "name": "Meleek Thomas",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Cleveland Cavaliers"
       ]
@@ -28203,7 +28225,8 @@
       "name": "Micah Peavy",
       "country": "USA",
       "teams": [
-        "New Orleans Pelicans"
+        "New Orleans Pelicans",
+        "Oklahoma City Thunder"
       ]
     },
     {
@@ -28212,6 +28235,7 @@
       "teams": [
         "Detroit Pistons",
         "Indiana Pacers",
+        "Portland Trail Blazers",
         "Utah Jazz"
       ]
     },
@@ -28639,6 +28663,7 @@
       "name": "Mike Conley",
       "country": "USA",
       "teams": [
+        "Boston Celtics",
         "Memphis Grizzlies",
         "Minnesota Timberwolves",
         "Utah Jazz"
@@ -29052,7 +29077,7 @@
     },
     {
       "name": "Mikel Brown Jr.",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Brooklyn Nets"
       ]
@@ -29083,7 +29108,8 @@
       "name": "Miles Bridges",
       "country": "USA",
       "teams": [
-        "Charlotte Hornets"
+        "Charlotte Hornets",
+        "Phoenix Suns"
       ]
     },
     {
@@ -29237,6 +29263,7 @@
       "name": "Mitchell Robinson",
       "country": "USA",
       "teams": [
+        "Boston Celtics",
         "New York Knicks"
       ]
     },
@@ -29264,7 +29291,8 @@
         "Los Angeles Lakers",
         "New Orleans Pelicans",
         "Orlando Magic",
-        "Philadelphia 76ers"
+        "Philadelphia 76ers",
+        "Utah Jazz"
       ]
     },
     {
@@ -29310,13 +29338,6 @@
       "country": "USA",
       "teams": [
         "Boston Celtics"
-      ]
-    },
-    {
-      "name": "Mohamed Bamba",
-      "country": "USA",
-      "teams": [
-        "Orlando Magic"
       ]
     },
     {
@@ -29417,6 +29438,7 @@
       "country": "Germany",
       "teams": [
         "Boston Celtics",
+        "Brooklyn Nets",
         "Los Angeles Lakers",
         "Orlando Magic",
         "Washington Wizards"
@@ -29703,6 +29725,13 @@
       ]
     },
     {
+      "name": "Nate Bittle",
+      "country": "USA",
+      "teams": [
+        "Toronto Raptors"
+      ]
+    },
+    {
       "name": "Nate Blackwell",
       "country": "USA",
       "teams": [
@@ -29854,6 +29883,7 @@
       "name": "Naz Reid",
       "country": "USA",
       "teams": [
+        "Charlotte Hornets",
         "Minnesota Timberwolves"
       ]
     },
@@ -29986,7 +30016,8 @@
       "name": "Nic Claxton",
       "country": "USA",
       "teams": [
-        "Brooklyn Nets"
+        "Brooklyn Nets",
+        "Chicago Bulls"
       ]
     },
     {
@@ -30044,7 +30075,7 @@
     },
     {
       "name": "Nick Martinelli",
-      "country": "",
+      "country": "USA",
       "teams": [
         "LA Clippers"
       ]
@@ -30055,6 +30086,7 @@
       "teams": [
         "Charlotte Hornets",
         "Chicago Bulls",
+        "Miami Heat",
         "Phoenix Suns"
       ]
     },
@@ -30140,13 +30172,6 @@
       "teams": [
         "Atlanta Hawks",
         "Dallas Mavericks"
-      ]
-    },
-    {
-      "name": "Nicolas Claxton",
-      "country": "USA",
-      "teams": [
-        "Brooklyn Nets"
       ]
     },
     {
@@ -30360,6 +30385,7 @@
       "name": "Norman Powell",
       "country": "USA",
       "teams": [
+        "Chicago Bulls",
         "LA Clippers",
         "Miami Heat",
         "Portland Trail Blazers",
@@ -30397,15 +30423,6 @@
         "New York Knicks",
         "Philadelphia 76ers",
         "Sacramento Kings"
-      ]
-    },
-    {
-      "name": "O. J. Mayo",
-      "country": "USA",
-      "teams": [
-        "Dallas Mavericks",
-        "Memphis Grizzlies",
-        "Milwaukee Bucks"
       ]
     },
     {
@@ -30742,6 +30759,7 @@
       "name": "Oscar Tshiebwe",
       "country": "DR Congo",
       "teams": [
+        "Houston Rockets",
         "Indiana Pacers",
         "Utah Jazz"
       ]
@@ -30889,39 +30907,6 @@
       "teams": [
         "LA Clippers",
         "San Antonio Spurs"
-      ]
-    },
-    {
-      "name": "P. J. Brown",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics",
-        "Charlotte Hornets",
-        "Chicago Bulls",
-        "Miami Heat"
-      ]
-    },
-    {
-      "name": "P. J. Dozier",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics"
-      ]
-    },
-    {
-      "name": "P. J. Hairston",
-      "country": "USA",
-      "teams": [
-        "Charlotte Hornets",
-        "Memphis Grizzlies"
-      ]
-    },
-    {
-      "name": "P. J. Tucker",
-      "country": "USA",
-      "teams": [
-        "Phoenix Suns",
-        "Toronto Raptors"
       ]
     },
     {
@@ -31111,7 +31096,8 @@
       "name": "Pat Spencer",
       "country": "USA",
       "teams": [
-        "Golden State Warriors"
+        "Golden State Warriors",
+        "Phoenix Suns"
       ]
     },
     {
@@ -31260,6 +31246,7 @@
       "name": "Paul George",
       "country": "USA",
       "teams": [
+        "Boston Celtics",
         "Indiana Pacers",
         "LA Clippers",
         "Oklahoma City Thunder",
@@ -31678,6 +31665,7 @@
       "name": "Peyton Watson",
       "country": "USA",
       "teams": [
+        "Cleveland Cavaliers",
         "Denver Nuggets"
       ]
     },
@@ -31930,11 +31918,19 @@
       ]
     },
     {
+      "name": "Quadir Copeland",
+      "country": "USA",
+      "teams": [
+        "Houston Rockets"
+      ]
+    },
+    {
       "name": "Quentin Grimes",
       "country": "USA",
       "teams": [
         "Dallas Mavericks",
         "Detroit Pistons",
+        "Los Angeles Lakers",
         "New York Knicks",
         "Philadelphia 76ers"
       ]
@@ -32044,7 +32040,8 @@
       "name": "Quinten Post",
       "country": "Netherlands",
       "teams": [
-        "Golden State Warriors"
+        "Golden State Warriors",
+        "Memphis Grizzlies"
       ]
     },
     {
@@ -32081,13 +32078,6 @@
       "country": "USA",
       "teams": [
         "Denver Nuggets"
-      ]
-    },
-    {
-      "name": "R. J. Hunter",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics"
       ]
     },
     {
@@ -32698,6 +32688,7 @@
       "country": "France",
       "teams": [
         "Memphis Grizzlies",
+        "Philadelphia 76ers",
         "Portland Trail Blazers"
       ]
     },
@@ -32752,7 +32743,8 @@
       "country": "USA",
       "teams": [
         "Brooklyn Nets",
-        "Golden State Warriors"
+        "Golden State Warriors",
+        "Washington Wizards"
       ]
     },
     {
@@ -34433,6 +34425,7 @@
       "country": "USA",
       "teams": [
         "Brooklyn Nets",
+        "Charlotte Hornets",
         "Phoenix Suns",
         "Utah Jazz"
       ]
@@ -34558,6 +34551,7 @@
       "name": "Rui Hachimura",
       "country": "Japan",
       "teams": [
+        "LA Clippers",
         "Los Angeles Lakers",
         "Washington Wizards"
       ]
@@ -34740,7 +34734,8 @@
       "name": "Ryan Nembhard",
       "country": "Canada",
       "teams": [
-        "Dallas Mavericks"
+        "Dallas Mavericks",
+        "Denver Nuggets"
       ]
     },
     {
@@ -34994,6 +34989,7 @@
       "name": "Sandro Mamukelashvili",
       "country": "USA",
       "teams": [
+        "Los Angeles Lakers",
         "Milwaukee Bucks",
         "San Antonio Spurs",
         "Toronto Raptors"
@@ -35003,6 +34999,7 @@
       "name": "Santi Aldama",
       "country": "Spain",
       "teams": [
+        "Dallas Mavericks",
         "Memphis Grizzlies"
       ]
     },
@@ -35392,7 +35389,8 @@
       "name": "Sean Pedulla",
       "country": "USA",
       "teams": [
-        "LA Clippers"
+        "LA Clippers",
+        "Sacramento Kings"
       ]
     },
     {
@@ -37027,35 +37025,12 @@
       ]
     },
     {
-      "name": "T. J. Ford",
+      "name": "T. R. Dunn",
       "country": "USA",
       "teams": [
-        "Indiana Pacers",
-        "Milwaukee Bucks",
-        "San Antonio Spurs",
-        "Toronto Raptors"
-      ]
-    },
-    {
-      "name": "T. J. Leaf",
-      "country": "Israel",
-      "teams": [
-        "Indiana Pacers",
+        "Denver Nuggets",
+        "Phoenix Suns",
         "Portland Trail Blazers"
-      ]
-    },
-    {
-      "name": "T. J. McConnell",
-      "country": "USA",
-      "teams": [
-        "Philadelphia 76ers"
-      ]
-    },
-    {
-      "name": "T. J. Warren",
-      "country": "USA",
-      "teams": [
-        "Phoenix Suns"
       ]
     },
     {
@@ -37099,7 +37074,8 @@
       "country": "Senegal",
       "teams": [
         "Boston Celtics",
-        "Cleveland Cavaliers"
+        "Cleveland Cavaliers",
+        "Philadelphia 76ers"
       ]
     },
     {
@@ -37169,6 +37145,13 @@
       ]
     },
     {
+      "name": "Tarik Biberovic",
+      "country": "Bosnia and Herzegovina",
+      "teams": [
+        "Dallas Mavericks"
+      ]
+    },
+    {
       "name": "Tarik Black",
       "country": "USA",
       "teams": [
@@ -37227,6 +37210,7 @@
         "Atlanta Hawks",
         "Brooklyn Nets",
         "Cleveland Cavaliers",
+        "Detroit Pistons",
         "Los Angeles Lakers",
         "Milwaukee Bucks",
         "Minnesota Timberwolves"
@@ -37830,6 +37814,7 @@
         "Dallas Mavericks",
         "Denver Nuggets",
         "Detroit Pistons",
+        "Miami Heat",
         "New York Knicks"
       ]
     },
@@ -37977,6 +37962,13 @@
       ]
     },
     {
+      "name": "Tobe Awaka",
+      "country": "USA",
+      "teams": [
+        "Chicago Bulls"
+      ]
+    },
+    {
       "name": "Tobi Lawal",
       "country": "UK",
       "teams": [
@@ -37991,7 +37983,8 @@
         "LA Clippers",
         "Milwaukee Bucks",
         "Orlando Magic",
-        "Philadelphia 76ers"
+        "Philadelphia 76ers",
+        "San Antonio Spurs"
       ]
     },
     {
@@ -38927,6 +38920,13 @@
       ]
     },
     {
+      "name": "Tre Donaldson",
+      "country": "USA",
+      "teams": [
+        "Miami Heat"
+      ]
+    },
+    {
       "name": "Tre Johnson",
       "country": "USA",
       "teams": [
@@ -38946,7 +38946,8 @@
       "country": "USA",
       "teams": [
         "Charlotte Hornets",
-        "Oklahoma City Thunder"
+        "Oklahoma City Thunder",
+        "Washington Wizards"
       ]
     },
     {
@@ -38981,6 +38982,7 @@
       "country": "USA",
       "teams": [
         "Brooklyn Nets",
+        "New Orleans Pelicans",
         "Philadelphia 76ers",
         "Portland Trail Blazers"
       ]
@@ -39047,7 +39049,7 @@
     },
     {
       "name": "Trevon Brazile",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Denver Nuggets"
       ]
@@ -39132,7 +39134,8 @@
       "country": "USA",
       "teams": [
         "Denver Nuggets",
-        "New Orleans Pelicans"
+        "New Orleans Pelicans",
+        "Utah Jazz"
       ]
     },
     {
@@ -39187,6 +39190,7 @@
       "teams": [
         "Denver Nuggets",
         "Detroit Pistons",
+        "Minnesota Timberwolves",
         "Sacramento Kings",
         "San Antonio Spurs",
         "Utah Jazz"
@@ -39449,7 +39453,8 @@
       "name": "Tyler Herro",
       "country": "USA",
       "teams": [
-        "Miami Heat"
+        "Miami Heat",
+        "Milwaukee Bucks"
       ]
     },
     {
@@ -40129,6 +40134,7 @@
       "name": "Walker Kessler",
       "country": "USA",
       "teams": [
+        "Los Angeles Lakers",
         "Utah Jazz"
       ]
     },
@@ -40279,6 +40285,7 @@
       "name": "Walter Clayton Jr.",
       "country": "USA",
       "teams": [
+        "Dallas Mavericks",
         "Memphis Grizzlies"
       ]
     },
@@ -41305,7 +41312,8 @@
       "name": "Zaccharie Risacher",
       "country": "Spain",
       "teams": [
-        "Atlanta Hawks"
+        "Atlanta Hawks",
+        "Dallas Mavericks"
       ]
     },
     {
@@ -41463,6 +41471,7 @@
       "country": "USA",
       "teams": [
         "Brooklyn Nets",
+        "Los Angeles Lakers",
         "Memphis Grizzlies"
       ]
     },
