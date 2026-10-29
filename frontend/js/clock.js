@@ -1,4 +1,5 @@
 // The shot clock: a countdown driving a seven-segment display and the slip's mini clock.
+// The same seven-segment digits show the series score (see scoresheet.js).
 
 import { sfx } from './sound.js';
 
@@ -13,6 +14,30 @@ const SEGMENTS = {
 };
 const DIGITS = ['abcdef', 'bc', 'abdeg', 'abcdg', 'bcfg', 'acdfg', 'acdefg', 'abc', 'abcdefg', 'abcdfg'];
 const WARNING_SECONDS = 5;
+
+/** Lays out `slots` seven-segment digits in an svg, all segments off. */
+export function buildSegments(svg, slots) {
+  let html = '';
+  for (let slot = 0; slot < slots; slot++) {
+    html += `<g transform="translate(${3 + slot * 27} 1) skewX(-6)">`;
+    Object.entries(SEGMENTS).forEach(([seg, pts]) => {
+      html += `<polygon data-slot="${slot}" data-seg="${seg}" points="${pts}"/>`;
+    });
+    html += '</g>';
+  }
+  svg.setAttribute('viewBox', `0 0 ${slots * 27} 46`);
+  svg.innerHTML = html;
+}
+
+/** Lights the segments for a number, right-aligned without leading zeros (' 9', not '09'). */
+export function showNumber(svg, value) {
+  const slots = svg.querySelectorAll('g').length;
+  const text = String(value).padStart(slots, ' ');
+  svg.querySelectorAll('polygon').forEach(p => {
+    const ch = text[Number(p.dataset.slot)];
+    p.classList.toggle('on', ch !== ' ' && DIGITS[Number(ch)].includes(p.dataset.seg));
+  });
+}
 
 export class ShotClock {
   /**
@@ -95,28 +120,13 @@ export class ShotClock {
   }
 
   build(slots) {
-    let html = '';
-    for (let slot = 0; slot < slots; slot++) {
-      html += `<g transform="translate(${3 + slot * 27} 1) skewX(-6)">`;
-      Object.entries(SEGMENTS).forEach(([seg, pts]) => {
-        html += `<polygon data-slot="${slot}" data-seg="${seg}" points="${pts}"/>`;
-      });
-      html += '</g>';
-    }
-    this.digits.setAttribute('viewBox', `0 0 ${slots * 27} 46`);
+    buildSegments(this.digits, slots);
     this.digits.classList.toggle('three', slots === 3);
-    this.digits.innerHTML = html;
   }
 
   render() {
     const value = Math.max(this.seconds, 0);
-    // Right-aligned, no leading zeros: ' 9' rather than '09'
-    const slots = this.digits.querySelectorAll('g').length;
-    const text = String(value).padStart(slots, ' ');
-    this.digits.querySelectorAll('polygon').forEach(p => {
-      const ch = text[Number(p.dataset.slot)];
-      p.classList.toggle('on', ch !== ' ' && DIGITS[Number(ch)].includes(p.dataset.seg));
-    });
+    showNumber(this.digits, value);
     this.mini.textContent = value;
     const warn = value <= WARNING_SECONDS;
     this.panel.classList.toggle('warning', warn);

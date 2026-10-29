@@ -402,21 +402,24 @@ button:disabled { cursor: not-allowed; }
 
 .team-o .team-name { padding: 2px 0 2px 4px; }
 
-/* Wins as tally marks, five to a gate */
-.tally { display: flex; gap: 8px; min-height: 18px; margin-top: 6px; }
-.team-o .tally { justify-content: flex-end; }
-.tally-gate { position: relative; display: flex; gap: 3px; height: 16px; align-items: stretch; }
-.tally-gate i { width: 2px; background: var(--ink); display: block; border-radius: 1px; }
-.tally-gate.full::after {
-  content: '';
-  position: absolute;
-  left: -3px;
-  right: -3px;
-  top: 50%;
-  height: 2px;
-  background: var(--ink);
-  transform: rotate(-24deg);
+/* Series wins: a small LED unit like the shot clock, on the side facing it */
+.score-led {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 9px 4px;
+  background: var(--device);
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px var(--ink), 0 3px 8px rgba(60, 30, 5, 0.3);
 }
+.team-x .score-led { margin-left: auto; }
+.team-o .score-led { margin-right: auto; }  /* the O panel runs right to left */
+.score-digits { width: 26px; height: 44px; display: block; }
+.score-digits polygon { fill: var(--led-off); }
+.score-digits polygon.on { fill: var(--led-on); }
+.score-label { font-family: var(--label); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: #8d8578; }
 
 .possession {
   position: absolute;
@@ -955,7 +958,9 @@ button:disabled { cursor: not-allowed; }
   .team { padding: 4px 16px 12px; gap: 10px; }
   .team-mark { font-size: 30px; width: 22px; }
   .team-name { font-size: 18px; }
-  .tally { margin-top: 2px; }
+  .score-led { padding: 3px 7px 2px; }
+  .score-digits { width: 18px; height: 30px; }
+  .score-label { display: none; }
   .team-x .possession { left: 48px; }
   .team-o .possession { right: 48px; }
   .clock { margin: 4px 0; padding: 4px 10px 2px; gap: 2px; }
@@ -986,14 +991,18 @@ button:disabled { cursor: not-allowed; }
   .meta div:first-child { border-left: 0; padding-left: 0; }
   .head-actions { margin-left: auto; }
 
-  .team { padding: 10px 10px 16px; gap: 8px; }
-  .team-mark { font-size: 36px; width: 24px; }
-  .team-name { font-size: 18px; }
-  .team-x .possession { left: 42px; }
-  .team-o .possession { right: 42px; }
-  .clock { padding: 8px 10px 4px; }
-  .clock-digits { width: 56px; height: 48px; }
-  .clock-digits.three { width: 84px; }
+  /* Score, clock, score and two names share 375px: everything a size down */
+  .team { padding: 10px 8px 16px; gap: 5px; min-width: 0; }
+  .team-mark { font-size: 30px; width: 20px; }
+  .team-name { font-size: 15px; }
+  .team-x .possession { left: 33px; }
+  .team-o .possession { right: 33px; }
+  .clock { padding: 6px 8px 3px; margin: 6px 4px; }
+  .clock-digits { width: 46px; height: 40px; }
+  .clock-digits.three { width: 69px; }
+  .score-led { padding: 4px 5px 3px; gap: 2px; }
+  .score-digits { width: 16px; height: 27px; }
+  .score-label { font-size: 7px; letter-spacing: 0.08em; }
 
   .status { padding: 9px 16px; font-size: 12px; }
   .sheet:has(> #screen-game:not(.hidden)) { height: 100dvh; margin: 0; }

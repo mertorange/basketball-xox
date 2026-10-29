@@ -4,7 +4,7 @@ import { renderActions } from './actions.js';
 import { api } from './api.js';
 import { renderBoard } from './board.js';
 import { $ } from './dom.js';
-import { renderTallies, setStatus } from './scoresheet.js';
+import { renderScores, setStatus } from './scoresheet.js';
 import { sfx } from './sound.js';
 
 export class HotSeatGame {
@@ -57,7 +57,7 @@ export class HotSeatGame {
     this.gridNo++;
     this.ui.showGame({ league, gameId: this.game.game_id, names: this.names, room: null,
       series: { bestOf: this.settings.bestOf, grid: this.gridNo } });
-    renderTallies(this.scores);
+    renderScores(this.scores);
     renderBoard(this.game, league);
     this.ui.playByPlay.reset();
     setStatus(`${note}${this.playerName(first)} to start. Pick a box.`);
@@ -211,7 +211,7 @@ export class HotSeatGame {
     if (winner === 'X' || winner === 'O') {
       sfx.playWin();
       this.scores[winner]++;
-      renderTallies(this.scores);
+      renderScores(this.scores);
       const what = this.seriesWinner() && this.settings.bestOf > 1 ? 'the series' : 'the grid';
       setStatus(`${this.playerName(winner)} wins ${what}.`, 'success');
     } else {

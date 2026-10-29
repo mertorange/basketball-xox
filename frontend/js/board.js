@@ -102,17 +102,16 @@ export function renderBoard(game, league, fresh = null) {
 export function drawWinStroke(line, winner) {
   if (!$('board-wrap').getBoundingClientRect().width) return; // not on screen yet
   const wrap = $('board-wrap').getBoundingClientRect();
+  // The centre of the X or O drawn in a box (it sits above the name, not in the box's middle)
   const centre = ([r, c]) => {
-    const rect = $(`box-${r}-${c}`).getBoundingClientRect();
+    const box = $(`box-${r}-${c}`);
+    const rect = (box.querySelector('.mark') || box).getBoundingClientRect();
     return [rect.left + rect.width / 2 - wrap.left, rect.top + rect.height / 2 - wrap.top];
   };
-  const [cx1, cy1] = centre(line[0]);
-  const [cx2, cy2] = centre(line[2]);
-  // A straight red line through the three, a little past the outer boxes at each end
-  const dx = (cx2 - cx1) * 0.14;
-  const dy = (cy2 - cy1) * 0.14;
-  $('win-stroke').innerHTML =
-    `<path pathLength="1" d="M${cx1 - dx} ${cy1 - dy}L${cx2 + dx} ${cy2 + dy}"/>`;
+  const [x1, y1] = centre(line[0]);
+  const [x2, y2] = centre(line[2]);
+  // A straight red line from the middle of the first mark to the middle of the last
+  $('win-stroke').innerHTML = `<path pathLength="1" d="M${x1} ${y1}L${x2} ${y2}"/>`;
 }
 
 /** Online: mark the box the player on the clock has open, and lock the grid when it isn't your turn. */

@@ -1,5 +1,6 @@
-// Everything written on the sheet around the grid: status line, win tallies, play-by-play.
+// Everything around the grid: status line, the series score on the scoreboard, play-by-play.
 
+import { buildSegments, showNumber } from './clock.js';
 import { $, escapeHtml } from './dom.js';
 
 export function setStatus(msg, type = '') {
@@ -8,16 +9,15 @@ export function setStatus(msg, type = '') {
   el.className = 'status' + (type ? ` ${type}` : '');
 }
 
-// Wins as tally marks, five to a gate
-export function renderTallies(scores) {
-  [[$('tally-x'), scores.X], [$('tally-o'), scores.O]].forEach(([el, wins]) => {
-    let html = '';
-    for (let left = wins; left > 0; left -= 5) {
-      const n = Math.min(left, 5);
-      html += `<span class="tally-gate${n === 5 ? ' full' : ''}">${'<i></i>'.repeat(Math.min(n, 4))}</span>`;
-    }
-    el.innerHTML = html;
-    el.setAttribute('aria-label', `${wins} ${wins === 1 ? 'win' : 'wins'}`);
+// Each team's wins in the series, in seven-segment digits like the shot clock
+export function renderScores(scores) {
+  [['X', scores.X], ['O', scores.O]].forEach(([mark, wins]) => {
+    const unit = $(`score-${mark.toLowerCase()}`);
+    const digits = unit.querySelector('svg');
+    const slots = String(wins).length;
+    if (digits.querySelectorAll('g').length !== slots) buildSegments(digits, slots);
+    showNumber(digits, wins);
+    unit.setAttribute('aria-label', `${wins} ${wins === 1 ? 'win' : 'wins'}`);
   });
 }
 

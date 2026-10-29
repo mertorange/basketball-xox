@@ -4,7 +4,7 @@
 import { renderActions } from './actions.js';
 import { lockBoard, renderBoard, showFocus } from './board.js';
 import { RoomConnection } from './online.js';
-import { renderTallies, setStatus } from './scoresheet.js';
+import { renderScores, setStatus } from './scoresheet.js';
 import { sfx } from './sound.js';
 
 const ONLINE_MIN_CHARS = 3; // autocomplete helps less when the opponent can't see you type
@@ -74,7 +74,7 @@ export class OnlineGame {
       spectators: room.spectators, series: { bestOf: room.series.best_of, grid: room.series.grid } });
     renderBoard(game, league, this.fresh);
     this.fresh = null;
-    renderTallies(room.scores);
+    renderScores(room.scores);
     this.ui.setPresence(room.seats, room.you);
 
     const myTurn = phase === 'playing' && game.current_player === room.you;
