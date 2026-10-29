@@ -108,3 +108,22 @@ def test_custom_grid_categories(manager):
     assert mixed["categories"] is None
     bad = client.post("/api/new-game", json={"league": "nba", "grid_style": "custom", "categories": ["team"]})
     assert bad.status_code == 422
+
+
+def test_name_list_tells_same_named_players_apart_and_nothing_else(manager, nba_catalog):
+    for player, born, pos in zip(nba_catalog.find("Twin Name"), ("1990-04-02", "1984"), ("PG", None)):
+        player.update(born=born, pos=pos)
+    from backend.catalog.players import PlayerCatalog
+    catalog = PlayerCatalog("nba", {"players": nba_catalog.players})
+    data = catalog.name_list
+    assert data["names"] == sorted({p["name"] for p in nba_catalog.players})
+    assert list(data["twins"]) == ["Twin Name"]
+    twins = data["twins"]["Twin Name"]
+    assert [(t["born"], t["pos"]) for t in twins] == [("1984", None), ("1990-04-02", "PG")]
+    assert {t["key"] for t in twins} == {"Twin Name|1984", "Twin Name|1990-04-02"}
+    assert all(set(t) == {"key", "born", "pos"} for t in twins)  # no teams, awards or countries
+
+    client = make_client(manager)
+    res = client.get("/api/players", params={"league": "nba"})
+    assert res.status_code == 200 and "Twin Name" in res.json()["twins"]
+    assert client.get("/api/players", params={"league": "nope"}).status_code == 400

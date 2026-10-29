@@ -85,7 +85,8 @@ class GameManager:
         game.status, game.winner = "finished", "DRAW"
         return game
 
-    def make_move(self, game_id: str, row: int, col: int, player_name: str) -> MoveResult:
+    def make_move(self, game_id: str, row: int, col: int, player_name: str,
+                  player_key: Optional[str] = None) -> MoveResult:
         game = self.active_games.get(game_id)
         if not game:
             return MoveResult(success=False, message="Game not found")
@@ -100,13 +101,17 @@ class GameManager:
                               current_player=game.current_player)
 
         name = player_name.strip()
-        if any(used.lower() == name.lower() for used in game.used_players):
-            return self._turnover(game, f"Turnover! '{name}' was already picked this match.")
-
         index = self.index_for(game)
         candidates = index.catalog.find(name)
         if not candidates:
             return self._turnover(game, f"Turnover! '{name}' not found in {game.league} records.")
+        # A pick from the name list says which same-named player it means
+        chosen = [p for p in candidates if player_key and p["key"] == player_key]
+        candidates = chosen or candidates
+        # Used is per player, not per name: the other Mike James is still free
+        candidates = [p for p in candidates if p["key"] not in game.used_keys]
+        if not candidates:
+            return self._turnover(game, f"Turnover! '{name}' was already picked this match.")
 
         row_spec = index.get(game.row_criteria[row].type.value, game.row_criteria[row].value)
         col_spec = index.get(game.col_criteria[col].type.value, game.col_criteria[col].value)
@@ -122,6 +127,7 @@ class GameManager:
         cell.player_country = player.get("country", "")
         cell.player_teams = player.get("teams", [])
         game.used_players.append(player["name"])
+        game.used_keys.append(player["key"])
 
         marks = [[c.claimed_by for c in grid_row] for grid_row in game.grid]
         line = winning_line(marks)

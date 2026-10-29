@@ -95,7 +95,7 @@ export class HotSeatGame {
 
   slipCancelled() {}
 
-  async pick(name) {
+  async pick(name, key = null) {
     if (!this.cell || this.pending) return;
     this.pending = true;
     this.ui.clock.stop();
@@ -103,7 +103,7 @@ export class HotSeatGame {
     const { row, col } = this.cell;
     setStatus(`Checking ${name}...`);
     try {
-      const result = await api.move(this.game.game_id, row, col, name);
+      const result = await api.move(this.game.game_id, row, col, name, key);
       if (result.success) {
         sfx.playScore();
         await this.refresh({ row, col });

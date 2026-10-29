@@ -19,7 +19,8 @@ def load_fivethirtyeight():
     career: (base name, possible birth year) -> {player_id: {(season, franchise, playoffs)}}
     season_births: (base name, season) -> {player_id: birth year}
     players: player_id -> (name, birth year, {(season, franchise, playoffs)})
-    workload: player_id -> {(season, franchise): (games, minutes)}, regular season only
+    workload: player_id -> {(season, franchise): (games, minutes)}, regular season only;
+              also player_id -> "pos" for the position in the latest season
     """
     print("Fetching FiveThirtyEight player-season history ...")
     career = defaultdict(lambda: defaultdict(set))
@@ -40,6 +41,9 @@ def load_fivethirtyeight():
         season_births[(base, season)][row["player_id"]] = birth_year - 1
         entry = players.setdefault(row["player_id"], (row["name_common"], birth_year - 1, set()))
         entry[2].add(stint)
+        if row["pos"] and row["pos"] != "NULL":
+            workload[row["player_id"]]["pos"] = max(workload[row["player_id"]].get("pos", (0, "")),
+                                                     (season, row["pos"]))
         if row["type"] == "RS" and row["G"].isdigit():
             minutes = int(row["Min"]) if row["Min"].isdigit() else 0
             workload[row["player_id"]][(season, team)] = (int(row["G"]), minutes)

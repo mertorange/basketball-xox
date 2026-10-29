@@ -22,6 +22,8 @@ class EspnPlayer:
     birthplace: str  # 'City, ST' for Americans, 'City, Country' otherwise, like the snapshots
     team: str
     college: str
+    dob: str = ""        # YYYY-MM-DD
+    position: str = ""   # 'PG', 'F', ...
 
 
 def load_espn_rosters():
@@ -49,6 +51,8 @@ def load_espn_rosters():
                 birthplace=f"{place.get('city', '')}, {region}" if region else "",
                 team=team,
                 college=(athlete.get("college") or {}).get("name", ""),
+                dob=athlete.get("dateOfBirth", "")[:10],
+                position=(athlete.get("position") or {}).get("abbreviation", ""),
             ))
     print(f"  {len(players)} players on {len(teams)} rosters")
     return players

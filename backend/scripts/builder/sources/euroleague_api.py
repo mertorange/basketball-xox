@@ -73,12 +73,15 @@ def fetch_euroleague_people():
                 key = same_name[0] if len(same_name) == 1 else (name_key(name), person.get("code"))
             if key not in people:
                 people[key] = {"names": [], "clubs": set(), "countries": [], "seasons": set(), "codes": set(),
-                               "born": int(birth_date[:4]) if birth_date else None}
+                               "born": int(birth_date[:4]) if birth_date else None, "dob": birth_date or None,
+                               "positions": []}
                 keys_by_name[key[0]].append(key)
             entry = people[key]
             entry["names"].append((season, name))
             entry["clubs"].add(club)
             entry["seasons"].add((season, club))
+            if row.get("positionName"):
+                entry["positions"].append((season, row["positionName"]))
             if person.get("code"):
                 entry["codes"].add(person["code"])
             # Birth country first: the registered nationality is often a second passport

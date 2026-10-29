@@ -352,3 +352,16 @@ def test_custom_room_deals_custom_grids(online):
     game = room_msg(a, lambda m: m["phase"] == "playing")["game"]
     assert game["categories"] == ["award"]
     assert {c["type"] for c in game["row_criteria"] + game["col_criteria"]} <= {"team", "award"}
+
+
+def test_online_pick_carries_the_chosen_player(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    game = manager.get_game(room.game_id)
+    index = manager.indexes["nba"]
+    game.row_criteria = [to_criterion(index.get(TEAM, t)) for t in ("Boston Celtics", "Miami Heat", "Chicago Bulls")]
+    celtics_twin, heat_twin = sorted(index.catalog.find("Twin Name"), key=lambda p: p["teams"])
+    # The Heat Twin, picked for a Boston box: the key is honoured, so it's a turnover
+    a.send_json({"type": "pick", "row": 0, "col": 0, "name": "Twin Name", "key": heat_twin["key"]})
+    event = recv_until(b, lambda m: m["type"] == "event" and m["kind"] in ("move", "turnover"))
+    assert event["kind"] == "turnover" and "did not play for Boston Celtics" in event["text"]

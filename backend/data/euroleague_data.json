@@ -2117,9 +2117,9 @@
         2027
       ],
       "stats": {
-        "games": 35,
-        "points": 209,
-        "rebounds": 137,
+        "games": 36,
+        "points": 222,
+        "rebounds": 143,
         "assists": 22
       }
     },
@@ -3971,9 +3971,9 @@
         2027
       ],
       "stats": {
-        "games": 147,
-        "points": 751,
-        "rebounds": 480,
+        "games": 148,
+        "points": 756,
+        "rebounds": 487,
         "assists": 181
       }
     },
@@ -4607,10 +4607,10 @@
         2027
       ],
       "stats": {
-        "games": 49,
-        "points": 590,
-        "rebounds": 227,
-        "assists": 48
+        "games": 50,
+        "points": 599,
+        "rebounds": 238,
+        "assists": 49
       }
     },
     {
@@ -5072,10 +5072,10 @@
         2027
       ],
       "stats": {
-        "games": 7,
-        "points": 45,
-        "rebounds": 27,
-        "assists": 11
+        "games": 8,
+        "points": 47,
+        "rebounds": 28,
+        "assists": 12
       }
     },
     {
@@ -6484,10 +6484,10 @@
         2027
       ],
       "stats": {
-        "games": 146,
-        "points": 2116,
+        "games": 147,
+        "points": 2122,
         "rebounds": 276,
-        "assists": 314
+        "assists": 316
       }
     },
     {
@@ -8167,10 +8167,10 @@
         "final_four"
       ],
       "stats": {
-        "games": 378,
-        "points": 2731,
-        "rebounds": 947,
-        "assists": 1013
+        "games": 379,
+        "points": 2733,
+        "rebounds": 949,
+        "assists": 1014
       }
     },
     {
@@ -10021,9 +10021,9 @@
         2027
       ],
       "stats": {
-        "games": 44,
-        "points": 460,
-        "rebounds": 112,
+        "games": 45,
+        "points": 478,
+        "rebounds": 114,
         "assists": 61
       }
     },
@@ -11682,10 +11682,10 @@
         2027
       ],
       "stats": {
-        "games": 49,
-        "points": 322,
-        "rebounds": 168,
-        "assists": 51
+        "games": 50,
+        "points": 335,
+        "rebounds": 169,
+        "assists": 52
       }
     },
     {
@@ -11894,10 +11894,10 @@
         "final_four"
       ],
       "stats": {
-        "games": 389,
-        "points": 2761,
-        "rebounds": 1266,
-        "assists": 726
+        "games": 390,
+        "points": 2764,
+        "rebounds": 1268,
+        "assists": 727
       }
     },
     {
@@ -13778,7 +13778,7 @@
         2027
       ],
       "stats": {
-        "games": 16,
+        "games": 17,
         "points": 32,
         "rebounds": 27,
         "assists": 6
@@ -19734,10 +19734,10 @@
         2027
       ],
       "stats": {
-        "games": 22,
-        "points": 191,
-        "rebounds": 141,
-        "assists": 19
+        "games": 23,
+        "points": 208,
+        "rebounds": 152,
+        "assists": 21
       }
     },
     {
@@ -21196,7 +21196,13 @@
       "seasons": [
         2027,
         2027
-      ]
+      ],
+      "stats": {
+        "games": 1,
+        "points": 0,
+        "rebounds": 3,
+        "assists": 0
+      }
     },
     {
       "name": "Karahan Efeoglu",
@@ -21450,10 +21456,10 @@
         "final_four"
       ],
       "stats": {
-        "games": 85,
-        "points": 1128,
-        "rebounds": 229,
-        "assists": 310
+        "games": 86,
+        "points": 1132,
+        "rebounds": 232,
+        "assists": 313
       }
     },
     {
@@ -21840,10 +21846,10 @@
         2027
       ],
       "stats": {
-        "games": 20,
-        "points": 76,
-        "rebounds": 83,
-        "assists": 12
+        "games": 21,
+        "points": 84,
+        "rebounds": 85,
+        "assists": 13
       }
     },
     {
@@ -21913,10 +21919,10 @@
         2027
       ],
       "stats": {
-        "games": 4,
-        "points": 5,
-        "rebounds": 15,
-        "assists": 1
+        "games": 5,
+        "points": 7,
+        "rebounds": 17,
+        "assists": 2
       }
     },
     {
@@ -24781,9 +24787,9 @@
         2027
       ],
       "stats": {
-        "games": 296,
-        "points": 2543,
-        "rebounds": 492,
+        "games": 297,
+        "points": 2546,
+        "rebounds": 493,
         "assists": 749
       }
     },
@@ -25113,10 +25119,10 @@
         2027
       ],
       "stats": {
-        "games": 7,
-        "points": 98,
-        "rebounds": 12,
-        "assists": 38
+        "games": 8,
+        "points": 107,
+        "rebounds": 16,
+        "assists": 41
       }
     },
     {
@@ -25515,10 +25521,10 @@
         "final_four"
       ],
       "stats": {
-        "games": 192,
-        "points": 1677,
-        "rebounds": 381,
-        "assists": 346
+        "games": 193,
+        "points": 1689,
+        "rebounds": 382,
+        "assists": 350
       }
     },
     {
@@ -25888,7 +25894,9 @@
         "points": 779,
         "rebounds": 251,
         "assists": 49
-      }
+      },
+      "born": "1986-05-30",
+      "pos": "F"
     },
     {
       "name": "Marko Simonovic",
@@ -25905,7 +25913,9 @@
         "points": 31,
         "rebounds": 16,
         "assists": 1
-      }
+      },
+      "born": "1999-10-15",
+      "pos": "C"
     },
     {
       "name": "Marko Tejic",
@@ -28734,9 +28744,9 @@
         2027
       ],
       "stats": {
-        "games": 71,
+        "games": 72,
         "points": 495,
-        "rebounds": 258,
+        "rebounds": 261,
         "assists": 56
       }
     },
@@ -32024,7 +32034,9 @@
         "points": 211,
         "rebounds": 133,
         "assists": 16
-      }
+      },
+      "born": "1981-11-22",
+      "pos": "C"
     },
     {
       "name": "Pape Sow",
@@ -32037,7 +32049,9 @@
       "seasons": [
         2021,
         2024
-      ]
+      ],
+      "born": "2003-09-14",
+      "pos": "F"
     },
     {
       "name": "Paris Lee",
@@ -33544,10 +33558,10 @@
         2027
       ],
       "stats": {
-        "games": 7,
-        "points": 39,
-        "rebounds": 8,
-        "assists": 14
+        "games": 8,
+        "points": 43,
+        "rebounds": 10,
+        "assists": 17
       }
     },
     {
@@ -35185,10 +35199,10 @@
         "final_four"
       ],
       "stats": {
-        "games": 52,
-        "points": 397,
-        "rebounds": 78,
-        "assists": 129
+        "games": 53,
+        "points": 402,
+        "rebounds": 79,
+        "assists": 134
       }
     },
     {
@@ -37558,10 +37572,10 @@
         2027
       ],
       "stats": {
-        "games": 107,
-        "points": 1331,
-        "rebounds": 322,
-        "assists": 233
+        "games": 108,
+        "points": 1345,
+        "rebounds": 323,
+        "assists": 234
       }
     },
     {
@@ -39353,10 +39367,10 @@
         2027
       ],
       "stats": {
-        "games": 7,
-        "points": 50,
-        "rebounds": 10,
-        "assists": 20
+        "games": 8,
+        "points": 64,
+        "rebounds": 13,
+        "assists": 22
       }
     },
     {
@@ -41386,10 +41400,10 @@
         2027
       ],
       "stats": {
-        "games": 7,
-        "points": 90,
-        "rebounds": 34,
-        "assists": 6
+        "games": 8,
+        "points": 92,
+        "rebounds": 38,
+        "assists": 9
       }
     },
     {

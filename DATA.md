@@ -59,6 +59,7 @@ Yalnızca `name`, `country`, `teams` her oyuncuda vardır; diğer alanlar bilinm
 | `draft` | NBA draft'ı: `round` 1/2 ve tur içi `pick`; `round: 0` draft edilmemiş. Yoksa bilinmiyor. |
 | `college` | NBA öncesi kolej. Liseden NBA'e gelenlerde yok. |
 | `stats` | NBA: normal sezon `games` ve `minutes` toplamı (1977'den beri; öncesinde maç sayısı yok). EuroLeague: kariyer toplamları `games`, `points`, `rebounds`, `assists` (2000-01'den beri). |
+| `born`, `pos` | Yalnızca **aynı adı taşıyan** oyuncularda (NBA'de 31 isim / 63 oyuncu, EuroLeague'de 2 / 4): doğum tarihi (`YYYY-AA-GG`, bilinmiyorsa yalnız yıl) ve son mevki (`PG`, `F`, `C`…). Oyuncu seçme listesinde ismin yanında gösterilir; seçim bu kişiye bağlanır. Diğer oyuncularda yazılmaz. |
 | `wiki_pages` | NBA: oyuncunun Wikimedia sayfa sayısı (Wikidata sitelinks; kaç dilde Vikipedi maddesi olduğu). Wikidata eşleşmesi yoksa yazılmaz. Ünlülük ölçüsü olarak kullanılır (§3.1). |
 
 İsimler ASCII'dir (`Luka Doncic`, `Aleksandar Dordevic`); arama küçük harf alt dize eşleşmesidir.

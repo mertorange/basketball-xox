@@ -7,6 +7,7 @@ import time
 import unicodedata
 import urllib.error
 import urllib.request
+from collections import defaultdict
 from pathlib import Path
 
 # The live datasets; in Docker HOOPGRID_DATA_DIR points at the current release on the data volume
@@ -145,7 +146,26 @@ def load_previous_players(filename):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f).get("players", [])
 
+def mark_shared_names(players):
+    """Players who share a name get `born` and `pos` so the game can tell them apart.
+
+    Builders hand every player `_born` (YYYY-MM-DD, or YYYY when only the year is known)
+    and `_pos`; those are dropped again for everyone with a name of their own.
+    """
+    counts = defaultdict(int)
+    for p in players:
+        counts[p["name"].lower()] += 1
+    for p in players:
+        born, pos = p.pop("_born", None), p.pop("_pos", None)
+        if counts[p["name"].lower()] > 1:
+            if born:
+                p["born"] = born
+            if pos:
+                p["pos"] = pos
+
+
 def write_dataset(out_dir, filename, league, teams, players):
+    mark_shared_names(players)
     # Same-named players sort by their teams, so reruns write identical files
     players.sort(key=lambda p: (p["name"], p["teams"]))
     countries = sorted({p["country"] for p in players if p["country"]})

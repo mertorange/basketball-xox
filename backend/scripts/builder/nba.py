@@ -65,6 +65,8 @@ class Person:
     wikidata_country: Optional[str] = None
     country: Optional[str] = None                   # resolved birth country
     workload: dict = field(default_factory=dict)    # (season, franchise) -> (games, minutes), regular season
+    dob: Optional[str] = None                       # YYYY-MM-DD, from ESPN or Wikidata
+    positions: list = field(default_factory=list)   # (season, 'PG' / 'F' / ...)
     wiki_links: Optional[int] = None                # Wikimedia pages about the player (Wikidata sitelinks)
 
     @property
@@ -86,10 +88,16 @@ class Person:
         self.college_only |= other.college_only
         self.high_school |= other.high_school
         self.add_workload(other.workload)
+        self.dob = self.dob or other.dob
+        self.positions += other.positions
 
     def add_workload(self, workload):
         """Sources overlap season by season; the larger count for a season wins."""
-        for key, (games, minutes) in workload.items():
+        for key, value in workload.items():
+            if key == "pos":
+                self.positions.append(value)
+                continue
+            games, minutes = value
             old = self.workload.get(key, (0, 0))
             self.workload[key] = (max(old[0], games), max(old[1], minutes))
 
@@ -155,6 +163,8 @@ def collect_roster_people(snapshots, season_births):
             person.names.append((snap.season, name))
             person.stints |= stints
             person.add_workload(workload)
+            if p.get("pos"):
+                person.positions.append((snap.season, p["pos"]))
             country = resolve_birthplace(loc)
             if country:
                 person.countries.append((snap.season, country))
@@ -183,6 +193,9 @@ def add_espn_rosters(people):
         # not ESPN's 'Ronald Holland II'); ESPN names only show for brand-new players
         person.names.append((0, e.name))
         person.stints.add((e.season, e.team, False))
+        person.dob = person.dob or e.dob or None
+        if e.position:
+            person.positions.append((e.season or 0, e.position))
         country = resolve_birthplace(e.birthplace)
         if country:
             # Lowest priority: ESPN sometimes lists the national team as the birth country
@@ -328,6 +341,7 @@ def match_wikidata(people, wikidata):
         matched.add(qid)
         person.wikidata_country = entry["country"]
         person.wiki_links = entry["links"]
+        person.dob = person.dob or entry["dob"]
         person.teams |= wikidata_teams(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON, include_undated=False)
         person.stints |= {(season, team, None) for season, team in
                           wikidata_seasons(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON)}
@@ -354,7 +368,7 @@ def wikidata_only_people(people, wikidata, matched, career, workload):
         base = base_name_key(entry["name"])
         if any(b is None or abs(b - entry["born"]) <= 3 for b in known[base]):
             continue
-        person = Person(born=entry["born"], names=[(0, entry["name"])], wiki_links=entry["links"])
+        person = Person(born=entry["born"], names=[(0, entry["name"])], wiki_links=entry["links"], dob=entry["dob"])
         stints = career.get((base, entry["born"]), {})
         if len(stints) == 1:
             pid, fte_stints = next(iter(stints.items()))
@@ -525,4 +539,7 @@ def export_player(person):
                            "minutes": sum(m for _, m in person.workload.values())}
     if person.wiki_links is not None:
         player["wiki_pages"] = person.wiki_links
+    # Kept only when another player has the same name (see common.mark_shared_names)
+    player["_born"] = person.dob or (str(person.born) if person.born else None)
+    player["_pos"] = max(person.positions)[1] if person.positions else None
     return player

@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from .fame import assign_fame
 
@@ -26,6 +26,11 @@ class PlayerCatalog:
         self._by_name: Dict[str, List[Player]] = {}
         for player in self.players:
             self._by_name.setdefault(player["name"].lower(), []).append(player)
+        # Same-named players get a key each (name plus birth date) so a pick names the right one
+        for same in self._by_name.values():
+            for i, player in enumerate(same):
+                player["key"] = player_key(player, i if len(same) > 1 else None)
+        self.name_list = self._name_list()
 
     @classmethod
     def load(cls, league: str, data_dir: Path = DATA_DIR) -> "PlayerCatalog":
@@ -39,6 +44,17 @@ class PlayerCatalog:
         """All players with this name; a few names belong to two different players."""
         return self._by_name.get(name.strip().lower(), [])
 
+    def _name_list(self) -> Dict[str, Any]:
+        """Every name for the autocomplete, which filters in the browser. Same-named players
+        come with what tells them apart (birth date, position) and their key; nothing about
+        teams, awards or countries, which would give answers away."""
+        twins = {}
+        for same in self._by_name.values():
+            if len(same) > 1:
+                twins[same[0]["name"]] = [{"key": p["key"], "born": p.get("born"), "pos": p.get("pos")}
+                                          for p in sorted(same, key=lambda p: str(p.get("born") or ""))]
+        return {"names": sorted({p["name"] for p in self.players}), "twins": twins}
+
     def search(self, query: str, limit: int = 8) -> List[Player]:
         """Names containing the query, those starting with it first, one row per name."""
         q = query.strip().lower()
@@ -50,6 +66,13 @@ class PlayerCatalog:
                 matches.append((0 if name.startswith(q) else 1, players[0]["name"], players[0]))
         matches.sort(key=lambda m: (m[0], m[1]))
         return [player for _, _, player in matches[:limit]]
+
+
+def player_key(player: Player, twin_index: Optional[int] = None) -> str:
+    """A stable id: the name, plus the birth date (or the file order) when the name is shared."""
+    if twin_index is None:
+        return player["name"]
+    return f"{player['name']}|{player.get('born') or f'#{twin_index}'}"
 
 
 def notability(player: Player) -> float:

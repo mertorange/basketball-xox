@@ -822,6 +822,21 @@ button:disabled { cursor: not-allowed; }
   border-bottom: 1px dotted var(--rule);
 }
 .suggestions li:hover { background: var(--tint); }
+/* Same-named players: birth date and position in a small box next to the name */
+.suggestions li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.twin-info {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 7px;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  font-family: var(--label);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.suggestions li[aria-selected="true"] .twin-info { background: transparent; border-color: var(--ink-faint); color: var(--paper); }
 /* The chosen name: what Enter or Submit sends */
 .suggestions li[aria-selected="true"] {
   display: flex;

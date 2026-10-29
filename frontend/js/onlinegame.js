@@ -265,10 +265,10 @@ export class OnlineGame {
     this.conn.send('focus', { row: null, col: null });
   }
 
-  pick(name) {
+  pick(name, key = null) {
     if (!this.cell) return;
     setStatus(`Checking ${name}...`);
-    this.conn.send('pick', { row: this.cell.row, col: this.cell.col, name });
+    this.conn.send('pick', { row: this.cell.row, col: this.cell.col, name, key });
   }
 
   skip() {

@@ -12,6 +12,7 @@ import { HotSeatGame, readNames } from './hotseat.js';
 import { hasSeat } from './online.js';
 import { OnlineGame } from './onlinegame.js';
 import { PlayByPlay } from './scoresheet.js';
+import { loadNames } from './names.js';
 import { PlayerSlip } from './slip.js';
 import { sfx } from './sound.js';
 
@@ -23,7 +24,7 @@ const modals = { gameover: $('modal-gameover'), rules: $('modal-rules-popup'), a
 const ui = {
   clock: new ShotClock($('shotclock-display'), $('clock-digits'), $('modal-clock-num'),
     () => active && active.clockExpired()),
-  slip: new PlayerSlip((name) => active && active.pick(name), () => active && active.slipCancelled()),
+  slip: new PlayerSlip((name, key) => active && active.pick(name, key), () => active && active.slipCancelled()),
   playByPlay: new PlayByPlay($('pbp-log')),
   showGame,
   showLobby,
@@ -259,6 +260,7 @@ function showMenu(error = null) {
  */
 function showGame({ league, gameId, names, room, you = null, spectators = 0, series }) {
   show('game');
+  loadNames(league).catch(() => {}); // fetched once, so the first suggestions are instant too
   $('meta-league').textContent = league === 'euroleague' ? 'EuroLeague' : 'NBA';
   $('meta-game').textContent = gameId.toUpperCase();
   $('meta-room-wrap').hidden = !room;

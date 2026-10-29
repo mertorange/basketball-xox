@@ -19,6 +19,7 @@ RATE_LIMITS = {
     ("POST", "/api/rooms"): 10,
     ("POST", "/api/new-game"): 30,
     ("GET", "/api/search-players"): 240,
+    ("GET", "/api/players"): 30,  # the whole name list; a page loads it once per league
 }
 
 # Games older than this are dropped from memory

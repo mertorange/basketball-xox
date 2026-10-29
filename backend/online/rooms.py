@@ -224,7 +224,7 @@ class RoomManager:
             raise RoomError("No game is running.")
         if game.current_player != seat.mark:
             raise RoomError("It is not your turn.")
-        result = self.games.make_move(game.game_id, msg.row, msg.col, msg.name)
+        result = self.games.make_move(game.game_id, msg.row, msg.col, msg.name, msg.key)
         if not result.success and game.current_player == seat.mark:
             raise RoomError(result.message)  # a claimed box: no turnover, try another
         room.focus = None

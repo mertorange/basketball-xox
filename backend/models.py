@@ -65,6 +65,8 @@ class MoveRequest(BaseModel):
     row: int = Field(ge=0, le=2)
     col: int = Field(ge=0, le=2)
     player_name: str = Field(max_length=80)
+    # Which of several same-named players was picked (from the name list); optional
+    player_key: Optional[str] = Field(None, max_length=120)
 
 
 class GameRequest(BaseModel):
@@ -99,3 +101,4 @@ class GameState(BaseModel):
     winner: Optional[Literal["X", "O", "DRAW"]] = None
     winning_line: Optional[List[List[int]]] = None
     used_players: List[str] = Field(default_factory=list)
+    used_keys: List[str] = Field(default_factory=list)  # one per pick: tells same-named players apart

@@ -48,6 +48,39 @@ def test_same_named_players(manager, nba_index):
     assert result.success
 
 
+def twin_keys(nba_index):
+    celtics, heat = sorted(nba_index.catalog.find("Twin Name"), key=lambda p: p["teams"])
+    return celtics["key"], heat["key"]
+
+
+def test_a_picked_key_names_the_player(manager, nba_index):
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, nba_index,
+              [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
+              [(TEAM, "Los Angeles Lakers"), (TEAM, "Golden State Warriors"), (TEAM, "San Antonio Spurs")])
+    celtics_key, heat_key = twin_keys(nba_index)
+    assert celtics_key != heat_key
+    # The Heat Twin was chosen from the list; he never played for Boston, so that's a turnover
+    wrong = manager.make_move(game.game_id, 0, 1, "Twin Name", player_key=heat_key)
+    assert not wrong.success and "did not play for Boston Celtics" in wrong.message
+
+
+def test_same_named_players_are_used_separately(manager, nba_index):
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, nba_index,
+              [(TEAM, "Boston Celtics"), (TEAM, "Miami Heat"), (TEAM, "Chicago Bulls")],
+              [(TEAM, "Boston Celtics"), (TEAM, "Miami Heat"), (TEAM, "Golden State Warriors")])
+    celtics_key, heat_key = twin_keys(nba_index)
+    assert manager.make_move(game.game_id, 0, 0, "Twin Name", player_key=celtics_key).success
+    # The other Twin Name is still free, but the same one can't come back
+    assert manager.make_move(game.game_id, 1, 1, "Twin Name", player_key=heat_key).success
+    again = manager.make_move(game.game_id, 0, 1, "Twin Name", player_key=celtics_key)
+    assert not again.success and "already picked" in again.message
+    assert game.used_keys == [celtics_key, heat_key]
+    # Without a key, a name whose players are all used is a used name
+    assert "already picked" in manager.make_move(game.game_id, 2, 2, "Twin Name").message
+
+
 def test_win(manager, nba_index):
     game = manager.create_game("nba", grid_style="classic")
     set_board(game, nba_index,

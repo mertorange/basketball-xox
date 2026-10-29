@@ -8564,7 +8564,8 @@
       "teams": [
         "Atlanta Hawks"
       ],
-      "wiki_pages": 4
+      "wiki_pages": 4,
+      "born": "1915-07-03"
     },
     {
       "name": "Bob Sims",
@@ -8572,7 +8573,8 @@
       "teams": [
         "Los Angeles Lakers"
       ],
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1938-10-09"
     },
     {
       "name": "Bob Skarda",
@@ -8858,7 +8860,9 @@
         "games": 91,
         "minutes": 867
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1984-01-09",
+      "pos": "SF"
     },
     {
       "name": "Bobby Jones",
@@ -8878,7 +8882,9 @@
         "games": 774,
         "minutes": 20177
       },
-      "wiki_pages": 17
+      "wiki_pages": 17,
+      "born": "1951-12-18",
+      "pos": "PF"
     },
     {
       "name": "Bobby Leonard",
@@ -9960,7 +9966,9 @@
         "games": 18,
         "minutes": 163
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1975-02-27",
+      "pos": "SF"
     },
     {
       "name": "Brandon Williams",
@@ -9982,7 +9990,9 @@
       "stats": {
         "games": 74,
         "minutes": 1240
-      }
+      },
+      "born": "1999-11-22",
+      "pos": "G"
     },
     {
       "name": "Brant Weidner",
@@ -13137,7 +13147,9 @@
         "games": 8,
         "minutes": 16
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1965-10-03",
+      "pos": "PF"
     },
     {
       "name": "Cedric Henderson",
@@ -13154,7 +13166,9 @@
         "games": 260,
         "minutes": 6182
       },
-      "wiki_pages": 9
+      "wiki_pages": 9,
+      "born": "1975-03-11",
+      "pos": "SF"
     },
     {
       "name": "Cedric Hunter",
@@ -13653,7 +13667,9 @@
         "games": 726,
         "minutes": 14095
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1957-04-03",
+      "pos": "PF"
     },
     {
       "name": "Charles Jones",
@@ -13670,7 +13686,9 @@
         "games": 85,
         "minutes": 1138
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1975-07-17",
+      "pos": "PG"
     },
     {
       "name": "Charles Jones",
@@ -13688,7 +13706,9 @@
         "games": 201,
         "minutes": 3009
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1962-01-12",
+      "pos": "PF"
     },
     {
       "name": "Charles Jordan",
@@ -13796,7 +13816,9 @@
         "games": 142,
         "minutes": 1973
       },
-      "wiki_pages": 12
+      "wiki_pages": 12,
+      "born": "1975-09-22",
+      "pos": "SG"
     },
     {
       "name": "Charles Smith",
@@ -13819,7 +13841,9 @@
         "games": 564,
         "minutes": 16378
       },
-      "wiki_pages": 14
+      "wiki_pages": 14,
+      "born": "1965-07-16",
+      "pos": "PF"
     },
     {
       "name": "Charles Thomas",
@@ -14914,7 +14938,9 @@
         "games": 147,
         "minutes": 2274
       },
-      "wiki_pages": 12
+      "wiki_pages": 12,
+      "born": "1990-04-29",
+      "pos": "SF"
     },
     {
       "name": "Chris Johnson",
@@ -14933,7 +14959,9 @@
         "games": 71,
         "minutes": 597
       },
-      "wiki_pages": 12
+      "wiki_pages": 12,
+      "born": "1985-07-17",
+      "pos": "C"
     },
     {
       "name": "Chris Kaman",
@@ -15357,7 +15385,9 @@
         "games": 224,
         "minutes": 3956
       },
-      "wiki_pages": 9
+      "wiki_pages": 9,
+      "born": "1970-05-17",
+      "pos": "SG"
     },
     {
       "name": "Chris Smith",
@@ -15373,7 +15403,9 @@
         "games": 2,
         "minutes": 2
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1987-10-13",
+      "pos": "PG"
     },
     {
       "name": "Chris Taft",
@@ -18769,7 +18801,8 @@
       "teams": [
         "Brooklyn Nets"
       ],
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1943-02-15"
     },
     {
       "name": "Dan Anderson",
@@ -18781,7 +18814,8 @@
         1975,
         1976
       ],
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1951-01-01"
     },
     {
       "name": "Dan Dickau",
@@ -22030,7 +22064,9 @@
         "games": 608,
         "minutes": 16843
       },
-      "wiki_pages": 14
+      "wiki_pages": 14,
+      "born": "1968-11-29",
+      "pos": "PG"
     },
     {
       "name": "Dee Brown",
@@ -22048,7 +22084,9 @@
         "games": 68,
         "minutes": 711
       },
-      "wiki_pages": 15
+      "wiki_pages": 15,
+      "born": "1984-08-17",
+      "pos": "PG"
     },
     {
       "name": "Dee Gibson",
@@ -25029,7 +25067,8 @@
       "teams": [
         "Los Angeles Lakers"
       ],
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1920-07-27"
     },
     {
       "name": "Don Smith",
@@ -25037,7 +25076,8 @@
       "teams": [
         "Philadelphia 76ers"
       ],
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1951-10-10"
     },
     {
       "name": "Donald Hodge",
@@ -27480,7 +27520,9 @@
         "games": 675,
         "minutes": 19975
       },
-      "wiki_pages": 12
+      "wiki_pages": 12,
+      "born": "1955-02-24",
+      "pos": "SG"
     },
     {
       "name": "Eddie Johnson",
@@ -27509,7 +27551,9 @@
         "games": 1199,
         "minutes": 32604
       },
-      "wiki_pages": 18
+      "wiki_pages": 18,
+      "born": "1959-05-01",
+      "pos": "SF"
     },
     {
       "name": "Eddie Jones",
@@ -31734,7 +31778,9 @@
       "stats": {
         "games": 618,
         "minutes": 13278
-      }
+      },
+      "born": "1948",
+      "pos": "C"
     },
     {
       "name": "George Johnson",
@@ -31753,7 +31799,9 @@
       "stats": {
         "games": 464,
         "minutes": 9878
-      }
+      },
+      "born": "1956",
+      "pos": "PF"
     },
     {
       "name": "George Kaftan",
@@ -32241,7 +32289,9 @@
         "games": 871,
         "minutes": 18856
       },
-      "wiki_pages": 15
+      "wiki_pages": 15,
+      "born": "1956-01-16",
+      "pos": "PG"
     },
     {
       "name": "Gerald Henderson",
@@ -32264,7 +32314,9 @@
         "games": 535,
         "minutes": 13854
       },
-      "wiki_pages": 21
+      "wiki_pages": 21,
+      "born": "1987-12-09",
+      "pos": "SG"
     },
     {
       "name": "Gerald Madkins",
@@ -32573,7 +32625,9 @@
         "games": 1000,
         "minutes": 34985
       },
-      "wiki_pages": 27
+      "wiki_pages": 27,
+      "born": "1967-05-28",
+      "pos": "SF"
     },
     {
       "name": "Glen Rice",
@@ -32588,7 +32642,9 @@
       "stats": {
         "games": 16,
         "minutes": 152
-      }
+      },
+      "born": "1990",
+      "pos": "SG"
     },
     {
       "name": "Glenn Hagan",
@@ -33577,7 +33633,9 @@
         "games": 149,
         "minutes": 1834
       },
-      "wiki_pages": 14
+      "wiki_pages": 14,
+      "born": "1991-01-08",
+      "pos": "PF"
     },
     {
       "name": "Greg Smith",
@@ -33591,7 +33649,8 @@
         1972,
         1975
       ],
-      "wiki_pages": 7
+      "wiki_pages": 7,
+      "born": "1947-01-28"
     },
     {
       "name": "Greg Stiemsma",
@@ -42027,7 +42086,9 @@
       "stats": {
         "games": 132,
         "minutes": 2566
-      }
+      },
+      "born": "1989",
+      "pos": "SF"
     },
     {
       "name": "Jeff Taylor",
@@ -42044,7 +42105,9 @@
         "games": 56,
         "minutes": 818
       },
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1960-01-01",
+      "pos": "SG"
     },
     {
       "name": "Jeff Teague",
@@ -46627,7 +46690,8 @@
         "Dallas Mavericks",
         "Phoenix Suns"
       ],
-      "wiki_pages": 13
+      "wiki_pages": 13,
+      "born": "1962-08-09"
     },
     {
       "name": "John Williams",
@@ -46645,7 +46709,9 @@
         "games": 435,
         "minutes": 10952
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1966-10-26",
+      "pos": "SF"
     },
     {
       "name": "John Williamson",
@@ -46770,7 +46836,9 @@
         "games": 750,
         "minutes": 21200
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1955-10-21",
+      "pos": "SG"
     },
     {
       "name": "Johnny Davis",
@@ -46790,7 +46858,9 @@
       "stats": {
         "games": 112,
         "minutes": 1278
-      }
+      },
+      "born": "2002",
+      "pos": "SG"
     },
     {
       "name": "Johnny Dawkins",
@@ -51045,7 +51115,9 @@
         "games": 16,
         "minutes": 156
       },
-      "wiki_pages": 10
+      "wiki_pages": 10,
+      "born": "1978-02-01",
+      "pos": "C"
     },
     {
       "name": "Ken Johnson",
@@ -51061,7 +51133,9 @@
         "games": 64,
         "minutes": 815
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1962-11-07",
+      "pos": "PF"
     },
     {
       "name": "Ken Mayfield",
@@ -54923,7 +54997,9 @@
         "games": 707,
         "minutes": 25685
       },
-      "wiki_pages": 27
+      "wiki_pages": 27,
+      "born": "1969-03-14",
+      "pos": "PF"
     },
     {
       "name": "Larry Johnson",
@@ -54939,7 +55015,9 @@
         "games": 4,
         "minutes": 38
       },
-      "wiki_pages": 7
+      "wiki_pages": 7,
+      "born": "1954-11-28",
+      "pos": "SG"
     },
     {
       "name": "Larry Jones",
@@ -59550,7 +59628,9 @@
         "games": 230,
         "minutes": 3681
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1973-04-26",
+      "pos": "SF"
     },
     {
       "name": "Mark Davis",
@@ -59567,7 +59647,9 @@
         "games": 33,
         "minutes": 258
       },
-      "wiki_pages": 7
+      "wiki_pages": 7,
+      "born": "1963-06-08",
+      "pos": "SF"
     },
     {
       "name": "Mark Eaton",
@@ -59651,7 +59733,9 @@
         "games": 6,
         "minutes": 16
       },
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1961-04-10",
+      "pos": "PG"
     },
     {
       "name": "Mark Jones",
@@ -59667,7 +59751,9 @@
         "games": 10,
         "minutes": 116
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1975-05-25",
+      "pos": "SF"
     },
     {
       "name": "Mark Landsberger",
@@ -62627,7 +62713,9 @@
         "games": 141,
         "minutes": 1328
       },
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1965-05-19",
+      "pos": "PF"
     },
     {
       "name": "Michael Smith",
@@ -62650,7 +62738,9 @@
         "games": 449,
         "minutes": 10552
       },
-      "wiki_pages": 7
+      "wiki_pages": 7,
+      "born": "1972-03-28",
+      "pos": "PF"
     },
     {
       "name": "Michael Stewart",
@@ -63111,7 +63201,8 @@
       "teams": [
         "LA Clippers"
       ],
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "born": "1946-07-26"
     },
     {
       "name": "Mike Davis",
@@ -63127,7 +63218,9 @@
         "games": 8,
         "minutes": 28
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1956-08-02",
+      "pos": "PF"
     },
     {
       "name": "Mike Dunleavy",
@@ -63434,7 +63527,9 @@
         "games": 595,
         "minutes": 14364
       },
-      "wiki_pages": 14
+      "wiki_pages": 14,
+      "born": "1975-06-23",
+      "pos": "PG"
     },
     {
       "name": "Mike James",
@@ -63457,7 +63552,9 @@
         "games": 36,
         "minutes": 687
       },
-      "wiki_pages": 19
+      "wiki_pages": 19,
+      "born": "1990-08-18",
+      "pos": "PG"
     },
     {
       "name": "Mike Kearns",
@@ -65712,7 +65809,9 @@
       "stats": {
         "games": 47,
         "minutes": 403
-      }
+      },
+      "born": "1999",
+      "pos": "SG"
     },
     {
       "name": "Nate Williams",
@@ -65730,7 +65829,9 @@
         "games": 233,
         "minutes": 4324
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1950-05-02",
+      "pos": "SG"
     },
     {
       "name": "Nate Wolters",
@@ -68733,7 +68834,9 @@
       "stats": {
         "games": 7,
         "minutes": 19
-      }
+      },
+      "born": "1984",
+      "pos": "SF"
     },
     {
       "name": "Patrick Ewing",
@@ -68760,7 +68863,9 @@
         "games": 1183,
         "minutes": 40594
       },
-      "wiki_pages": 44
+      "wiki_pages": 44,
+      "born": "1962-08-05",
+      "pos": "C"
     },
     {
       "name": "Patrick Ewing, Jr.",
@@ -72671,7 +72776,9 @@
         "games": 599,
         "minutes": 16013
       },
-      "wiki_pages": 13
+      "wiki_pages": 13,
+      "born": "1964-03-05",
+      "pos": "SF"
     },
     {
       "name": "Reggie Williams",
@@ -72696,7 +72803,9 @@
         "games": 206,
         "minutes": 3736
       },
-      "wiki_pages": 17
+      "wiki_pages": 17,
+      "born": "1986-09-14",
+      "pos": "SF"
     },
     {
       "name": "Renaldo Balkman",
@@ -77007,7 +77116,9 @@
         "games": 257,
         "minutes": 4528
       },
-      "wiki_pages": 6
+      "wiki_pages": 6,
+      "born": "1959-05-07",
+      "pos": "PF"
     },
     {
       "name": "Sam Williams",
@@ -77019,7 +77130,8 @@
         1969,
         1970
       ],
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1945-01-22"
     },
     {
       "name": "Sam Worthen",
@@ -88562,7 +88674,9 @@
         "games": 155,
         "minutes": 1767
       },
-      "wiki_pages": 5
+      "wiki_pages": 5,
+      "born": "1960-10-26",
+      "pos": "PG"
     },
     {
       "name": "Walker Russell",
@@ -88577,7 +88691,9 @@
       "stats": {
         "games": 28,
         "minutes": 357
-      }
+      },
+      "born": "1982",
+      "pos": "PG"
     },
     {
       "name": "Walker Russell, Jr.",

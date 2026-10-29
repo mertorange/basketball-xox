@@ -10,6 +10,9 @@ from .sources.euroleague_api import (fetch_career_stats, fetch_champions, fetch_
                                      fetch_final_four_clubs)
 
 
+EUROLEAGUE_POSITIONS = {"Guard": "G", "Forward": "F", "Center": "C"}
+
+
 def build_euroleague_database(out_dir):
     print("\nBuilding EuroLeague database...")
     criteria = set(STANDARD_EUROLEAGUE_CLUBS)
@@ -40,6 +43,9 @@ def build_euroleague_database(out_dir):
         stats = [career[code] for code in entry["codes"] if code in career]
         if stats:
             player["stats"] = {key: sum(s[key] for s in stats) for key in stats[0]}
+        # Kept only when another player has the same name (see common.mark_shared_names)
+        player["_born"] = entry["dob"]
+        player["_pos"] = EUROLEAGUE_POSITIONS.get(max(entry["positions"])[1]) if entry["positions"] else None
         players.append(player)
 
     # Carry over previous entries (hand-curated legends from before 2000-01)

@@ -23,3 +23,16 @@ def test_birthplaces():
 def test_euroleague_names():
     assert format_euroleague_name("MCCORMACK, DAVID") == "David McCormack"
     assert format_euroleague_name("O'NEALE, ROYCE") == "Royce O'Neale"
+
+
+def test_only_shared_names_keep_birth_date_and_position():
+    from builder.common import mark_shared_names
+    players = [
+        {"name": "Mike James", "_born": "1990-08-18", "_pos": "PG"},
+        {"name": "Mike James", "_born": "1975", "_pos": None},
+        {"name": "Luka Doncic", "_born": "1999-02-28", "_pos": "G"},
+    ]
+    mark_shared_names(players)
+    assert players[0] == {"name": "Mike James", "born": "1990-08-18", "pos": "PG"}
+    assert players[1] == {"name": "Mike James", "born": "1975"}
+    assert players[2] == {"name": "Luka Doncic"}

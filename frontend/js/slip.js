@@ -1,15 +1,20 @@
 // The player slip: the dialog where the current player names someone for a box.
-// A pick always comes from the suggestions: the top one is chosen as soon as they arrive,
-// Enter or Submit takes the chosen one, and a name with no suggestions can't be sent, so a
-// typo never costs the turn.
+// Suggestions come from the league's name list (names.js), filtered here on every keystroke,
+// so they show as fast as the player types. A pick always comes from the suggestions: the
+// top one is chosen as soon as they show, Enter or Submit takes the chosen one, and a name
+// with no suggestions can't be sent, so a typo never costs the turn. Players who share a
+// name are listed one by one with their birth date and position.
 
-import { api } from './api.js';
+import { fold, loadNames, matchNames, namesFor } from './names.js';
 import { $, closeModal, escapeHtml, isOpen, openModal } from './dom.js';
 import { clearSelection, selectCell } from './board.js';
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export class PlayerSlip {
   /**
-   * @param {(name: string) => void} onSubmit called with the chosen player name
+   * @param {(name: string, key: string|null) => void} onSubmit called with the chosen player;
+   *   key tells same-named players apart (null for everyone else)
    * @param {() => void} onCancel called when the slip is closed without a pick
    */
   constructor(onSubmit, onCancel = () => {}) {
@@ -22,11 +27,9 @@ export class PlayerSlip {
     this.confirm = $('btn-confirm-select');
     this.league = 'nba';
     this.active = -1;
-    this.names = [];        // the suggestions on screen
-    this.searching = false; // the list on screen is for an older text; new results are coming
-    this.queued = false;    // Enter was pressed before they came: pick the top one on arrival
-    this.searchSeq = 0;
-    this.debounce = null;
+    this.options = [];      // the suggestions on screen: {name, key, born, pos}
+    this.waiting = false;   // the name list is still loading (only ever the first time)
+    this.queued = false;    // Enter was pressed before it came: pick the top one on arrival
 
     $('btn-cancel-select').addEventListener('click', () => this.cancel());
     this.confirm.addEventListener('click', () => this.submitChosen());
@@ -42,20 +45,19 @@ export class PlayerSlip {
   open(league, row, col, rowLabel, colLabel, minChars = 2) {
     this.league = league;
     this.minChars = minChars;
+    loadNames(league).catch(() => {}); // usually loaded already, when the game started
     selectCell(row, col);
     $('req-row').textContent = rowLabel;
     $('req-col').textContent = colLabel;
     this.input.value = '';
-    this.searching = this.queued = false;
+    this.waiting = this.queued = false;
     this.renderSuggestions([], '');
     openModal(this.modal);
     this.input.focus();
   }
 
   close() {
-    clearTimeout(this.debounce);
-    this.searchSeq++; // drop any answer still on its way
-    this.searching = this.queued = false;
+    this.waiting = this.queued = false;
     closeModal(this.modal);
     clearSelection();
   }
@@ -66,44 +68,58 @@ export class PlayerSlip {
     this.onCancel();
   }
 
-  submit(name) {
-    if (!name) return;
+  submit(option) {
+    if (!option) return;
     this.close();
-    this.onSubmit(name);
+    this.onSubmit(option.name, option.key);
   }
 
-  /** Sends the chosen suggestion; while results are still coming, waits for them. */
+  /** Sends the chosen suggestion; while the name list is still loading, waits for it. */
   submitChosen() {
-    if (this.searching) {
+    if (this.waiting) {
       this.queued = true;
       return;
     }
-    const name = this.names[this.active];
-    if (name) this.submit(name);
+    this.submit(this.options[this.active]);
   }
 
   onInput() {
-    const val = this.input.value.trim();
-    clearTimeout(this.debounce);
+    const query = this.input.value.trim();
     this.queued = false;
-    if (val.length < this.minChars) {
-      this.searchSeq++;
-      this.searching = false;
+    if (query.length < this.minChars) {
       this.renderSuggestions([], '');
       return;
     }
-    // The names on screen are for the old text: don't let Enter send one of them
-    this.searching = true;
+    const entries = namesFor(this.league);
+    if (entries) {
+      this.renderSuggestions(matchNames(entries, query), query);
+      return;
+    }
+    // First use before the list arrived: show the matches as soon as it does
+    this.waiting = true;
     this.updateConfirm();
-    this.debounce = setTimeout(() => this.search(val), 150);
+    const league = this.league;
+    loadNames(league)
+      .then(() => {
+        if (!this.isOpen || league !== this.league) return;
+        this.waiting = false;
+        const queued = this.queued;
+        this.onInput();
+        if (queued) this.submitChosen();
+      })
+      .catch(() => {
+        this.waiting = false;
+        this.list.innerHTML = '<li class="none">Could not load the player names. Check the connection.</li>';
+        this.updateConfirm();
+      });
   }
 
   updateConfirm() {
-    this.confirm.disabled = !this.searching && this.active < 0;
+    this.confirm.disabled = !this.waiting && this.active < 0;
   }
 
   onKeydown(e) {
-    const items = [...this.list.querySelectorAll('li[data-name]')];
+    const items = [...this.list.querySelectorAll('li[data-index]')];
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       if (!items.length) return;
       e.preventDefault();
@@ -115,24 +131,9 @@ export class PlayerSlip {
     }
   }
 
-  async search(query) {
-    const seq = ++this.searchSeq;
-    let players = [];
-    try {
-      players = await api.searchPlayers(this.league, query);
-    } catch (err) {}
-    if (seq !== this.searchSeq) return; // a newer search is on its way
-    this.searching = false;
-    this.renderSuggestions(players, query);
-    if (this.queued) {
-      this.queued = false;
-      this.submitChosen();
-    }
-  }
-
-  renderSuggestions(players, query) {
+  renderSuggestions(options, query) {
     this.active = -1;
-    this.names = players.map(p => p.name);
+    this.options = options;
     this.input.removeAttribute('aria-activedescendant');
     if (!query) {
       this.list.innerHTML = '';
@@ -140,16 +141,18 @@ export class PlayerSlip {
       this.updateConfirm();
       return;
     }
-    if (!players.length) {
+    if (!options.length) {
       this.list.innerHTML = '<li class="none">No player by that name in the records. Check the spelling.</li>';
     } else {
-      // Names only: showing countries or teams here would give the answer away
-      this.list.innerHTML = players.map((p, i) =>
-        `<li role="option" id="sugg-${i}" data-name="${escapeHtml(p.name)}" aria-selected="false"><span>${highlight(p.name, query)}</span></li>`
+      // Names only: showing countries or teams here would give the answer away. Same-named
+      // players also show when they were born and where they played on the floor.
+      this.list.innerHTML = options.map((option, i) =>
+        `<li role="option" id="sugg-${i}" data-index="${i}" aria-selected="false">` +
+        `<span>${highlight(option.name, query)}</span>${option.key ? twinInfo(option) : ''}</li>`
       ).join('');
-      this.list.querySelectorAll('li[data-name]').forEach((li, i) => {
+      this.list.querySelectorAll('li[data-index]').forEach((li, i) => {
         li.addEventListener('mousedown', (e) => e.preventDefault());
-        li.addEventListener('click', () => this.submit(li.dataset.name));
+        li.addEventListener('click', () => this.submit(this.options[i]));
         li.addEventListener('mousemove', () => this.setActive(i));
       });
       this.setActive(0); // the top match is chosen until the player picks another
@@ -159,7 +162,7 @@ export class PlayerSlip {
   }
 
   setActive(index) {
-    const items = this.list.querySelectorAll('li[data-name]');
+    const items = this.list.querySelectorAll('li[data-index]');
     items.forEach((li, i) => li.setAttribute('aria-selected', String(i === index)));
     this.active = index;
     if (items[index]) {
@@ -169,9 +172,22 @@ export class PlayerSlip {
   }
 }
 
+/** 'b. 23 Feb 1992 · C': what tells two players with one name apart. */
+function twinInfo({ born, pos }) {
+  const parts = [];
+  if (born) {
+    const [year, month, day] = born.split('-');
+    parts.push(month && day ? `b. ${Number(day)} ${MONTHS[Number(month) - 1]} ${year}` : `b. ${year}`);
+  }
+  if (pos) parts.push(pos);
+  return `<span class="twin-info">${escapeHtml(parts.join(' · ') || 'same name')}</span>`;
+}
+
 function highlight(name, query) {
-  const i = name.toLowerCase().indexOf(query.toLowerCase());
+  // The names are ASCII, so the folded query lines up with the name letter for letter
+  const q = fold(query);
+  const i = name.toLowerCase().indexOf(q);
   if (i < 0) return escapeHtml(name);
-  return escapeHtml(name.slice(0, i)) + '<mark>' + escapeHtml(name.slice(i, i + query.length)) + '</mark>' +
-    escapeHtml(name.slice(i + query.length));
+  return escapeHtml(name.slice(0, i)) + '<mark>' + escapeHtml(name.slice(i, i + q.length)) + '</mark>' +
+    escapeHtml(name.slice(i + q.length));
 }

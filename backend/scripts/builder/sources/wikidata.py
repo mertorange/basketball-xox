@@ -58,6 +58,7 @@ def load_wikidata_players():
         entry = players.setdefault(qid, {
             "name": clean_player_name(row["pLabel"]["value"]),
             "born": int(dob[:4]) if dob[:4].isdigit() else None,
+            "dob": dob[:10] if dob[:4].isdigit() else None,
             "countries": set(), "dated": set(), "undated": set(),
             "coach": row["coach"]["value"] == "true",
             "links": int(row["links"]["value"]),

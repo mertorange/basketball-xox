@@ -37,6 +37,7 @@ class Pick(BaseModel):
     row: int = Field(ge=0, le=2)
     col: int = Field(ge=0, le=2)
     name: str = Field(max_length=80)
+    key: Optional[str] = Field(None, max_length=120)  # which same-named player, from the name list
 
 
 class Skip(BaseModel):

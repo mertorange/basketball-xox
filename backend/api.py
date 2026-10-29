@@ -57,7 +57,8 @@ def build_router(game_manager) -> APIRouter:
     @router.post("/move", response_model=MoveResult)
     def submit_move(req: MoveRequest):
         same_device_game(req.game_id)
-        return game_manager.make_move(game_id=req.game_id, row=req.row, col=req.col, player_name=req.player_name)
+        return game_manager.make_move(game_id=req.game_id, row=req.row, col=req.col, player_name=req.player_name,
+                                      player_key=req.player_key)
 
     @router.post("/skip-turn")
     def skip_turn(req: GameRequest):
@@ -80,6 +81,14 @@ def build_router(game_manager) -> APIRouter:
             "message": f"Shot clock expired! Turn forfeited to Player {game.current_player}.",
             "current_player": game.current_player,
         }
+
+    @router.get("/players")
+    def player_names(league: str = Query("nba")):
+        """Every name, for the autocomplete to filter as the player types (no round trip)."""
+        index = game_manager.indexes.get(league.lower())
+        if not index:
+            raise HTTPException(status_code=400, detail="Unknown league")
+        return index.catalog.name_list
 
     @router.get("/search-players")
     def search_players(q: str = Query(..., min_length=1, max_length=80), league: str = Query("nba")):
