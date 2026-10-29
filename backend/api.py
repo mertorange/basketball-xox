@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Query
 
-from .models import GameState, MoveRequest, MoveResult, NewGameRequest, ShotClockViolationRequest
+from .models import GameRequest, GameState, MoveRequest, MoveResult, NewGameRequest
 
 
 def build_router(game_manager) -> APIRouter:
@@ -39,15 +39,41 @@ def build_router(game_manager) -> APIRouter:
             raise HTTPException(status_code=409, detail="Answers are shown when the game is over")
         return {"game_id": game_id, "cells": answers}
 
+    def same_device_game(game_id: str) -> GameState:
+        """Routes that change a game serve same-device games only: an online game's id reaches
+        everyone in its room, spectators included, so its moves must go through the room."""
+        game = game_or_404(game_id)
+        if game_id in game_manager.online_games:
+            raise HTTPException(status_code=409, detail="Online games are played through their room")
+        return game
+
+    def running_same_device_game(game_id: str) -> GameState:
+        game = same_device_game(game_id)
+        if game.status == "finished":
+            raise HTTPException(status_code=409, detail="The game is over")
+        return game
+
     @router.post("/move", response_model=MoveResult)
     def submit_move(req: MoveRequest):
+        same_device_game(req.game_id)
         return game_manager.make_move(game_id=req.game_id, row=req.row, col=req.col, player_name=req.player_name)
 
+    @router.post("/skip-turn")
+    def skip_turn(req: GameRequest):
+        running_same_device_game(req.game_id)
+        game = game_manager.skip_turn(req.game_id)
+        return {"success": True, "current_player": game.current_player}
+
+    @router.post("/draw", response_model=GameState)
+    def end_in_draw(req: GameRequest):
+        """Same device: both players are at the screen, so the button press is the agreement."""
+        running_same_device_game(req.game_id)
+        return game_manager.end_in_draw(req.game_id)
+
     @router.post("/shot-clock-violation")
-    def handle_shot_clock_violation(req: ShotClockViolationRequest):
+    def handle_shot_clock_violation(req: GameRequest):
+        running_same_device_game(req.game_id)
         game = game_manager.trigger_shot_clock_violation(req.game_id)
-        if not game:
-            raise HTTPException(status_code=404, detail="Game not found or finished")
         return {
             "success": True,
             "message": f"Shot clock expired! Turn forfeited to Player {game.current_player}.",
@@ -61,21 +87,5 @@ def build_router(game_manager) -> APIRouter:
             raise HTTPException(status_code=400, detail="Unknown league")
         # Names only: teams, country or awards in the response would hand out the answers
         return [{"name": p["name"]} for p in index.catalog.search(q, limit=8)]
-
-    @router.get("/cell-info/{game_id}/{row}/{col}")
-    def get_cell_info(game_id: str, row: int, col: int):
-        game = game_or_404(game_id)
-        if not (0 <= row < 3 and 0 <= col < 3):
-            raise HTTPException(status_code=400, detail="Invalid coordinates")
-        index = game_manager.index_for(game)
-        r, c = game.row_criteria[row], game.col_criteria[col]
-        valid = index.answers(index.get(r.type.value, r.value), index.get(c.type.value, c.value))
-        return {
-            "row_criteria": r.display,
-            "col_criteria": c.display,
-            "count_valid_players": len(valid),
-            "claimed_by": game.grid[row][col].claimed_by,
-            "player_name": game.grid[row][col].player_name,
-        }
 
     return router

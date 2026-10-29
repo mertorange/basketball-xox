@@ -20,6 +20,8 @@ export const api = {
   answers: (gameId) => request(`/api/game/${gameId}/answers`),
   move: (gameId, row, col, playerName) => post('/api/move', { game_id: gameId, row, col, player_name: playerName }),
   shotClockViolation: (gameId) => post('/api/shot-clock-violation', { game_id: gameId }),
+  skipTurn: (gameId) => post('/api/skip-turn', { game_id: gameId }),
+  endInDraw: (gameId) => post('/api/draw', { game_id: gameId }),
   searchPlayers: (league, query) =>
     request(`/api/search-players?league=${encodeURIComponent(league)}&q=${encodeURIComponent(query)}`),
   createRoom: (settings) => post('/api/rooms', settings),

@@ -2,7 +2,7 @@
 
 import time
 import uuid
-from typing import Dict, Optional
+from typing import Dict, Optional, Set
 
 from ..catalog.criteria import CriteriaIndex, CriterionSpec
 from ..catalog.players import notability
@@ -24,6 +24,8 @@ class GameManager:
         # mid-game never changes the answers to a grid already on screen
         self.game_indexes: Dict[str, CriteriaIndex] = {}
         self.created_at: Dict[str, float] = {}
+        # Games run by an online room; the same-device routes must not touch them
+        self.online_games: Set[str] = set()
         self.replace_indexes(indexes)
 
     def replace_indexes(self, indexes: Dict[str, CriteriaIndex]) -> None:
@@ -33,7 +35,7 @@ class GameManager:
 
     def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
                     min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed",
-                    first_player: str = "X") -> GameState:
+                    first_player: str = "X", online: bool = False) -> GameState:
         rows, cols = self.generators[league].generate(grid_style, min_answers)
         game = GameState(
             game_id=uuid.uuid4().hex[:8],
@@ -51,6 +53,8 @@ class GameManager:
         self.active_games[game.game_id] = game
         self.game_indexes[game.game_id] = self.indexes[league]
         self.created_at[game.game_id] = time.monotonic()
+        if online:
+            self.online_games.add(game.game_id)
         return game
 
     def get_game(self, game_id: str) -> Optional[GameState]:
@@ -59,11 +63,22 @@ class GameManager:
     def index_for(self, game: GameState) -> CriteriaIndex:
         return self.game_indexes.get(game.game_id) or self.indexes[game.league.lower()]
 
-    def trigger_shot_clock_violation(self, game_id: str) -> Optional[GameState]:
+    def skip_turn(self, game_id: str) -> Optional[GameState]:
+        """The player on the clock passes (or ran out of time); None if the game is not running."""
         game = self.active_games.get(game_id)
         if not game or game.status == "finished":
             return None
         game.current_player = other_player(game.current_player)
+        return game
+
+    trigger_shot_clock_violation = skip_turn
+
+    def end_in_draw(self, game_id: str) -> Optional[GameState]:
+        """Both players agreed to stop: the game ends as a draw."""
+        game = self.active_games.get(game_id)
+        if not game or game.status == "finished":
+            return None
+        game.status, game.winner = "finished", "DRAW"
         return game
 
     def make_move(self, game_id: str, row: int, col: int, player_name: str) -> MoveResult:
@@ -158,6 +173,7 @@ class GameManager:
         self.active_games.pop(game_id, None)
         self.game_indexes.pop(game_id, None)
         self.created_at.pop(game_id, None)
+        self.online_games.discard(game_id)
 
     def prune(self, max_age: float, keep=()) -> int:
         """Drops games older than max_age seconds, except those in keep; returns how many went."""

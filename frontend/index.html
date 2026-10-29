@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=7">
+  <link rel="stylesheet" href="/static/style.css?v=8">
 </head>
 <body>
   <main class="sheet">
@@ -234,6 +234,17 @@
         <svg class="win-stroke" id="win-stroke" aria-hidden="true"></svg>
       </div>
 
+      <div class="game-actions" id="game-actions" hidden>
+        <button type="button" class="btn btn-line" id="btn-skip">Skip turn</button>
+        <div class="draw-wrap">
+          <button type="button" class="btn btn-line" id="btn-draw">End as draw</button>
+          <div class="draw-answer" id="draw-answer" hidden>
+            <button type="button" class="btn-small btn-small-ink" id="btn-draw-yes">Yes</button>
+            <button type="button" class="btn-small" id="btn-draw-no">No</button>
+          </div>
+        </div>
+      </div>
+
       <section class="pbp">
         <h2 class="field-label">Play-by-play</h2>
         <ol class="pbp-log" id="pbp-log"></ol>
@@ -312,6 +323,7 @@
         <li>Country criteria mean the player's country of birth. Awards, draft slots, colleges, eras and career totals work the same way: the player must fit both.</li>
         <li>A wrong name, a player already used, or an expired shot clock is a turnover: the turn passes.</li>
         <li>Three boxes in a row, column or diagonal wins. Nine boxes without a line is a draw.</li>
+        <li>Stuck? Skip turn passes the ball to your opponent. End as draw stops the grid with no winner: online the other player has to say yes; on one device, press it twice.</li>
       </ol>
       <div class="slip-actions">
         <button type="button" class="btn btn-ink" id="btn-ack-rules">Got it</button>
@@ -319,6 +331,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=7"></script>
+  <script type="module" src="/static/js/main.js?v=8"></script>
 </body>
 </html>

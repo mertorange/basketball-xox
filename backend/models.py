@@ -58,7 +58,8 @@ class MoveRequest(BaseModel):
     player_name: str = Field(max_length=80)
 
 
-class ShotClockViolationRequest(BaseModel):
+class GameRequest(BaseModel):
+    """A same-device action on a whole game: shot clock violation, skipped turn, agreed draw."""
     game_id: str
 
 

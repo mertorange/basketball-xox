@@ -13,7 +13,7 @@ from typing import Dict, Optional, Set
 
 from ..game.manager import GameManager
 from ..game.rules import other_player
-from .protocol import Focus, Join, Leave, Pick, Ready, Rematch
+from .protocol import AnswerDraw, Focus, Join, Leave, OfferDraw, Pick, Ready, Rematch, Skip
 
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ"  # no I, L or O: easy to read out loud
 CODE_LENGTH = 4
@@ -50,6 +50,7 @@ class Room:
     game_id: Optional[str] = None
     next_first: str = "X"                  # who starts the next game; alternates
     focus: Optional[dict] = None           # the box the player on the clock has open
+    draw_offer: Optional[str] = None       # the mark that asked for a draw, until answered
     deadline: Optional[float] = None       # event-loop time the current turn runs out
     clock_task: Optional[asyncio.Task] = None
     forfeit_tasks: Dict[str, asyncio.Task] = field(default_factory=dict)
@@ -181,6 +182,12 @@ class RoomManager:
                 await self._on_focus(room, seat, msg)
             elif isinstance(msg, Pick):
                 await self._on_pick(room, seat, msg)
+            elif isinstance(msg, Skip):
+                await self._on_skip(room, seat)
+            elif isinstance(msg, OfferDraw):
+                await self._on_offer_draw(room, seat)
+            elif isinstance(msg, AnswerDraw):
+                await self._on_answer_draw(room, seat, msg)
             elif isinstance(msg, Rematch):
                 await self._on_rematch(room, seat)
             elif isinstance(msg, Leave):
@@ -225,6 +232,50 @@ class RoomManager:
             self._start_clock(room)
         await self._broadcast(room)
 
+    async def _on_skip(self, room: Room, seat: Seat) -> None:
+        game = self._running_game(room)
+        if game.current_player != seat.mark:
+            raise RoomError("It is not your turn.")
+        self.games.skip_turn(game.game_id)
+        room.focus = None
+        self._start_clock(room)
+        await self._event(room, "skip", seat.mark, f"{seat.name} skipped the turn")
+        await self._broadcast(room)
+
+    async def _on_offer_draw(self, room: Room, seat: Seat) -> None:
+        game = self._running_game(room)
+        if room.draw_offer == seat.mark:
+            return  # already asked
+        if room.draw_offer is not None:
+            # Both asked at once: that is an agreement
+            await self._agree_draw(room, game)
+            return
+        room.draw_offer = seat.mark
+        await self._event(room, "draw_offer", seat.mark, f"{seat.name} asked for a draw")
+        await self._broadcast(room)
+
+    async def _on_answer_draw(self, room: Room, seat: Seat, msg: AnswerDraw) -> None:
+        game = self._running_game(room)
+        if room.draw_offer is None or room.draw_offer == seat.mark:
+            raise RoomError("There is no draw offer to answer.")
+        if msg.accept:
+            await self._agree_draw(room, game)
+            return
+        room.draw_offer = None
+        await self._event(room, "draw_declined", seat.mark, f"{seat.name} said no to a draw")
+        await self._broadcast(room)
+
+    async def _agree_draw(self, room: Room, game) -> None:
+        self.games.end_in_draw(game.game_id)
+        await self._finish(room, "DRAW")
+        await self._broadcast(room)
+
+    def _running_game(self, room: Room):
+        game = self.game(room)
+        if not game or game.status != "in_progress":
+            raise RoomError("No game is running.")
+        return game
+
     async def _on_rematch(self, room: Room, seat: Seat) -> None:
         if self.phase(room) != "final":
             return
@@ -253,11 +304,12 @@ class RoomManager:
         game = self.games.create_game(
             league=s["league"], player1_name=room.seats["X"].name, player2_name=room.seats["O"].name,
             min_answers=s["min_answers"], shot_clock=s["shot_clock"], grid_style=s["grid_style"],
-            first_player=room.next_first,
+            first_player=room.next_first, online=True,
         )
         room.game_id = game.game_id
         room.next_first = other_player(room.next_first)
         room.focus = None
+        room.draw_offer = None
         for seat in room.seats.values():
             seat.ready = seat.rematch = False
         self._start_clock(room)
@@ -266,6 +318,7 @@ class RoomManager:
     async def _finish(self, room: Room, winner: str) -> None:
         self._stop_clock(room)
         room.focus = None
+        room.draw_offer = None
         if winner in room.scores:
             room.scores[winner] += 1
         await self._event(room, "final", winner, "Draw" if winner == "DRAW" else f"{winner} wins")
@@ -332,6 +385,7 @@ class RoomManager:
             "game": game.model_dump(mode="json") if game else None,
             "turn_ms_left": ms_left,
             "focus": room.focus,
+            "draw_offer": room.draw_offer,
             "spectators": len(room.spectators),
         }
 

@@ -2,6 +2,7 @@
 // screens and the dialogs; the game itself runs in a controller: HotSeatGame (one device)
 // or OnlineGame (a room shared over a WebSocket).
 
+import { renderActions } from './actions.js';
 import { api } from './api.js';
 import { showAnswers } from './answers.js';
 import { drawWinStroke } from './board.js';
@@ -106,6 +107,11 @@ function setupHandlers() {
   });
   $('btn-close-answers').addEventListener('click', () => closeModal(modals.answers));
 
+  $('btn-skip').addEventListener('click', () => active && active.skip());
+  $('btn-draw').addEventListener('click', () => active && active.drawPressed());
+  $('btn-draw-yes').addEventListener('click', () => active && active.answerDraw && active.answerDraw(true));
+  $('btn-draw-no').addEventListener('click', () => active && active.answerDraw && active.answerDraw(false));
+
   $('btn-game-rules').addEventListener('click', () => openModal(modals.rules));
   $('btn-ack-rules').addEventListener('click', () => closeModal(modals.rules));
   $('btn-rematch-match').addEventListener('click', () => {
@@ -196,6 +202,7 @@ function show(name) {
 
 function showMenu(error = null) {
   ui.clock.stop();
+  renderActions({ visible: false });
   ui.slip.close();
   closeModal(modals.gameover);
   closeModal(modals.answers);
@@ -294,10 +301,11 @@ async function copyLink(sourceId, buttonId) {
 /**
  * winner: 'X' | 'O' | 'DRAW'; winnerName: shown in the title; waiting: online rematch status line;
  * canRematch: false once the local player has asked for a rematch; byForfeit: the other side left;
- * spectating: no rematch button at all
+ * agreed: a draw both players asked for, with boxes still open; spectating: no rematch button at all
  */
 function showFinal({ winner, winnerName, names, scores, waiting = null, canRematch = true, byForfeit = false,
-                     spectating = false }) {
+                     agreed = false, spectating = false }) {
+  renderActions({ visible: false });
   const stamp = $('go-stamp');
   stamp.className = 'stamp';
   if (winner === 'X' || winner === 'O') {
@@ -309,7 +317,8 @@ function showFinal({ winner, winnerName, names, scores, waiting = null, canRemat
     stamp.textContent = 'Draw';
     stamp.classList.add('draw');
     $('go-title').textContent = 'No winner';
-    $('go-desc').textContent = `All nine boxes filled without a line. Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
+    const how = agreed ? 'Ended as a draw by agreement.' : 'All nine boxes filled without a line.';
+    $('go-desc').textContent = `${how} Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
   }
   $('go-waiting').textContent = waiting || '';
   $('btn-rematch-match').disabled = !canRematch;

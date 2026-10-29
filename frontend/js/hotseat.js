@@ -1,5 +1,6 @@
 // Same-device play: both players share one screen; the browser runs the shot clock.
 
+import { isAgreedDraw, renderActions } from './actions.js';
 import { api } from './api.js';
 import { renderBoard } from './board.js';
 import { $ } from './dom.js';
@@ -20,6 +21,8 @@ export class HotSeatGame {
     this.gamesPlayed = 0;
     this.cell = null;
     this.pending = false; // a pick is being checked; the clock must not also fire
+    this.drawArmed = false; // End as draw was pressed once; the second press confirms
+    this.drawTimer = null;
   }
 
   playerName(mark) {
@@ -47,12 +50,25 @@ export class HotSeatGame {
     renderBoard(this.game, league);
     this.ui.playByPlay.reset();
     setStatus(`${this.playerName(first)} to start. Pick a box.`);
+    this.disarmDraw();
     this.ui.clock.start(clock);
   }
 
   async refresh(fresh = null) {
     this.game = await api.getGame(this.game.game_id);
     renderBoard(this.game, this.settings.league, fresh);
+    this.renderActions();
+  }
+
+  renderActions() {
+    const running = Boolean(this.game) && this.game.status !== 'finished';
+    renderActions({
+      visible: running,
+      skip: running && !this.pending,
+      draw: this.drawArmed
+        ? { label: 'Press again to end as draw', pending: true }
+        : { disabled: this.pending }
+    });
   }
 
   cellClicked(row, col) {
@@ -100,6 +116,65 @@ export class HotSeatGame {
       setStatus('Could not reach the game server.', 'error');
     } finally {
       this.pending = false;
+      this.renderActions();
+    }
+  }
+
+  async skip() {
+    if (this.pending || !this.game || this.game.status === 'finished') return;
+    this.pending = true;
+    this.disarmDraw();
+    this.ui.clock.stop();
+    const skipper = this.game.current_player;
+    try {
+      await api.skipTurn(this.game.game_id);
+      await this.refresh();
+      this.ui.playByPlay.log(skipper, 'Skipped the turn', true);
+      setStatus(`${this.playerName(skipper)} skipped. ${this.playerName(this.game.current_player)} has the ball.`);
+      this.ui.clock.start(this.settings.clock);
+    } catch (err) {
+      console.error(err);
+      setStatus('Could not reach the game server.', 'error');
+    } finally {
+      this.pending = false;
+      this.renderActions();
+    }
+  }
+
+  // Both players share the screen, so pressing twice is the agreement
+  drawPressed() {
+    if (this.pending || !this.game || this.game.status === 'finished') return;
+    if (!this.drawArmed) {
+      this.drawArmed = true;
+      this.drawTimer = setTimeout(() => this.disarmDraw(), 3000);
+      this.renderActions();
+      return;
+    }
+    this.disarmDraw();
+    this.endInDraw();
+  }
+
+  disarmDraw() {
+    clearTimeout(this.drawTimer);
+    this.drawTimer = null;
+    this.drawArmed = false;
+    this.renderActions();
+  }
+
+  async endInDraw() {
+    this.pending = true;
+    this.ui.clock.stop();
+    try {
+      this.game = await api.endInDraw(this.game.game_id);
+      renderBoard(this.game, this.settings.league);
+      this.renderActions();
+      this.finish('DRAW');
+    } catch (err) {
+      console.error(err);
+      setStatus('Could not reach the game server.', 'error');
+      this.ui.clock.start(this.settings.clock);
+    } finally {
+      this.pending = false;
     }
   }
 
@@ -107,6 +182,7 @@ export class HotSeatGame {
     if (this.pending || !this.game || this.game.status === 'finished') return;
     sfx.playArenaBuzzer();
     this.ui.slip.close();
+    this.disarmDraw();
     const offender = this.game.current_player;
     try {
       await api.shotClockViolation(this.game.game_id);
@@ -127,14 +203,15 @@ export class HotSeatGame {
       renderTallies(this.scores);
       setStatus(`${this.playerName(winner)} wins the grid.`, 'success');
     } else {
-      setStatus('Draw. All nine boxes filled.');
+      setStatus(isAgreedDraw(this.game) ? 'Draw by agreement.' : 'Draw. All nine boxes filled.');
     }
     setTimeout(() => this.ui.showFinal({
       winner,
       winnerName: winner === 'DRAW' ? null : this.playerName(winner),
       names: this.names,
       scores: this.scores,
-      waiting: null
+      waiting: null,
+      agreed: isAgreedDraw(this.game)
     }), 900);
   }
 
@@ -148,6 +225,7 @@ export class HotSeatGame {
 
   leave() {
     this.ui.clock.stop();
+    clearTimeout(this.drawTimer);
   }
 }
 

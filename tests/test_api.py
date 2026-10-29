@@ -53,3 +53,45 @@ def test_answers_only_after_the_game(manager, nba_index):
     # Celtics x Celtics: the award winner (Alpha One) comes before the others
     assert cells[0][1]["answers"][0] == "Alpha One" and cells[0][1]["count"] == 4
     assert client.get("/api/game/missing/answers").status_code == 404
+
+
+def test_skip_turn_and_draw(manager):
+    client = make_client(manager)
+    game_id = client.post("/api/new-game", json={"league": "nba", "min_answers": 1, "grid_style": "classic",
+                                                 "first_player": "X"}).json()["game_id"]
+    res = client.post("/api/skip-turn", json={"game_id": game_id})
+    assert res.status_code == 200 and res.json()["current_player"] == "O"
+
+    drawn = client.post("/api/draw", json={"game_id": game_id}).json()
+    assert drawn["status"] == "finished" and drawn["winner"] == "DRAW"
+    assert client.post("/api/skip-turn", json={"game_id": game_id}).status_code == 409
+    assert client.post("/api/draw", json={"game_id": game_id}).status_code == 409
+    assert client.post("/api/draw", json={"game_id": "missing"}).status_code == 404
+
+
+def test_same_device_routes_refuse_online_games(manager):
+    client = make_client(manager)
+    game = manager.create_game("nba", min_answers=1, grid_style="classic", online=True)
+    gid = {"game_id": game.game_id}
+    for path in ("/api/skip-turn", "/api/draw", "/api/shot-clock-violation"):
+        assert client.post(path, json=gid).status_code == 409
+    move = client.post("/api/move", json={**gid, "row": 0, "col": 0, "player_name": "Nobody"})
+    assert move.status_code == 409
+    assert game.status == "in_progress" and game.current_player == "X"
+    assert all(cell.claimed_by is None for row in game.grid for cell in row)
+    # Reading the state is still fine: spectators already get it over the socket
+    assert client.get(f"/api/game/{game.game_id}").status_code == 200
+
+
+def test_same_device_moves_and_clock(manager):
+    client = make_client(manager)
+    game_id = client.post("/api/new-game", json={"league": "nba", "min_answers": 1,
+                                                 "grid_style": "classic"}).json()["game_id"]
+    move = client.post("/api/move", json={"game_id": game_id, "row": 0, "col": 0, "player_name": "Nobody"})
+    assert move.status_code == 200 and "not found" in move.json()["message"]
+    clock = client.post("/api/shot-clock-violation", json={"game_id": game_id})
+    assert clock.status_code == 200 and clock.json()["current_player"] == "X"
+    missing = {"game_id": "missing", "row": 0, "col": 0, "player_name": "Nobody"}
+    assert client.post("/api/move", json=missing).status_code == 404
+    assert client.post("/api/shot-clock-violation", json={"game_id": "missing"}).status_code == 404
+    assert client.get(f"/api/cell-info/{game_id}/0/0").status_code == 404  # removed: it leaked answer counts

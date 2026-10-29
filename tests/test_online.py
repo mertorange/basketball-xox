@@ -215,3 +215,73 @@ def test_spectator_limit(online, monkeypatch):
     _, second = watch(client, code)
     assert first["type"] == "welcome"
     assert second == {"type": "error", "reason": "This room has as many spectators as it can take."}
+
+
+def test_skip_turn(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    b.send_json({"type": "skip"})
+    assert recv_until(b, lambda m: m["type"] == "error")["reason"] == "It is not your turn."
+
+    a.send_json({"type": "skip"})
+    event = recv_until(b, lambda m: m["type"] == "event" and m["kind"] == "skip")
+    assert event["mark"] == "X"
+    assert room_msg(b, lambda m: m["game"]["current_player"] == "O")
+
+
+def test_draw_offer_declined_then_accepted(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+
+    a.send_json({"type": "answer_draw", "accept": True})  # nothing to answer yet
+    assert "no draw offer" in recv_until(a, lambda m: m["type"] == "error")["reason"]
+
+    a.send_json({"type": "offer_draw"})
+    assert recv_until(b, lambda m: m["type"] == "event" and m["kind"] == "draw_offer")["mark"] == "X"
+    assert room_msg(b, lambda m: m["draw_offer"] == "X")["phase"] == "playing"
+    a.send_json({"type": "answer_draw", "accept": True})  # can't accept your own offer
+    assert "no draw offer" in recv_until(a, lambda m: m["type"] == "error")["reason"]
+
+    b.send_json({"type": "answer_draw", "accept": False})
+    assert recv_until(a, lambda m: m["type"] == "event" and m["kind"] == "draw_declined")["mark"] == "O"
+    snap = room_msg(a, lambda m: m["draw_offer"] is None)
+    assert snap["phase"] == "playing"
+
+    b.send_json({"type": "offer_draw"})
+    room_msg(a, lambda m: m["draw_offer"] == "O")
+    a.send_json({"type": "answer_draw", "accept": True})
+    final = room_msg(b, lambda m: m["phase"] == "final")
+    assert final["game"]["winner"] == "DRAW" and final["draw_offer"] is None
+    assert final["scores"] == {"X": 0, "O": 0}
+
+
+def test_both_offering_a_draw_ends_the_game(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    a.send_json({"type": "offer_draw"})
+    room_msg(b, lambda m: m["draw_offer"] == "X")
+    b.send_json({"type": "offer_draw"})
+    assert room_msg(a, lambda m: m["phase"] == "final")["game"]["winner"] == "DRAW"
+
+
+def test_spectators_cannot_skip_or_offer(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    s, _ = watch(client, code)
+    for msg in ({"type": "skip"}, {"type": "offer_draw"}):
+        s.send_json(msg)
+        assert recv_until(s, lambda m: m["type"] == "error")["reason"] == "Spectators can watch but not play."
+
+
+def test_room_games_refuse_the_same_device_routes(online):
+    """The game id reaches spectators; it must not let anyone play or skip over HTTP."""
+    from backend.api import build_router
+    client, rooms, manager = online
+    client.app.include_router(build_router(manager))
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    gid = room.game_id  # the same id every snapshot carries
+    assert client.post("/api/shot-clock-violation", json={"game_id": gid}).status_code == 409
+    assert client.post("/api/move", json={"game_id": gid, "row": 0, "col": 0,
+                                          "player_name": "Alpha One"}).status_code == 409
+    game = manager.get_game(gid)
+    assert game.current_player == "X" and game.grid[0][0].claimed_by is None

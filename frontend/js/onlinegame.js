@@ -1,6 +1,7 @@
 // Online play: the server runs the game and the clock; this renders what it sends and
 // forwards the local player's actions.
 
+import { isAgreedDraw, renderActions } from './actions.js';
 import { lockBoard, renderBoard, showFocus } from './board.js';
 import { RoomConnection } from './online.js';
 import { renderTallies, setStatus } from './scoresheet.js';
@@ -48,6 +49,7 @@ export class OnlineGame {
     const { phase, game } = room;
     if (phase === 'waiting' || phase === 'lobby' || !game) {
       this.ui.clock.stop();
+      renderActions({ visible: false });
       this.ui.hideFinal();
       this.ui.showLobby(room, room.code, this.spectator);
       return;
@@ -74,8 +76,10 @@ export class OnlineGame {
 
     if (phase === 'playing') {
       this.ui.clock.follow(room.turn_ms_left, room.settings.shot_clock);
+      this.renderActions(myTurn);
       this.showTurn(myTurn);
     } else {
+      renderActions({ visible: false });
       this.ui.clock.stop();
       this.showFinal();
     }
@@ -104,6 +108,18 @@ export class OnlineGame {
         this.ui.playByPlay.log(event.mark, 'Shot clock violation', true);
         this.note = { text: `Shot clock violation by ${who}.`, type: 'error' };
         break;
+      case 'skip':
+        this.ui.playByPlay.log(event.mark, 'Skipped the turn', true);
+        this.note = { text: mine ? 'You skipped.' : `${who} skipped.`, type: '' };
+        break;
+      case 'draw_offer':
+        this.ui.playByPlay.log(event.mark, 'Asked for a draw');
+        this.note = { text: mine ? 'You asked for a draw.' : `${who} asked for a draw.`, type: '' };
+        break;
+      case 'draw_declined':
+        this.ui.playByPlay.log(event.mark, 'Said no to a draw');
+        this.note = { text: mine ? 'You said no to a draw.' : `${who} said no to a draw.`, type: 'error' };
+        break;
       case 'final':
         if (event.mark === this.room?.you) sfx.playWin();
         break;
@@ -127,6 +143,22 @@ export class OnlineGame {
     if (status === 'reconnecting') setStatus('Connection lost. Reconnecting...', 'error');
     if (status === 'closed' && !this.conn.leaving) this.ui.showMenu('Lost the connection to the room.');
     if (status === 'closed' && this.conn.leaving && !this.room) this.ui.showMenu(null, true);
+  }
+
+  /** The draw button tells everyone who asked; only the other player gets Yes / No. */
+  renderActions(myTurn) {
+    const room = this.room;
+    const offer = room.draw_offer;
+    let draw;
+    if (!offer) {
+      draw = { disabled: this.spectator };
+    } else if (offer === room.you) {
+      draw = { label: 'You asked for a draw', disabled: true, pending: true };
+    } else {
+      draw = { label: `${this.nameOf(offer)} asked for a draw`, disabled: true, pending: true,
+        answer: !this.spectator };
+    }
+    renderActions({ skip: myTurn, draw });
   }
 
   // ---------- Status lines ----------
@@ -175,7 +207,7 @@ export class OnlineGame {
     else if (them.rematch) waiting = `${them.name} wants a rematch.`;
 
     if (this.spectator) waiting = null;
-    const verdict = winner === 'DRAW' ? 'Draw.' : winner === room.you ? 'You win the grid.' : `${this.nameOf(winner)} wins the grid.`;
+    const verdict = winner === 'DRAW' ? (isAgreedDraw(room.game) ? 'Draw by agreement.' : 'Draw.') : winner === room.you ? 'You win the grid.' : `${this.nameOf(winner)} wins the grid.`;
     setStatus(this.note ? `${this.note.text} ${verdict}` : verdict, winner === room.you ? 'success' : '');
 
     const details = {
@@ -186,6 +218,7 @@ export class OnlineGame {
       waiting,
       canRematch: Boolean(them) && !(me && me.rematch),
       byForfeit: winner !== 'DRAW' && !room.game.winning_line,
+      agreed: isAgreedDraw(room.game),
       spectating: this.spectator
     };
     if (this.finalShownFor === room.game.game_id) {
@@ -227,6 +260,22 @@ export class OnlineGame {
     if (!this.cell) return;
     setStatus(`Checking ${name}...`);
     this.conn.send('pick', { row: this.cell.row, col: this.cell.col, name });
+  }
+
+  skip() {
+    if (this.spectator) return;
+    this.ui.slip.close();
+    this.conn.send('skip');
+  }
+
+  drawPressed() {
+    if (this.spectator) return;
+    this.conn.send('offer_draw');
+  }
+
+  answerDraw(accept) {
+    if (this.spectator) return;
+    this.conn.send('answer_draw', { accept });
   }
 
   ready() {

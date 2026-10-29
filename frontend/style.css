@@ -543,6 +543,43 @@ button:disabled { cursor: not-allowed; }
   animation: pen 0.45s ease-in-out forwards;
 }
 
+/* ---------- Skip / draw, under the grid ---------- */
+
+.game-actions {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 24px 22px;
+}
+.game-actions[hidden], .draw-answer[hidden] { display: none; }
+
+.game-actions .btn { min-width: 168px; }
+.btn-line:disabled { color: var(--ink-faint); border-color: var(--rule); cursor: default; }
+.btn-line:disabled:hover { background: transparent; }
+
+/* An open offer, or a first press waiting for the second: marked with the highlighter */
+#btn-draw.pending,
+#btn-draw.pending:hover { background: var(--marker); color: var(--ink); border-color: var(--ink); }
+
+.draw-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.draw-answer { display: flex; gap: 6px; }
+
+.btn-small {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  min-height: 30px;
+  border: 2px solid var(--ink);
+  background: transparent;
+}
+.btn-small:hover { background: var(--paper-deep); }
+.btn-small-ink { background: var(--ink); color: var(--paper); }
+.btn-small-ink:hover { background: #000; }
+
 /* ---------- Play-by-play ---------- */
 
 .pbp {
@@ -733,6 +770,9 @@ button:disabled { cursor: not-allowed; }
   .crit-name { font-size: 14px; }
   .cell-player { font-size: 12px; }
   .pbp { padding: 12px 16px 16px; }
+  .game-actions { padding: 0 16px 16px; gap: 8px; }
+  .game-actions > * { flex: 1; }
+  .game-actions .btn { min-width: 0; width: 100%; padding: 10px 8px; font-size: 12px; }
 
   .overlay { padding: 16px 10px; }
   .slip { padding: 16px; }

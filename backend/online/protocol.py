@@ -4,6 +4,8 @@
                                                 (spectators get seat None and no token)
     {"type": "room", ...snapshot}               the full room state, after every change
     {"type": "event", "kind", "mark", "text"}   something happened: for sounds and the log
+                                                (move, turnover, violation, skip, draw_offer,
+                                                draw_declined, final, ...)
     {"type": "error", "reason"}
 """
 
@@ -37,6 +39,21 @@ class Pick(BaseModel):
     name: str = Field(max_length=80)
 
 
+class Skip(BaseModel):
+    """The player on the clock passes the turn."""
+    type: Literal["skip"]
+
+
+class OfferDraw(BaseModel):
+    """Ask the opponent to end the game as a draw; the offer stands until answered."""
+    type: Literal["offer_draw"]
+
+
+class AnswerDraw(BaseModel):
+    type: Literal["answer_draw"]
+    accept: bool
+
+
 class Rematch(BaseModel):
     type: Literal["rematch"]
 
@@ -45,5 +62,6 @@ class Leave(BaseModel):
     type: Literal["leave"]
 
 
-ClientMessage = Annotated[Union[Join, Ready, Focus, Pick, Rematch, Leave], Field(discriminator="type")]
+ClientMessage = Annotated[Union[Join, Ready, Focus, Pick, Skip, OfferDraw, AnswerDraw, Rematch, Leave],
+                          Field(discriminator="type")]
 client_message = TypeAdapter(ClientMessage)
