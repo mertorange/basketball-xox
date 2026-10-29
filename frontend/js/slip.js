@@ -7,9 +7,12 @@ import { clearSelection, selectCell } from './board.js';
 export class PlayerSlip {
   /**
    * @param {(name: string) => void} onSubmit called with the chosen player name
+   * @param {() => void} onCancel called when the slip is closed without a pick
    */
-  constructor(onSubmit) {
+  constructor(onSubmit, onCancel = () => {}) {
     this.onSubmit = onSubmit;
+    this.onCancel = onCancel;
+    this.minChars = 2;
     this.modal = $('modal-select');
     this.input = $('search-player-input');
     this.list = $('search-results-list');
@@ -19,7 +22,7 @@ export class PlayerSlip {
     this.searchSeq = 0;
     this.debounce = null;
 
-    $('btn-cancel-select').addEventListener('click', () => this.close());
+    $('btn-cancel-select').addEventListener('click', () => this.cancel());
     this.confirm.addEventListener('click', () => this.submit(this.input.value.trim()));
     this.input.addEventListener('input', () => this.onInput());
     this.input.addEventListener('keydown', (e) => this.onKeydown(e));
@@ -29,8 +32,10 @@ export class PlayerSlip {
     return isOpen(this.modal);
   }
 
-  open(league, row, col, rowLabel, colLabel) {
+  /** minChars: letters before suggestions appear (online play asks for more) */
+  open(league, row, col, rowLabel, colLabel, minChars = 2) {
     this.league = league;
+    this.minChars = minChars;
     selectCell(row, col);
     $('req-row').textContent = rowLabel;
     $('req-col').textContent = colLabel;
@@ -46,6 +51,12 @@ export class PlayerSlip {
     clearSelection();
   }
 
+  cancel() {
+    if (!this.isOpen) return;
+    this.close();
+    this.onCancel();
+  }
+
   submit(name) {
     if (!name) return;
     this.close();
@@ -56,7 +67,7 @@ export class PlayerSlip {
     const val = this.input.value.trim();
     this.confirm.disabled = val.length === 0;
     clearTimeout(this.debounce);
-    if (val.length < 2) {
+    if (val.length < this.minChars) {
       this.renderSuggestions([], '');
       return;
     }

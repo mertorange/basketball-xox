@@ -1,5 +1,7 @@
 """FastAPI application: loads the player catalogs once and serves the API and the frontend."""
 
+import asyncio
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -11,17 +13,28 @@ from .api import build_router
 from .catalog.criteria import build_index
 from .catalog.players import load_catalogs
 from .game.manager import GameManager
+from .online.rooms import RoomManager
+from .online.ws import build_online_router
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(title="Hoop Grid", description="2-Player Basketball Grid Tic-Tac-Toe")
+def create_app(room_manager_options: dict = None) -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        cleanup = asyncio.create_task(app.state.room_manager.cleanup_loop())
+        yield
+        cleanup.cancel()
+
+    app = FastAPI(title="Hoop Grid", description="2-Player Basketball Grid Tic-Tac-Toe", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
     indexes = {league: build_index(catalog) for league, catalog in load_catalogs().items()}
     app.state.game_manager = GameManager(indexes)
+    # Rooms live in this process's memory: run a single worker (see README)
+    app.state.room_manager = RoomManager(app.state.game_manager, **(room_manager_options or {}))
     app.include_router(build_router(app.state.game_manager))
+    app.include_router(build_online_router(app.state.room_manager))
 
     if FRONTEND_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")

@@ -56,6 +56,37 @@ export class ShotClock {
     }, 1000);
   }
 
+  /**
+   * Online play: the server owns the clock and sends how much of the turn is left;
+   * this only counts down on screen. Expiry is the server's call, so no callback.
+   */
+  follow(msLeft, length) {
+    this.stop();
+    this.length = length;
+    if (!length || msLeft == null) {
+      this.panel.classList.add('off');
+      this.mini.textContent = '';
+      return;
+    }
+    this.panel.classList.remove('off');
+    const slots = length >= 100 ? 3 : 2;
+    if (this.digits.querySelectorAll('g').length !== slots) this.build(slots);
+    const deadline = performance.now() + msLeft;
+    let shown = null;
+    const tick = () => {
+      const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+      if (seconds === shown) return;
+      // Snapshots re-sync the clock mid-second; beep only when the number really changes
+      const changed = seconds !== this.seconds;
+      shown = seconds;
+      this.seconds = seconds;
+      this.render();
+      if (changed && seconds <= WARNING_SECONDS && seconds > 0) sfx.playClockBeep();
+    };
+    tick();
+    this.timer = setInterval(tick, 200);
+  }
+
   stop() {
     if (this.timer) {
       clearInterval(this.timer);

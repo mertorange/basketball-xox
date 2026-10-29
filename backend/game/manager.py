@@ -22,7 +22,8 @@ class GameManager:
         self.active_games: Dict[str, GameState] = {}
 
     def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
-                    min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed") -> GameState:
+                    min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed",
+                    first_player: str = "X") -> GameState:
         rows, cols = self.generators[league].generate(grid_style, min_answers)
         game = GameState(
             game_id=uuid.uuid4().hex[:8],
@@ -33,7 +34,7 @@ class GameManager:
             row_criteria=[to_criterion(s) for s in rows],
             col_criteria=[to_criterion(s) for s in cols],
             grid=[[Cell(row=r, col=c) for c in range(3)] for r in range(3)],
-            current_player="X",
+            current_player=first_player,
             player1_name=player1_name.strip() or "Player 1",
             player2_name=player2_name.strip() or "Player 2",
         )
@@ -107,6 +108,17 @@ class GameManager:
         game.current_player = other_player(mover)
         return MoveResult(success=True, message=f"{player['name']} confirmed for {row_spec.label} & {col_spec.label}.",
                           current_player=game.current_player, cell=cell)
+
+    def forfeit(self, game_id: str, loser: str) -> Optional[GameState]:
+        """Ends a running game in the other player's favour (left or lost connection)."""
+        game = self.active_games.get(game_id)
+        if not game or game.status == "finished":
+            return None
+        game.status, game.winner = "finished", other_player(loser)
+        return game
+
+    def discard(self, game_id: str) -> None:
+        self.active_games.pop(game_id, None)
 
     @staticmethod
     def _turnover(game: GameState, message: str) -> MoveResult:

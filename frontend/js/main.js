@@ -1,206 +1,292 @@
-// Hoop Grid: two-player basketball XOX on a scorer's sheet. Game flow lives here; every
-// part of the screen has its own module.
+// Hoop Grid: two-player basketball XOX on a scorer's sheet. This module owns the menu, the
+// screens and the dialogs; the game itself runs in a controller: HotSeatGame (one device)
+// or OnlineGame (a room shared over a WebSocket).
 
 import { api } from './api.js';
-import { drawWinStroke, renderBoard } from './board.js';
+import { drawWinStroke } from './board.js';
 import { ShotClock } from './clock.js';
-import { $, closeModal, isOpen, openModal } from './dom.js';
-import { PlayByPlay, renderTallies, setStatus } from './scoresheet.js';
+import { $, closeModal, escapeHtml, isOpen, openModal } from './dom.js';
+import { HotSeatGame, readNames } from './hotseat.js';
+import { hasSeat } from './online.js';
+import { OnlineGame } from './onlinegame.js';
+import { PlayByPlay } from './scoresheet.js';
 import { PlayerSlip } from './slip.js';
-import { sfx } from './sound.js';
 
-const state = {
-  game: null,
-  settings: { league: 'nba', clock: 60, density: 2, style: 'mixed' },
-  scores: { X: 0, O: 0 },
-  cell: null,          // the box the slip is open for
-  pending: false       // a pick is being checked; the clock must not also fire
-};
+let active = null; // the running controller
 
-const screens = { menu: $('screen-menu'), game: $('screen-game') };
+const screens = { menu: $('screen-menu'), lobby: $('screen-lobby'), game: $('screen-game') };
 const modals = { gameover: $('modal-gameover'), rules: $('modal-rules-popup') };
-const playByPlay = new PlayByPlay($('pbp-log'));
-const clock = new ShotClock($('shotclock-display'), $('clock-digits'), $('modal-clock-num'), onShotClockExpired);
-const slip = new PlayerSlip(confirmPick);
 
-const playerName = (mark) => (mark === 'X' ? state.game.player1_name : state.game.player2_name);
+const ui = {
+  clock: new ShotClock($('shotclock-display'), $('clock-digits'), $('modal-clock-num'),
+    () => active && active.clockExpired()),
+  slip: new PlayerSlip((name) => active && active.pick(name), () => active && active.slipCancelled()),
+  playByPlay: new PlayByPlay($('pbp-log')),
+  showGame,
+  showLobby,
+  showLobbyError: (reason) => { $('lobby-error').textContent = reason; },
+  showFinal,
+  hideFinal: () => closeModal(modals.gameover),
+  setPresence,
+  showMenu
+};
 
 window.addEventListener('DOMContentLoaded', setupHandlers);
 
+// ---------- Menu ----------
+
+function readSettings(form) {
+  const data = new FormData(form);
+  return {
+    mode: data.get('mode'),
+    league: data.get('league'),
+    clock: parseInt(data.get('clock'), 10) || 0,
+    density: parseInt(data.get('density'), 10) || 2,
+    style: data.get('style') || 'mixed'
+  };
+}
+
+function syncMenuMode() {
+  const mode = new FormData($('setup-form')).get('mode');
+  $('setup-form').dataset.mode = mode;
+  $('btn-launch-game').textContent = mode === 'online' ? 'Create room' : 'Tip-off';
+}
+
 function setupHandlers() {
-  $('setup-form').addEventListener('submit', (e) => {
+  const form = $('setup-form');
+  form.querySelectorAll('input[name=mode]').forEach(input => input.addEventListener('change', syncMenuMode));
+
+  // An invite link (?room=KQ7M) opens the menu in online mode with the code filled in
+  const invited = new URLSearchParams(location.search).get('room');
+  if (invited) {
+    form.querySelector('input[name=mode][value=online]').checked = true;
+    $('join-code').value = invited.toUpperCase();
+  }
+  syncMenuMode();
+  // A reload mid-game: this tab already has a seat, so go straight back to it
+  if (invited && hasSeat(invited.toUpperCase())) {
+    startController(new OnlineGame(ui, invited.toUpperCase(), onlineName()));
+  }
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const data = new FormData(e.target);
-    state.settings = {
-      league: data.get('league'),
-      clock: parseInt(data.get('clock'), 10) || 0,
-      density: parseInt(data.get('density'), 10) || 2,
-      style: data.get('style') || 'mixed'
-    };
-    startNewGame(true);
+    const settings = readSettings(form);
+    $('menu-error').textContent = '';
+    if (settings.mode === 'online') {
+      await createRoom(settings);
+    } else {
+      startController(new HotSeatGame(ui, settings, readNames()));
+    }
+  });
+  $('btn-join-room').addEventListener('click', joinRoom);
+  $('join-code').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      joinRoom();
+    }
   });
 
-  $('btn-game-exit').addEventListener('click', showMenu);
-  $('btn-game-new').addEventListener('click', () => startNewGame(false));
+  $('btn-game-exit').addEventListener('click', leaveToMenu);
+  $('btn-lobby-leave').addEventListener('click', leaveToMenu);
+  $('btn-game-new').addEventListener('click', () => active && active.newGrid && active.newGrid());
+  $('btn-ready').addEventListener('click', () => {
+    if (!active || !active.ready) return;
+    active.ready();
+    $('btn-ready').disabled = true;
+  });
+  $('btn-copy-link').addEventListener('click', copyInvite);
+
   $('btn-game-rules').addEventListener('click', () => openModal(modals.rules));
   $('btn-ack-rules').addEventListener('click', () => closeModal(modals.rules));
   $('btn-rematch-match').addEventListener('click', () => {
-    closeModal(modals.gameover);
-    startNewGame(false);
+    if (!active) return;
+    if (active instanceof HotSeatGame) closeModal(modals.gameover);
+    active.rematch();
   });
   $('btn-return-menu-go').addEventListener('click', () => {
     closeModal(modals.gameover);
-    showMenu();
+    leaveToMenu();
   });
 
   document.querySelectorAll('.cell').forEach(cell => {
-    cell.addEventListener('click', () => onCellClicked(Number(cell.dataset.row), Number(cell.dataset.col)));
+    cell.addEventListener('click', () => active && active.cellClicked(Number(cell.dataset.row), Number(cell.dataset.col)));
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (slip.isOpen) slip.close();
+    if (ui.slip.isOpen) ui.slip.cancel();
     else if (isOpen(modals.rules)) closeModal(modals.rules);
   });
 
   window.addEventListener('resize', () => {
-    if (state.game && state.game.winning_line) drawWinStroke(state.game.winning_line, state.game.winner);
+    const line = document.querySelector('#win-stroke line');
+    if (line && active && active.game) drawWinStroke(active.game.winning_line, active.game.winner);
   });
 }
 
-function showMenu() {
-  clock.stop();
-  screens.game.classList.add('hidden');
-  screens.menu.classList.remove('hidden');
+async function startController(controller) {
+  if (active) active.leave();
+  active = controller;
+  try {
+    await controller.start();
+  } catch (err) {
+    console.error(err);
+    active = null;
+    showMenu('Could not reach the game server. Is it running?');
+  }
 }
 
-async function startNewGame(isNewMatch) {
-  clock.stop();
-  $('menu-error').textContent = '';
-  setStatus('Drawing up a new grid...');
-  const { league, clock: shotClock, density, style } = state.settings;
+function onlineName() {
+  return $('name-online').value.trim() || 'Player';
+}
 
+async function createRoom(settings) {
   try {
-    state.game = await api.newGame({
-      league,
-      player1_name: $('name-p1').value.trim() || 'Player 1',
-      player2_name: $('name-p2').value.trim() || 'Player 2',
-      min_answers: density,
-      shot_clock: shotClock,
-      grid_style: style
+    const { code } = await api.createRoom({
+      league: settings.league,
+      min_answers: settings.density,
+      shot_clock: settings.clock,
+      grid_style: settings.style
     });
+    startController(new OnlineGame(ui, code, onlineName()));
   } catch (err) {
     console.error(err);
-    if (isNewMatch) $('menu-error').textContent = 'Could not reach the game server. Is it running?';
-    else setStatus('Could not reach the game server.', 'error');
+    $('menu-error').textContent = 'Could not create a room. Is the server running?';
+  }
+}
+
+async function joinRoom() {
+  const code = $('join-code').value.trim().toUpperCase();
+  $('menu-error').textContent = '';
+  if (code.length !== 4) {
+    $('menu-error').textContent = 'Room codes have four letters.';
     return;
   }
-
-  if (isNewMatch) {
-    state.scores = { X: 0, O: 0 };
-    screens.menu.classList.add('hidden');
-    screens.game.classList.remove('hidden');
+  try {
+    await api.roomInfo(code);
+  } catch (err) {
+    $('menu-error').textContent = `No room with the code ${code}.`;
+    return;
   }
+  startController(new OnlineGame(ui, code, onlineName()));
+}
+
+function leaveToMenu() {
+  if (active) active.leave();
+  active = null;
+  showMenu();
+}
+
+// ---------- Screens ----------
+
+function show(name) {
+  Object.entries(screens).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
+}
+
+function showMenu(error = null) {
+  ui.clock.stop();
+  ui.slip.close();
+  closeModal(modals.gameover);
+  if (active && error) active = null;
+  history.replaceState(null, '', location.pathname);
+  $('menu-error').textContent = error || '';
+  show('menu');
+}
+
+/** names: { X, O }; room: the room code online, null on one device; you: the local seat online */
+function showGame({ league, gameId, names, room, you = null }) {
+  show('game');
   $('meta-league').textContent = league === 'euroleague' ? 'EuroLeague' : 'NBA';
-  $('meta-game').textContent = state.game.game_id.toUpperCase();
-  $('text-name-x').textContent = state.game.player1_name;
-  $('text-name-o').textContent = state.game.player2_name;
-  renderTallies(state.scores);
-  renderBoard(state.game, league);
-  playByPlay.reset();
-  setStatus(`${state.game.player1_name} to start. Pick a box.`);
-  clock.start(shotClock);
+  $('meta-game').textContent = gameId.toUpperCase();
+  $('meta-room-wrap').hidden = !room;
+  $('meta-room').textContent = room || '';
+  $('btn-game-new').hidden = Boolean(room);
+  $('text-name-x').textContent = names.X;
+  $('text-name-o').textContent = names.O;
+  $('label-x').textContent = you === 'X' ? 'Team A · You' : 'Team A';
+  $('label-o').textContent = you === 'O' ? 'Team B · You' : 'Team B';
+  if (!room) setPresence(null);
 }
 
-async function refreshGame(fresh = null) {
-  state.game = await api.getGame(state.game.game_id);
-  renderBoard(state.game, state.settings.league, fresh);
+function setPresence(seats, you) {
+  ['X', 'O'].forEach(mark => {
+    const panel = $(`panel-${mark.toLowerCase()}`);
+    const seat = seats && seats[mark];
+    panel.classList.toggle('offline', Boolean(seats) && (!seat || !seat.connected) && mark !== you);
+  });
 }
 
-function onCellClicked(row, col) {
-  const game = state.game;
-  if (!game || game.status === 'finished' || state.pending) return;
-  if (game.grid[row][col].claimed_by) {
-    setStatus('That box is taken. Pick an open one.', 'error');
+const CLOCK_LABEL = (s) => (s ? `${s} sec clock` : 'no clock');
+
+function showLobby(room, code) {
+  show('lobby');
+  $('lobby-error').textContent = '';
+  $('lobby-code').textContent = code;
+  const link = `${location.origin}${location.pathname}?room=${code}`;
+  $('lobby-link').textContent = link;
+  history.replaceState(null, '', `?room=${code}`);
+
+  if (!room) {
+    $('lobby-settings').textContent = 'Connecting...';
+    $('lobby-seats').innerHTML = '';
+    $('btn-ready').disabled = true;
     return;
   }
-  state.cell = { row, col };
-  slip.open(state.settings.league, row, col, game.row_criteria[row].display, game.col_criteria[col].display);
+  const s = room.settings;
+  $('lobby-settings').textContent = [
+    s.league === 'euroleague' ? 'EuroLeague' : 'NBA',
+    s.grid_style === 'mixed' ? 'mixed grid' : 'classic grid',
+    CLOCK_LABEL(s.shot_clock),
+    `${s.min_answers}+ answers a box`
+  ].join(' · ');
+
+  $('lobby-seats').innerHTML = ['X', 'O'].map(mark => {
+    const seat = room.seats[mark];
+    const label = mark === 'X' ? 'Team A' : 'Team B';
+    if (!seat) return `<li><b class="ink-${mark.toLowerCase()}">${mark}</b><span class="seat-name empty">Waiting for a player</span><span class="seat-state">${label}</span></li>`;
+    const state = !seat.connected ? 'Offline' : seat.ready ? 'Ready' : 'Not ready';
+    const you = mark === room.you ? ' <small>(you)</small>' : '';
+    return `<li class="${seat.ready ? 'is-ready' : ''}"><b class="ink-${mark.toLowerCase()}">${mark}</b>` +
+      `<span class="seat-name">${escapeHtml(seat.name)}${you}</span><span class="seat-state">${state}</span></li>`;
+  }).join('');
+
+  const me = room.seats[room.you];
+  const full = Boolean(room.seats.X && room.seats.O);
+  $('btn-ready').disabled = !full || Boolean(me && me.ready);
+  $('btn-ready').textContent = me && me.ready ? 'Ready ✓' : 'Ready';
+  $('lobby-hint').textContent = full ? 'Tip-off when both players are ready.' : 'Send the link or the code to your opponent.';
 }
 
-async function confirmPick(name) {
-  if (!state.cell || state.pending) return;
-  state.pending = true;
-  clock.stop();
-  const mover = state.game.current_player;
-  const { row, col } = state.cell;
-  setStatus(`Checking ${name}...`);
-
+async function copyInvite() {
+  const link = $('lobby-link').textContent;
   try {
-    const result = await api.move(state.game.game_id, row, col, name);
-    if (result.success) {
-      sfx.playScore();
-      await refreshGame({ row, col });
-      const placed = state.game.grid[row][col].player_name || name;
-      playByPlay.log(mover, `${placed} · ${state.game.row_criteria[row].display} × ${state.game.col_criteria[col].display}`);
-      if (result.game_over) {
-        finishGame(result);
-      } else {
-        setStatus(`Good. ${playerName(state.game.current_player)} is up.`, 'success');
-        clock.start(state.settings.clock);
-      }
-    } else {
-      sfx.playTurnover();
-      await refreshGame();
-      playByPlay.log(mover, `Turnover: ${name}`, true);
-      setStatus(`${result.message.replace(/^Turnover!\s*/, 'Turnover. ')} ${playerName(state.game.current_player)} has the ball.`, 'error');
-      clock.start(state.settings.clock);
-    }
+    await navigator.clipboard.writeText(link);
+    $('btn-copy-link').textContent = 'Copied';
   } catch (err) {
-    console.error(err);
-    setStatus('Could not reach the game server.', 'error');
-  } finally {
-    state.pending = false;
+    $('btn-copy-link').textContent = 'Copy failed';
   }
+  setTimeout(() => { $('btn-copy-link').textContent = 'Copy link'; }, 1600);
 }
 
-async function onShotClockExpired() {
-  if (state.pending || !state.game || state.game.status === 'finished') return;
-  sfx.playArenaBuzzer();
-  slip.close();
-  const offender = state.game.current_player;
-  try {
-    await api.shotClockViolation(state.game.game_id);
-    await refreshGame();
-    playByPlay.log(offender, 'Shot clock violation', true);
-    setStatus(`Shot clock violation. ${playerName(state.game.current_player)} has the ball.`, 'error');
-    clock.start(state.settings.clock);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function finishGame(result) {
-  clock.stop();
+/**
+ * winner: 'X' | 'O' | 'DRAW'; winnerName: shown in the title; waiting: online rematch status line;
+ * canRematch: false once the local player has asked for a rematch; byForfeit: the other side left
+ */
+function showFinal({ winner, winnerName, names, scores, waiting = null, canRematch = true, byForfeit = false }) {
   const stamp = $('go-stamp');
   stamp.className = 'stamp';
-  if (result.winner === 'X' || result.winner === 'O') {
-    sfx.playWin();
-    state.scores[result.winner]++;
-    renderTallies(state.scores);
-    const winner = playerName(result.winner);
+  if (winner === 'X' || winner === 'O') {
     stamp.textContent = 'Final';
-    stamp.classList.add(result.winner.toLowerCase());
-    $('go-title').textContent = `${winner} wins`;
-    $('go-desc').textContent =
-      `Three in a row. Series: ${state.game.player1_name} ${state.scores.X} – ${state.scores.O} ${state.game.player2_name}`;
-    setStatus(`${winner} wins the grid.`, 'success');
+    stamp.classList.add(winner.toLowerCase());
+    $('go-title').textContent = winnerName === 'You' ? 'You win' : `${winnerName} wins`;
+    $('go-desc').textContent = `${byForfeit ? 'By forfeit' : 'Three in a row'}. Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
   } else {
     stamp.textContent = 'Draw';
     stamp.classList.add('draw');
     $('go-title').textContent = 'No winner';
-    $('go-desc').textContent = 'All nine boxes filled without a line.';
-    setStatus('Draw. All nine boxes filled.');
+    $('go-desc').textContent = `All nine boxes filled without a line. Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
   }
-  setTimeout(() => openModal(modals.gameover), 900);
+  $('go-waiting').textContent = waiting || '';
+  $('btn-rematch-match').disabled = !canRematch;
+  openModal(modals.gameover);
 }

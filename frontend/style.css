@@ -739,3 +739,88 @@ button:disabled { cursor: not-allowed; }
   .slip-req { font-size: 20px; }
   .slip-input { font-size: 24px; }
 }
+
+/* ---------- Online: menu fields, lobby, presence ---------- */
+
+.setup[data-mode="hotseat"] .only-online,
+.setup[data-mode="online"] .only-hotseat { display: none; }
+
+.join-field { display: grid; gap: 16px; }
+.join-row { display: flex; align-items: flex-end; gap: 16px; }
+.join-row .line-field { flex: 0 0 9em; }
+.join-row input { letter-spacing: 0.12em; }
+.hint { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+
+#screen-lobby .field { border: 0; border-bottom: 1px solid var(--rule); }
+#screen-lobby .field-label { margin-bottom: 10px; }
+#lobby-code { letter-spacing: 0.06em; }
+
+.invite { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.invite code {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px dashed var(--rule);
+  background: var(--paper-deep);
+  overflow-wrap: anywhere;
+}
+
+.seats { list-style: none; }
+.seats li {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--rule);
+}
+.seats li:last-child { border-bottom: 0; }
+.seats b { font-family: var(--display); font-weight: 900; font-size: 30px; line-height: 1; }
+.seat-name { font-family: var(--display); font-weight: 800; font-size: 24px; text-transform: uppercase; }
+.seat-name small { font-family: var(--mono); font-weight: 400; font-size: 11px; text-transform: none; color: var(--ink-faint); }
+.seat-name.empty { color: var(--rule); }
+.seat-state { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+.seats li.is-ready .seat-state { color: var(--ink); background: linear-gradient(transparent 50%, var(--marker) 50%); }
+#lobby-hint { margin-top: 8px; }
+
+.lobby-actions { display: flex; align-items: center; gap: 12px; padding: 0 32px; }
+.lobby-actions .btn-tipoff { flex: 1; margin: 20px 0 8px; }
+#screen-lobby .form-error { margin-top: 4px; }
+
+.presence {
+  position: absolute;
+  top: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--x);
+  visibility: hidden;
+}
+.team-x .presence { right: 16px; }
+.team-o .presence { left: 16px; }
+.team.offline .presence { visibility: visible; }
+.team.offline .team-name, .team.offline .team-mark { opacity: 0.45; }
+
+/* The opponent's open box: a dashed pencil outline in their colour */
+.cell.peek::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px dashed currentColor;
+  pointer-events: none;
+}
+.cell.peek-x { color: var(--x); }
+.cell.peek-o { color: var(--o); }
+
+.board-wrap.locked .cell:not(.claimed) { cursor: not-allowed; }
+.board-wrap.locked .cell:not(.claimed):hover { background: var(--paper); }
+
+.final-waiting { min-height: 18px; margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--ink); }
+.btn-ink:disabled { cursor: default; }
+
+@media (max-width: 640px) {
+  .join-row { flex-wrap: wrap; }
+  .lobby-actions { padding: 0 16px; flex-wrap: wrap; }
+  .lobby-actions .btn-line { order: 2; }
+}

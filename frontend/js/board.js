@@ -92,6 +92,16 @@ export function drawWinStroke(line, winner) {
     `<line pathLength="1" x1="${x1 - dx}" y1="${y1 - dy}" x2="${x2 + dx}" y2="${y2 + dy}" style="stroke:${colour}"/>`;
 }
 
+/** Online: mark the box the player on the clock has open, and lock the grid when it isn't your turn. */
+export function showFocus(focus, mark) {
+  document.querySelectorAll('.cell.peek').forEach(c => c.classList.remove('peek', 'peek-x', 'peek-o'));
+  if (focus) $(`box-${focus.row}-${focus.col}`).classList.add('peek', `peek-${mark.toLowerCase()}`);
+}
+
+export function lockBoard(locked) {
+  $('board-wrap').classList.toggle('locked', locked);
+}
+
 export function selectCell(row, col) {
   clearSelection();
   $(`box-${row}-${col}`).classList.add('selected');

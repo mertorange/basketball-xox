@@ -41,6 +41,14 @@ class NewGameRequest(BaseModel):
     min_answers: int = Field(2, ge=1, le=4)
     shot_clock: Optional[int] = Field(60, ge=0, le=600)
     grid_style: GridStyle = "mixed"
+    first_player: Mark = "X"
+
+
+class CreateRoomRequest(BaseModel):
+    league: Literal["nba", "euroleague"] = "nba"
+    min_answers: int = Field(2, ge=1, le=4)
+    shot_clock: int = Field(30, ge=0, le=600)
+    grid_style: GridStyle = "mixed"
 
 
 class MoveRequest(BaseModel):

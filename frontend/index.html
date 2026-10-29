@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=5">
+  <link rel="stylesheet" href="/static/style.css?v=6">
 </head>
 <body>
   <main class="sheet">
@@ -22,7 +22,38 @@
         <span class="form-no">Form HG&#8209;1</span>
       </header>
 
-      <form class="setup" id="setup-form" autocomplete="off">
+      <form class="setup" id="setup-form" autocomplete="off" data-mode="hotseat">
+        <fieldset class="field">
+          <legend class="field-label">Play</legend>
+          <div class="choices choices-wide">
+            <label class="choice">
+              <input type="radio" name="mode" value="hotseat" checked>
+              <span class="choice-box" aria-hidden="true"></span>
+              <span class="choice-text">Same device<small>pass the phone or share the laptop</small></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="mode" value="online">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span class="choice-text">Online room<small>each player on their own device, with a room code</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="field join-field only-online">
+          <label class="line-field">
+            <span class="field-label">Your name</span>
+            <input type="text" id="name-online" value="" placeholder="Player" maxlength="16" spellcheck="false">
+          </label>
+          <div class="join-row">
+            <label class="line-field">
+              <span class="field-label">Have a code?</span>
+              <input type="text" id="join-code" maxlength="4" placeholder="KQ7M" spellcheck="false" autocapitalize="characters">
+            </label>
+            <button type="button" class="btn btn-line" id="btn-join-room">Join room</button>
+          </div>
+          <p class="hint">Or set up a new room below and send the code to your opponent.</p>
+        </div>
+
         <fieldset class="field">
           <legend class="field-label">Competition</legend>
           <div class="choices choices-wide">
@@ -74,7 +105,7 @@
           </div>
         </fieldset>
 
-        <div class="field teams-field">
+        <div class="field teams-field only-hotseat">
           <label class="line-field">
             <span class="field-label">Team A <b class="ink-x">X</b></span>
             <input type="text" id="name-p1" value="Player 1" maxlength="16" spellcheck="false">
@@ -94,6 +125,37 @@
       </footer>
     </section>
 
+    <!-- ONLINE LOBBY -->
+    <section class="screen hidden" id="screen-lobby">
+      <header class="form-head">
+        <div>
+          <h1 class="wordmark">Room <span id="lobby-code">&mdash;</span></h1>
+          <p class="form-sub" id="lobby-settings">Connecting...</p>
+        </div>
+        <span class="form-no">Online</span>
+      </header>
+
+      <div class="field">
+        <span class="field-label">Invite</span>
+        <div class="invite">
+          <code id="lobby-link"></code>
+          <button type="button" class="btn btn-line" id="btn-copy-link">Copy link</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field-label">Players</span>
+        <ul class="seats" id="lobby-seats"></ul>
+        <p class="hint" id="lobby-hint"></p>
+      </div>
+
+      <div class="lobby-actions">
+        <button type="button" class="btn btn-line" id="btn-lobby-leave">Leave room</button>
+        <button type="button" class="btn btn-ink btn-tipoff" id="btn-ready" disabled>Ready</button>
+      </div>
+      <p class="form-error" id="lobby-error" role="alert"></p>
+    </section>
+
     <!-- GAME SHEET -->
     <section class="screen hidden" id="screen-game">
       <header class="game-head">
@@ -101,6 +163,7 @@
         <dl class="meta">
           <div><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
           <div><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
+          <div id="meta-room-wrap" hidden><dt>Room</dt><dd id="meta-room"></dd></div>
         </dl>
         <nav class="head-actions">
           <button type="button" class="btn-text" id="btn-game-rules">Rules</button>
@@ -113,11 +176,12 @@
         <div class="team team-x" id="panel-x">
           <span class="team-mark">X</span>
           <div class="team-body">
-            <span class="team-label">Team A</span>
+            <span class="team-label" id="label-x">Team A</span>
             <span class="team-name" id="text-name-x">Player 1</span>
             <span class="tally" id="tally-x" aria-label="0 wins"></span>
           </div>
           <span class="possession">On the clock</span>
+          <span class="presence">Connection lost</span>
         </div>
 
         <div class="clock" id="shotclock-display" aria-label="Shot clock">
@@ -128,11 +192,12 @@
         <div class="team team-o" id="panel-o">
           <span class="team-mark">O</span>
           <div class="team-body">
-            <span class="team-label">Team B</span>
+            <span class="team-label" id="label-o">Team B</span>
             <span class="team-name" id="text-name-o">Player 2</span>
             <span class="tally" id="tally-o" aria-label="0 wins"></span>
           </div>
           <span class="possession">On the clock</span>
+          <span class="presence">Connection lost</span>
         </div>
       </div>
 
@@ -210,6 +275,7 @@
       <span class="stamp" id="go-stamp">Final</span>
       <h2 class="final-title" id="go-title">Player 1 wins</h2>
       <p class="final-desc" id="go-desc"></p>
+      <p class="final-waiting" id="go-waiting" aria-live="polite"></p>
       <div class="slip-actions">
         <button type="button" class="btn btn-line" id="btn-return-menu-go">Menu</button>
         <button type="button" class="btn btn-ink" id="btn-rematch-match">Rematch</button>
@@ -222,7 +288,7 @@
     <div class="slip" role="dialog" aria-modal="true" aria-labelledby="rules-title">
       <h2 class="slip-title" id="rules-title">How to play</h2>
       <ol class="rules">
-        <li>Two players share the device. Team A plays <b class="ink-x">X</b>, Team B plays <b class="ink-o">O</b>.</li>
+        <li>Two players, on one device or in an online room. Team A plays <b class="ink-x">X</b>, Team B plays <b class="ink-o">O</b>; the first move alternates between grids.</li>
         <li>Pick an open box and name a player who fits both its row and its column.</li>
         <li>Country criteria mean the player's country of birth. Awards, draft slots, colleges, eras and career totals work the same way: the player must fit both.</li>
         <li>A wrong name, a player already used, or an expired shot clock is a turnover: the turn passes.</li>
@@ -234,6 +300,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=5"></script>
+  <script type="module" src="/static/js/main.js?v=6"></script>
 </body>
 </html>

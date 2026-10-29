@@ -23,6 +23,7 @@ def build_router(game_manager) -> APIRouter:
             min_answers=req.min_answers,
             shot_clock=req.shot_clock,
             grid_style=req.grid_style,
+            first_player=req.first_player,
         )
 
     @router.get("/game/{game_id}", response_model=GameState)

@@ -20,5 +20,7 @@ export const api = {
   move: (gameId, row, col, playerName) => post('/api/move', { game_id: gameId, row, col, player_name: playerName }),
   shotClockViolation: (gameId) => post('/api/shot-clock-violation', { game_id: gameId }),
   searchPlayers: (league, query) =>
-    request(`/api/search-players?league=${encodeURIComponent(league)}&q=${encodeURIComponent(query)}`)
+    request(`/api/search-players?league=${encodeURIComponent(league)}&q=${encodeURIComponent(query)}`),
+  createRoom: (settings) => post('/api/rooms', settings),
+  roomInfo: (code) => request(`/api/rooms/${encodeURIComponent(code)}`)
 };

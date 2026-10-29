@@ -1,0 +1,47 @@
+"""WebSocket messages, client to server. Server messages are plain dicts built in rooms.py:
+
+    {"type": "welcome", "token", "seat"}        after join: keep the token to reconnect
+    {"type": "room", ...snapshot}               the full room state, after every change
+    {"type": "event", "kind", "mark", "text"}   something happened: for sounds and the log
+    {"type": "error", "reason"}
+"""
+
+from typing import Annotated, Literal, Optional, Union
+
+from pydantic import BaseModel, Field, TypeAdapter
+
+
+class Join(BaseModel):
+    type: Literal["join"]
+    name: str = Field("Player", max_length=24)
+    token: Optional[str] = Field(None, max_length=64)
+
+
+class Ready(BaseModel):
+    type: Literal["ready"]
+
+
+class Focus(BaseModel):
+    """The player on the clock opened a box (or closed it: row and col None)."""
+    type: Literal["focus"]
+    row: Optional[int] = Field(None, ge=0, le=2)
+    col: Optional[int] = Field(None, ge=0, le=2)
+
+
+class Pick(BaseModel):
+    type: Literal["pick"]
+    row: int = Field(ge=0, le=2)
+    col: int = Field(ge=0, le=2)
+    name: str = Field(max_length=80)
+
+
+class Rematch(BaseModel):
+    type: Literal["rematch"]
+
+
+class Leave(BaseModel):
+    type: Literal["leave"]
+
+
+ClientMessage = Annotated[Union[Join, Ready, Focus, Pick, Rematch, Leave], Field(discriminator="type")]
+client_message = TypeAdapter(ClientMessage)

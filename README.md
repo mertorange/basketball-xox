@@ -8,7 +8,7 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 
 ## 🎮 Game Rules
 1. **The Grid:** 3 rows and 3 columns (9 boxes total).
-2. **Turn-based 1v1:** Player 1 (`X`) vs Player 2 (`O`).
+2. **Turn-based 1v1:** Player 1 (`X`) vs Player 2 (`O`), on one device or in an online room. The first move alternates between grids.
 3. **Drafting a Player:** To claim a box, you must pick a basketball player who matches **BOTH** the row and column criteria. Country criteria use the player's country of birth (Kyrie Irving counts for Australia).
 4. **Fouls / Turnovers:** If you make an invalid guess or name a player that was already picked, you commit a turnover and forfeit your turn to your opponent!
 5. **No Re-use:** Each basketball player can only be picked once per match.
@@ -20,6 +20,7 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 - **Two League Modes:** 
   - 🏀 **NBA Mode:** Star players, historic franchises, and international NBA talents.
   - 🏆 **EuroLeague Mode:** Continental giants (Real Madrid, Panathinaikos, Fenerbahçe, Olympiacos, Barcelona, etc.) and European legends.
+- **Online Rooms:** Create a room, send the four-letter code or the invite link, and play from two devices. The server runs the shot clock, shows which box your opponent has open, keeps the series score, and holds your seat if you reload (two minutes to come back before a forfeit).
 - **Two Grid Styles:** *Mixed* (default) crosses teams with awards (champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP; EuroLeague title, Final Four), draft slots (#1 pick, top 10, second round, undrafted), colleges, eras and career marks (5+ franchises; 1,000+ EuroLeague points…). *Classic* keeps to teams and countries of birth.
 - **Smart Balanced Board Generation:** Every grid is checked so each box has at least the chosen number of valid answers.
 - **Real-Time Autocomplete Search:** Search player names smoothly with keyboard navigation and typo-free selection.
@@ -46,7 +47,10 @@ Alternatively, run manually with uvicorn:
 uvicorn backend.app:app --reload --port 8000
 ```
 
-### 3. Tests
+### 3. Deploying online play
+Rooms live in the server's memory, so run **one** worker (`uvicorn backend.app:app --workers 1`). Behind a reverse proxy, forward WebSocket upgrades on `/ws/` (nginx: `proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade";`). Restarting the server ends open rooms.
+
+### 4. Tests
 ```bash
 pip install pytest
 python -m pytest tests
@@ -69,6 +73,10 @@ basketball-xox/
 │   │   ├── board.py          # Grid generation (classic / mixed) with answer checks
 │   │   ├── rules.py          # Lines, draws, turns
 │   │   └── manager.py        # Running games, moves, turnovers
+│   ├── online/
+│   │   ├── rooms.py          # Rooms, seats, server-side shot clock, reconnects, rematches
+│   │   ├── protocol.py       # WebSocket message types
+│   │   └── ws.py             # /api/rooms and /ws/rooms/{code}
 │   ├── data/                 # Generated datasets (see DATA.md)
 │   └── scripts/
 │       ├── build_databases.py   # CLI
@@ -76,8 +84,9 @@ basketball-xox/
 ├── frontend/
 │   ├── index.html            # Scoresheet layout
 │   ├── style.css             # Paper-and-ink styling
-│   └── js/                   # main.js (game flow), api, board, clock, slip, scoresheet, sound, dom
-├── tests/                    # pytest: criteria, board, game, builder helpers
+│   └── js/                   # main.js (menu, screens), hotseat.js / onlinegame.js (controllers),
+│                             # online.js (room socket), api, board, clock, slip, scoresheet, sound, dom
+├── tests/                    # pytest: criteria, board, game, API, online rooms, builder helpers
 ├── DATA.md                   # Data sources, pipeline, rules, gaps, licensing
 ├── requirements.txt
 └── run.py                    # One-click launcher
@@ -98,4 +107,6 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [x] Stat & award criteria: NBA champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP, draft slots, colleges, eras; EuroLeague champion, Final Four, career totals. Not yet: *EuroLeague MVP* and *50+ Pt Game* (no source; see DATA.md).
 - [ ] Daily data refresh (cron) once the game runs on a server.
 - [ ] Connect SQLite / PostgreSQL database for full career player stats.
-- [ ] Online multiplayer room codes via WebSockets.
+- [x] Online multiplayer room codes via WebSockets (private rooms).
+- [ ] Spectator links and a post-game "all answers" view.
+- [ ] Quick match queue, then accounts and ratings.
