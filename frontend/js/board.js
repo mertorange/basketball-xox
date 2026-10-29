@@ -110,8 +110,14 @@ export function drawWinStroke(line, winner) {
   };
   const [x1, y1] = centre(line[0]);
   const [x2, y2] = centre(line[2]);
-  // A straight red line from the middle of the first mark to the middle of the last
-  $('win-stroke').innerHTML = `<path pathLength="1" d="M${x1} ${y1}L${x2} ${y2}"/>`;
+  // A straight red line through the marks' middles, starting a little before the first
+  // and running on a little past the last (about 40% of a mark's width at each end)
+  const markWidth = ($(`box-${line[0][0]}-${line[0][1]}`).querySelector('.mark') || $('box-0-0'))
+    .getBoundingClientRect().width;
+  const length = Math.hypot(x2 - x1, y2 - y1) || 1;
+  const ex = ((x2 - x1) / length) * markWidth * 0.4;
+  const ey = ((y2 - y1) / length) * markWidth * 0.4;
+  $('win-stroke').innerHTML = `<path pathLength="1" d="M${x1 - ex} ${y1 - ey}L${x2 + ex} ${y2 + ey}"/>`;
 }
 
 /** Online: mark the box the player on the clock has open, and lock the grid when it isn't your turn. */
