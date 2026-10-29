@@ -17,6 +17,7 @@ function post(path, body) {
 export const api = {
   newGame: (settings) => post('/api/new-game', settings),
   getGame: (gameId) => request(`/api/game/${gameId}`),
+  answers: (gameId) => request(`/api/game/${gameId}/answers`),
   move: (gameId, row, col, playerName) => post('/api/move', { game_id: gameId, row, col, player_name: playerName }),
   shotClockViolation: (gameId) => post('/api/shot-clock-violation', { game_id: gameId }),
   searchPlayers: (league, query) =>

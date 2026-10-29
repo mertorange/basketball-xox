@@ -824,3 +824,43 @@ button:disabled { cursor: not-allowed; }
   .lobby-actions { padding: 0 16px; flex-wrap: wrap; }
   .lobby-actions .btn-line { order: 2; }
 }
+
+/* ---------- Answers after the game ---------- */
+
+.overlay#modal-answers { padding-top: 4vh; overflow-y: auto; }
+.slip.answers { max-width: 860px; }
+.answers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+  margin-top: 14px;
+}
+.ans-box {
+  padding: 10px 10px 12px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  min-width: 0;
+}
+.ans-head {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.ans-head span { font-family: var(--mono); font-weight: 400; color: var(--ink-faint); }
+.ans-picked { margin-top: 6px; font-family: var(--display); font-weight: 800; font-size: 17px; text-transform: uppercase; }
+.ans-picked b { font-weight: 900; margin-right: 4px; }
+.ans-picked.ans-open { color: var(--rule); }
+.ans-count { margin-top: 4px; font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+.ans-list { margin-top: 6px; font-size: 13px; line-height: 1.35; color: var(--ink-soft); }
+.ans-list span { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+
+@media (max-width: 640px) {
+  .answers-grid { grid-template-columns: 1fr; }
+}
+
+.invite-label { margin-top: 14px; }

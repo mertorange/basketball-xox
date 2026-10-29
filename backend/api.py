@@ -30,6 +30,15 @@ def build_router(game_manager) -> APIRouter:
     def get_game(game_id: str):
         return game_or_404(game_id)
 
+    @router.get("/game/{game_id}/answers")
+    def get_answers(game_id: str):
+        """Only for finished games: the answer key never leaves the server mid-game."""
+        game_or_404(game_id)
+        answers = game_manager.answers(game_id)
+        if answers is None:
+            raise HTTPException(status_code=409, detail="Answers are shown when the game is over")
+        return {"game_id": game_id, "cells": answers}
+
     @router.post("/move", response_model=MoveResult)
     def submit_move(req: MoveRequest):
         return game_manager.make_move(game_id=req.game_id, row=req.row, col=req.col, player_name=req.player_name)

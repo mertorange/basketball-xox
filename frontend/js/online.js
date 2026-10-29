@@ -40,11 +40,14 @@ export class RoomConnection {
    * @param {string} name
    * @param {{onRoom, onEvent, onError, onStatus}} handlers
    *   onStatus receives 'connected' | 'reconnecting' | 'closed'
+   * @param {'player'|'spectator'} role
    */
-  constructor(code, name, handlers) {
+  constructor(code, name, handlers, role = 'player') {
     this.code = code;
     this.name = name;
     this.handlers = handlers;
+    this.role = role;
+    this.welcomed = false;
     this.socket = null;
     this.attempt = 0;
     this.leaving = false;
@@ -56,7 +59,8 @@ export class RoomConnection {
     const socket = new WebSocket(`${scheme}://${location.host}/ws/rooms/${this.code}`);
     this.socket = socket;
     socket.addEventListener('open', () => {
-      socket.send(JSON.stringify({ type: 'join', name: this.name, token: loadToken(this.code) }));
+      const token = this.role === 'player' ? loadToken(this.code) : null;
+      socket.send(JSON.stringify({ type: 'join', name: this.name, token, role: this.role }));
     });
     socket.addEventListener('message', (e) => this.receive(JSON.parse(e.data)));
     socket.addEventListener('close', () => {
@@ -73,15 +77,16 @@ export class RoomConnection {
   receive(msg) {
     if (msg.type === 'welcome') {
       this.attempt = 0;
+      this.welcomed = true;
       this.seat = msg.seat;
-      saveToken(this.code, msg.token);
+      if (msg.token) saveToken(this.code, msg.token);
       this.handlers.onStatus('connected');
     } else if (msg.type === 'room') {
       this.handlers.onRoom(msg);
     } else if (msg.type === 'event') {
       this.handlers.onEvent(msg);
     } else if (msg.type === 'error') {
-      if (!this.seat) this.leaving = true; // refused at the door (full room, bad code): don't retry
+      if (!this.welcomed) this.leaving = true; // refused at the door (full room, bad code): don't retry
       this.handlers.onError(msg.reason);
     }
   }

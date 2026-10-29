@@ -20,7 +20,8 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 - **Two League Modes:** 
   - 🏀 **NBA Mode:** Star players, historic franchises, and international NBA talents.
   - 🏆 **EuroLeague Mode:** Continental giants (Real Madrid, Panathinaikos, Fenerbahçe, Olympiacos, Barcelona, etc.) and European legends.
-- **Online Rooms:** Create a room, send the four-letter code or the invite link, and play from two devices. The server runs the shot clock, shows which box your opponent has open, keeps the series score, and holds your seat if you reload (two minutes to come back before a forfeit).
+- **Online Rooms:** Create a room, send the four-letter code or the invite link, and play from two devices. The server runs the shot clock, shows which box your opponent has open, keeps the series score, and holds your seat if you reload (two minutes to come back before a forfeit). A separate watch link lets up to 20 spectators follow the game live.
+- **Answers After the Game:** Once a grid is over, see every player who fit each box, the best known first, next to the ones you picked. The answer key never leaves the server while a game is running.
 - **Two Grid Styles:** *Mixed* (default) crosses teams with awards (champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP; EuroLeague title, Final Four), draft slots (#1 pick, top 10, second round, undrafted), colleges, eras and career marks (5+ franchises; 1,000+ EuroLeague points…). *Classic* keeps to teams and countries of birth.
 - **Smart Balanced Board Generation:** Every grid is checked so each box has at least the chosen number of valid answers.
 - **Real-Time Autocomplete Search:** Search player names smoothly with keyboard navigation and typo-free selection.
@@ -139,5 +140,5 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [ ] Run it on a VPS with a daily refresh cron.
 - [ ] Connect SQLite / PostgreSQL database for full career player stats.
 - [x] Online multiplayer room codes via WebSockets (private rooms).
-- [ ] Spectator links and a post-game "all answers" view.
+- [x] Spectator links and a post-game "all answers" view.
 - [ ] Quick match queue, then accounts and ratings.

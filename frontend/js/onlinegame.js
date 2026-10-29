@@ -13,9 +13,11 @@ export class OnlineGame {
    * @param {object} ui  shared screen parts from main.js (see HotSeatGame) plus
    *                     showLobby(room, code), hideFinal(), setPresence(seats, you), showMenu(error)
    */
-  constructor(ui, code, name) {
+  /** spectator: watch the room without a seat */
+  constructor(ui, code, name, { spectator = false } = {}) {
     this.ui = ui;
     this.code = code;
+    this.spectator = spectator;
     this.room = null;
     this.cell = null;
     this.fresh = null;          // box claimed by the last move, to animate its mark
@@ -27,11 +29,11 @@ export class OnlineGame {
       onEvent: (event) => this.onEvent(event),
       onError: (reason) => this.onError(reason),
       onStatus: (status) => this.onStatus(status)
-    });
+    }, spectator ? 'spectator' : 'player');
   }
 
   start() {
-    this.ui.showLobby(null, this.code);
+    this.ui.showLobby(null, this.code, this.spectator);
     this.conn.open();
   }
 
@@ -47,7 +49,7 @@ export class OnlineGame {
     if (phase === 'waiting' || phase === 'lobby' || !game) {
       this.ui.clock.stop();
       this.ui.hideFinal();
-      this.ui.showLobby(room, room.code);
+      this.ui.showLobby(room, room.code, this.spectator);
       return;
     }
 
@@ -58,7 +60,8 @@ export class OnlineGame {
       this.ui.hideFinal();
     }
     const league = room.settings.league;
-    this.ui.showGame({ league, gameId: game.game_id, names: this.names(), room: room.code, you: room.you });
+    this.ui.showGame({ league, gameId: game.game_id, names: this.names(), room: room.code, you: room.you,
+      spectators: room.spectators });
     renderBoard(game, league, this.fresh);
     this.fresh = null;
     renderTallies(room.scores);
@@ -144,7 +147,8 @@ export class OnlineGame {
 
   showTurn(myTurn) {
     const room = this.room;
-    const opponent = room.you === 'X' ? 'O' : 'X';
+    // Watching: talk about whoever is on the clock
+    const opponent = this.spectator ? room.game.current_player : (room.you === 'X' ? 'O' : 'X');
     let line;
     if (myTurn) {
       line = 'Your turn. Pick a box.';
@@ -170,6 +174,7 @@ export class OnlineGame {
     else if (me && me.rematch) waiting = `Waiting for ${them.name}...`;
     else if (them.rematch) waiting = `${them.name} wants a rematch.`;
 
+    if (this.spectator) waiting = null;
     const verdict = winner === 'DRAW' ? 'Draw.' : winner === room.you ? 'You win the grid.' : `${this.nameOf(winner)} wins the grid.`;
     setStatus(this.note ? `${this.note.text} ${verdict}` : verdict, winner === room.you ? 'success' : '');
 
@@ -180,7 +185,8 @@ export class OnlineGame {
       scores: room.scores,
       waiting,
       canRematch: Boolean(them) && !(me && me.rematch),
-      byForfeit: winner !== 'DRAW' && !room.game.winning_line
+      byForfeit: winner !== 'DRAW' && !room.game.winning_line,
+      spectating: this.spectator
     };
     if (this.finalShownFor === room.game.game_id) {
       this.ui.showFinal(details);
@@ -195,6 +201,10 @@ export class OnlineGame {
   cellClicked(row, col) {
     const room = this.room;
     if (!room || room.phase !== 'playing') return;
+    if (this.spectator) {
+      setStatus('You are watching this game.');
+      return;
+    }
     if (room.game.current_player !== room.you) {
       setStatus(`Wait for ${this.nameOf(room.game.current_player)} to finish their turn.`, 'error');
       return;

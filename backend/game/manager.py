@@ -5,6 +5,7 @@ import uuid
 from typing import Dict, Optional
 
 from ..catalog.criteria import CriteriaIndex, CriterionSpec
+from ..catalog.players import notability
 from ..models import Cell, Criterion, GameState, MoveResult
 from .board import BoardGenerator
 from .rules import is_full, other_player, winning_line
@@ -119,6 +120,31 @@ class GameManager:
         game.current_player = other_player(mover)
         return MoveResult(success=True, message=f"{player['name']} confirmed for {row_spec.label} & {col_spec.label}.",
                           current_player=game.current_player, cell=cell)
+
+    def answers(self, game_id: str, limit: int = 40) -> Optional[list]:
+        """Every box's valid answers, best known first, once the game is over (None before)."""
+        game = self.active_games.get(game_id)
+        if not game or game.status != "finished":
+            return None
+        index = self.index_for(game)
+        grid = []
+        for r, row_crit in enumerate(game.row_criteria):
+            row = []
+            for c, col_crit in enumerate(game.col_criteria):
+                players = index.answers(index.get(row_crit.type.value, row_crit.value),
+                                        index.get(col_crit.type.value, col_crit.value))
+                names = [p["name"] for p in sorted(players, key=lambda p: (-notability(p), p["name"]))]
+                cell = game.grid[r][c]
+                row.append({
+                    "row": row_crit.display,
+                    "col": col_crit.display,
+                    "count": len(names),
+                    "answers": names[:limit],
+                    "picked": cell.player_name,
+                    "claimed_by": cell.claimed_by,
+                })
+            grid.append(row)
+        return grid
 
     def forfeit(self, game_id: str, loser: str) -> Optional[GameState]:
         """Ends a running game in the other player's favour (left or lost connection)."""

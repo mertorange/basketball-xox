@@ -174,3 +174,44 @@ def test_leave_mid_game(online):
     assert recv_until(a, lambda m: m["type"] == "event" and m["kind"] == "left")["mark"] == "O"
     snap = room_msg(a, lambda m: "O" not in m["seats"])
     assert snap["game"]["winner"] == "X" and snap["scores"]["X"] == 1
+
+
+def watch(client, code):
+    ws = client.websocket_connect(f"/ws/rooms/{code}")
+    ws.__enter__()
+    client.sockets.callback(drop, ws)
+    ws.send_json({"type": "join", "role": "spectator"})
+    return ws, recv_until(ws, lambda m: m["type"] in ("welcome", "error"))
+
+
+def test_spectators_watch_but_cannot_play(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    s, welcome = watch(client, code)
+    assert welcome == {"type": "welcome", "token": None, "seat": None}
+    snap = room_msg(s, lambda m: m["phase"] == "playing")
+    assert snap["you"] is None and snap["spectators"] == 1
+    assert room_msg(a, lambda m: m["spectators"] == 1)
+
+    s.send_json({"type": "pick", "row": 0, "col": 0, "name": "Alpha One"})
+    assert recv_until(s, lambda m: m["type"] == "error")["reason"] == "Spectators can watch but not play."
+
+    a.send_json({"type": "focus", "row": 2, "col": 1})
+    assert room_msg(s, lambda m: m["focus"] is not None)["focus"] == {"row": 2, "col": 1}
+    a.send_json({"type": "pick", "row": 0, "col": 0, "name": "Alpha One"})
+    assert recv_until(s, lambda m: m["type"] == "event" and m["kind"] == "move")["player"] == "Alpha One"
+
+    drop(s)
+    assert room_msg(a, lambda m: m["spectators"] == 0)
+    assert len(room.seats) == 2  # watching never takes a seat
+
+
+def test_spectator_limit(online, monkeypatch):
+    from backend.online import rooms as rooms_module
+    client, rooms, _ = online
+    monkeypatch.setattr(rooms_module, "MAX_SPECTATORS", 1)
+    code = create_room(client)
+    _, first = watch(client, code)
+    _, second = watch(client, code)
+    assert first["type"] == "welcome"
+    assert second == {"type": "error", "reason": "This room has as many spectators as it can take."}

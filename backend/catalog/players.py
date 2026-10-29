@@ -49,5 +49,13 @@ class PlayerCatalog:
         return [player for _, _, player in matches[:limit]]
 
 
+def notability(player: Player) -> float:
+    """A rough fame score for ordering answer lists: awards, then career length and travel."""
+    seasons = player.get("seasons") or [0, 0]
+    stats = player.get("stats") or {}
+    return (5 * len(player.get("awards", ())) + (seasons[1] - seasons[0]) + len(player.get("teams", ()))
+            + stats.get("games", 0) / 50)
+
+
 def load_catalogs(data_dir: Path = DATA_DIR) -> Dict[str, PlayerCatalog]:
     return {league: PlayerCatalog.load(league, data_dir) for league in LEAGUE_FILES}

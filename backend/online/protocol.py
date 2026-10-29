@@ -1,6 +1,7 @@
 """WebSocket messages, client to server. Server messages are plain dicts built in rooms.py:
 
     {"type": "welcome", "token", "seat"}        after join: keep the token to reconnect
+                                                (spectators get seat None and no token)
     {"type": "room", ...snapshot}               the full room state, after every change
     {"type": "event", "kind", "mark", "text"}   something happened: for sounds and the log
     {"type": "error", "reason"}
@@ -15,6 +16,7 @@ class Join(BaseModel):
     type: Literal["join"]
     name: str = Field("Player", max_length=24)
     token: Optional[str] = Field(None, max_length=64)
+    role: Literal["player", "spectator"] = "player"
 
 
 class Ready(BaseModel):

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=6">
+  <link rel="stylesheet" href="/static/style.css?v=7">
 </head>
 <body>
   <main class="sheet">
@@ -135,11 +135,16 @@
         <span class="form-no">Online</span>
       </header>
 
-      <div class="field">
-        <span class="field-label">Invite</span>
+      <div class="field" id="lobby-invite">
+        <span class="field-label">Invite a player</span>
         <div class="invite">
           <code id="lobby-link"></code>
           <button type="button" class="btn btn-line" id="btn-copy-link">Copy link</button>
+        </div>
+        <span class="field-label invite-label">Or let others watch</span>
+        <div class="invite">
+          <code id="lobby-watch-link"></code>
+          <button type="button" class="btn btn-line" id="btn-copy-watch">Copy watch link</button>
         </div>
       </div>
 
@@ -164,6 +169,7 @@
           <div><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
           <div><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
           <div id="meta-room-wrap" hidden><dt>Room</dt><dd id="meta-room"></dd></div>
+          <div id="meta-watch-wrap" hidden><dt>Watching</dt><dd id="meta-watch">0</dd></div>
         </dl>
         <nav class="head-actions">
           <button type="button" class="btn-text" id="btn-game-rules">Rules</button>
@@ -278,8 +284,21 @@
       <p class="final-waiting" id="go-waiting" aria-live="polite"></p>
       <div class="slip-actions">
         <button type="button" class="btn btn-line" id="btn-return-menu-go">Menu</button>
+        <button type="button" class="btn btn-line" id="btn-show-answers">Answers</button>
         <button type="button" class="btn btn-ink" id="btn-rematch-match">Rematch</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ANSWERS -->
+  <div class="overlay" id="modal-answers">
+    <div class="slip answers" role="dialog" aria-modal="true" aria-labelledby="answers-title">
+      <div class="slip-head">
+        <h2 class="slip-title" id="answers-title">The answers</h2>
+        <button type="button" class="btn btn-line" id="btn-close-answers">Close</button>
+      </div>
+      <p class="hint">Every player who fit each box, the best known first.</p>
+      <div class="answers-grid" id="answers-grid"></div>
     </div>
   </div>
 
@@ -300,6 +319,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=6"></script>
+  <script type="module" src="/static/js/main.js?v=7"></script>
 </body>
 </html>

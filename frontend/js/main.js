@@ -3,6 +3,7 @@
 // or OnlineGame (a room shared over a WebSocket).
 
 import { api } from './api.js';
+import { showAnswers } from './answers.js';
 import { drawWinStroke } from './board.js';
 import { ShotClock } from './clock.js';
 import { $, closeModal, escapeHtml, isOpen, openModal } from './dom.js';
@@ -15,7 +16,7 @@ import { PlayerSlip } from './slip.js';
 let active = null; // the running controller
 
 const screens = { menu: $('screen-menu'), lobby: $('screen-lobby'), game: $('screen-game') };
-const modals = { gameover: $('modal-gameover'), rules: $('modal-rules-popup') };
+const modals = { gameover: $('modal-gameover'), rules: $('modal-rules-popup'), answers: $('modal-answers') };
 
 const ui = {
   clock: new ShotClock($('shotclock-display'), $('clock-digits'), $('modal-clock-num'),
@@ -56,16 +57,20 @@ function setupHandlers() {
   const form = $('setup-form');
   form.querySelectorAll('input[name=mode]').forEach(input => input.addEventListener('change', syncMenuMode));
 
-  // An invite link (?room=KQ7M) opens the menu in online mode with the code filled in
-  const invited = new URLSearchParams(location.search).get('room');
+  // An invite link (?room=KQ7M) opens the menu in online mode with the code filled in;
+  // a watch link (?room=KQ7M&watch=1) goes straight in as a spectator
+  const params = new URLSearchParams(location.search);
+  const invited = (params.get('room') || '').toUpperCase();
   if (invited) {
     form.querySelector('input[name=mode][value=online]').checked = true;
-    $('join-code').value = invited.toUpperCase();
+    $('join-code').value = invited;
   }
   syncMenuMode();
-  // A reload mid-game: this tab already has a seat, so go straight back to it
-  if (invited && hasSeat(invited.toUpperCase())) {
-    startController(new OnlineGame(ui, invited.toUpperCase(), onlineName()));
+  if (invited && params.get('watch')) {
+    startController(new OnlineGame(ui, invited, 'Spectator', { spectator: true }));
+  } else if (invited && hasSeat(invited)) {
+    // A reload mid-game: this tab already has a seat, so go straight back to it
+    startController(new OnlineGame(ui, invited, onlineName()));
   }
 
   form.addEventListener('submit', async (e) => {
@@ -94,7 +99,12 @@ function setupHandlers() {
     active.ready();
     $('btn-ready').disabled = true;
   });
-  $('btn-copy-link').addEventListener('click', copyInvite);
+  $('btn-copy-link').addEventListener('click', () => copyLink('lobby-link', 'btn-copy-link'));
+  $('btn-copy-watch').addEventListener('click', () => copyLink('lobby-watch-link', 'btn-copy-watch'));
+  $('btn-show-answers').addEventListener('click', () => {
+    if (active && active.game) showAnswers(active.game.game_id);
+  });
+  $('btn-close-answers').addEventListener('click', () => closeModal(modals.answers));
 
   $('btn-game-rules').addEventListener('click', () => openModal(modals.rules));
   $('btn-ack-rules').addEventListener('click', () => closeModal(modals.rules));
@@ -115,6 +125,7 @@ function setupHandlers() {
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (ui.slip.isOpen) ui.slip.cancel();
+    else if (isOpen(modals.answers)) closeModal(modals.answers);
     else if (isOpen(modals.rules)) closeModal(modals.rules);
   });
 
@@ -187,19 +198,25 @@ function showMenu(error = null) {
   ui.clock.stop();
   ui.slip.close();
   closeModal(modals.gameover);
+  closeModal(modals.answers);
   if (active && error) active = null;
   history.replaceState(null, '', location.pathname);
   $('menu-error').textContent = error || '';
   show('menu');
 }
 
-/** names: { X, O }; room: the room code online, null on one device; you: the local seat online */
-function showGame({ league, gameId, names, room, you = null }) {
+/**
+ * names: { X, O }; room: the room code online, null on one device; you: the local seat online
+ * (null when watching); spectators: how many are watching an online room
+ */
+function showGame({ league, gameId, names, room, you = null, spectators = 0 }) {
   show('game');
   $('meta-league').textContent = league === 'euroleague' ? 'EuroLeague' : 'NBA';
   $('meta-game').textContent = gameId.toUpperCase();
   $('meta-room-wrap').hidden = !room;
   $('meta-room').textContent = room || '';
+  $('meta-watch-wrap').hidden = !spectators;
+  $('meta-watch').textContent = spectators;
   $('btn-game-new').hidden = Boolean(room);
   $('text-name-x').textContent = names.X;
   $('text-name-o').textContent = names.O;
@@ -218,13 +235,16 @@ function setPresence(seats, you) {
 
 const CLOCK_LABEL = (s) => (s ? `${s} sec clock` : 'no clock');
 
-function showLobby(room, code) {
+function showLobby(room, code, spectator = false) {
   show('lobby');
   $('lobby-error').textContent = '';
   $('lobby-code').textContent = code;
-  const link = `${location.origin}${location.pathname}?room=${code}`;
-  $('lobby-link').textContent = link;
-  history.replaceState(null, '', `?room=${code}`);
+  const base = `${location.origin}${location.pathname}?room=${code}`;
+  $('lobby-link').textContent = base;
+  $('lobby-watch-link').textContent = `${base}&watch=1`;
+  $('lobby-invite').hidden = spectator;
+  $('btn-ready').hidden = spectator;
+  history.replaceState(null, '', spectator ? `?room=${code}&watch=1` : `?room=${code}`);
 
   if (!room) {
     $('lobby-settings').textContent = 'Connecting...';
@@ -254,25 +274,30 @@ function showLobby(room, code) {
   const full = Boolean(room.seats.X && room.seats.O);
   $('btn-ready').disabled = !full || Boolean(me && me.ready);
   $('btn-ready').textContent = me && me.ready ? 'Ready ✓' : 'Ready';
-  $('lobby-hint').textContent = full ? 'Tip-off when both players are ready.' : 'Send the link or the code to your opponent.';
+  const watching = room.spectators ? ` ${room.spectators} watching.` : '';
+  $('lobby-hint').textContent = (spectator ? 'You are watching; the game starts when both players are ready.'
+    : full ? 'Tip-off when both players are ready.' : 'Send the link or the code to your opponent.') + watching;
 }
 
-async function copyInvite() {
-  const link = $('lobby-link').textContent;
+async function copyLink(sourceId, buttonId) {
+  const button = $(buttonId);
+  const label = button.textContent;
   try {
-    await navigator.clipboard.writeText(link);
-    $('btn-copy-link').textContent = 'Copied';
+    await navigator.clipboard.writeText($(sourceId).textContent);
+    button.textContent = 'Copied';
   } catch (err) {
-    $('btn-copy-link').textContent = 'Copy failed';
+    button.textContent = 'Copy failed';
   }
-  setTimeout(() => { $('btn-copy-link').textContent = 'Copy link'; }, 1600);
+  setTimeout(() => { button.textContent = label; }, 1600);
 }
 
 /**
  * winner: 'X' | 'O' | 'DRAW'; winnerName: shown in the title; waiting: online rematch status line;
- * canRematch: false once the local player has asked for a rematch; byForfeit: the other side left
+ * canRematch: false once the local player has asked for a rematch; byForfeit: the other side left;
+ * spectating: no rematch button at all
  */
-function showFinal({ winner, winnerName, names, scores, waiting = null, canRematch = true, byForfeit = false }) {
+function showFinal({ winner, winnerName, names, scores, waiting = null, canRematch = true, byForfeit = false,
+                     spectating = false }) {
   const stamp = $('go-stamp');
   stamp.className = 'stamp';
   if (winner === 'X' || winner === 'O') {
@@ -288,5 +313,6 @@ function showFinal({ winner, winnerName, names, scores, waiting = null, canRemat
   }
   $('go-waiting').textContent = waiting || '';
   $('btn-rematch-match').disabled = !canRematch;
+  $('btn-rematch-match').hidden = spectating;
   openModal(modals.gameover);
 }

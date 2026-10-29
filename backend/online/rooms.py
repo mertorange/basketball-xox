@@ -19,6 +19,7 @@ CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ"  # no I, L or O: easy to read out loud
 CODE_LENGTH = 4
 DISCONNECT_GRACE = 120.0  # seconds a player may be gone mid-game before forfeiting
 IDLE_TTL = 30 * 60        # empty rooms nobody touched for this long are removed
+MAX_SPECTATORS = 20
 
 
 class RoomError(Exception):
@@ -44,6 +45,7 @@ class Room:
     code: str
     settings: dict
     seats: Dict[str, Seat] = field(default_factory=dict)
+    spectators: Set = field(default_factory=set)  # sockets watching without a seat
     scores: Dict[str, int] = field(default_factory=lambda: {"X": 0, "O": 0})
     game_id: Optional[str] = None
     next_first: str = "X"                  # who starts the next game; alternates
@@ -90,7 +92,8 @@ class RoomManager:
     def remove_idle(self) -> None:
         now = time.monotonic()
         for code, room in list(self.rooms.items()):
-            if any(s.connected for s in room.seats.values()) or now - room.last_activity < self.idle_ttl:
+            watched = room.spectators or any(s.connected for s in room.seats.values())
+            if watched or now - room.last_activity < self.idle_ttl:
                 continue
             self._stop_clock(room)
             for task in room.forfeit_tasks.values():
@@ -110,9 +113,17 @@ class RoomManager:
 
     # ---------- Connections ----------
 
-    async def connect(self, room: Room, ws, msg: Join) -> Seat:
-        """Seats a new player, or puts a returning one (same token) back in their seat."""
+    async def connect(self, room: Room, ws, msg: Join) -> Optional[Seat]:
+        """Seats a new player, puts a returning one (same token) back in their seat, or
+        adds a spectator (who gets no seat: None)."""
         async with room.lock:
+            if msg.role == "spectator":
+                if len(room.spectators) >= MAX_SPECTATORS:
+                    raise RoomError("This room has as many spectators as it can take.")
+                room.spectators.add(ws)
+                await self._send(ws, {"type": "welcome", "token": None, "seat": None})
+                await self._broadcast(room)
+                return None
             seat = next((s for s in room.seats.values()
                          if msg.token and secrets.compare_digest(s.token, msg.token)), None)
             returning = seat is not None
@@ -136,6 +147,10 @@ class RoomManager:
 
     async def disconnect(self, room: Room, ws) -> None:
         async with room.lock:
+            if ws in room.spectators:
+                room.spectators.discard(ws)
+                await self._broadcast(room)
+                return
             seat = next((s for s in room.seats.values() if ws in s.sockets), None)
             if not seat:
                 return
@@ -151,9 +166,13 @@ class RoomManager:
 
     # ---------- Player actions ----------
 
-    async def handle(self, room: Room, seat: Seat, msg) -> None:
+    async def handle(self, room: Room, seat: Optional[Seat], msg) -> None:
         async with room.lock:
             room.last_activity = time.monotonic()
+            if seat is None:
+                if isinstance(msg, Leave):
+                    return
+                raise RoomError("Spectators can watch but not play.")
             if seat.mark not in room.seats:
                 raise RoomError("You are no longer in this room.")
             if isinstance(msg, Ready):
@@ -295,7 +314,8 @@ class RoomManager:
 
     # ---------- Messages ----------
 
-    def snapshot(self, room: Room, you: str) -> dict:
+    def snapshot(self, room: Room, you: Optional[str]) -> dict:
+        """The whole room as one player (or, with you=None, a spectator) sees it."""
         game = self.game(room)
         ms_left = None
         if room.deadline is not None and game and game.status == "in_progress":
@@ -312,6 +332,7 @@ class RoomManager:
             "game": game.model_dump(mode="json") if game else None,
             "turn_ms_left": ms_left,
             "focus": room.focus,
+            "spectators": len(room.spectators),
         }
 
     async def _broadcast(self, room: Room) -> None:
@@ -319,12 +340,16 @@ class RoomManager:
             snapshot = self.snapshot(room, seat.mark)
             for ws in list(seat.sockets):
                 await self._send(ws, snapshot)
+        if room.spectators:
+            snapshot = self.snapshot(room, None)
+            for ws in list(room.spectators):
+                await self._send(ws, snapshot)
 
     async def _event(self, room: Room, kind: str, mark: str, text: str, **extra) -> None:
         message = {"type": "event", "kind": kind, "mark": mark, "text": text, **extra}
-        for seat in room.seats.values():
-            for ws in list(seat.sockets):
-                await self._send(ws, message)
+        sockets = [ws for seat in room.seats.values() for ws in seat.sockets] + list(room.spectators)
+        for ws in sockets:
+            await self._send(ws, message)
 
     @staticmethod
     async def _send(ws, message: dict) -> None:

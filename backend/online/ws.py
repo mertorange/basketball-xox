@@ -31,12 +31,13 @@ def build_online_router(rooms: RoomManager) -> APIRouter:
             await ws.send_json({"type": "error", "reason": "No room with that code."})
             await ws.close()
             return
-        seat = None
+        joined = False
         try:
             first = client_message.validate_python(await ws.receive_json())
             if not isinstance(first, Join):
                 raise RoomError("Join the room first.")
-            seat = await rooms.connect(room, ws, first)
+            seat = await rooms.connect(room, ws, first)  # None for a spectator
+            joined = True
             while True:
                 data = await ws.receive_json()
                 try:
@@ -56,7 +57,7 @@ def build_online_router(rooms: RoomManager) -> APIRouter:
             await ws.send_json({"type": "error", "reason": _reason(e)})
             await ws.close()
         finally:
-            if seat:
+            if joined:
                 await rooms.disconnect(room, ws)
 
     return router
