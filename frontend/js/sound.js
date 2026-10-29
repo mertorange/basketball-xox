@@ -1,8 +1,29 @@
 // Sound effects synthesised with the Web Audio API; no audio files.
 
+const MUTE_KEY = 'hoopgrid:muted';
+
 class SoundFX {
   constructor() {
     this.ctx = null;
+    this.muted = false;
+    try {
+      this.muted = localStorage.getItem(MUTE_KEY) === '1';
+    } catch (e) {}
+  }
+
+  /** Remembered per browser, so a muted player stays muted on the next visit. */
+  setMuted(muted) {
+    this.muted = muted;
+    try {
+      localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+    } catch (e) {}
+  }
+
+  /** The audio context, or nothing while muted (no context is even created then). */
+  ready() {
+    if (this.muted) return null;
+    this.init();
+    return this.ctx;
   }
 
   init() {
@@ -16,8 +37,7 @@ class SoundFX {
   // Warning beep for last 5 seconds of shot clock
   playClockBeep() {
     try {
-      this.init();
-      if (!this.ctx) return;
+      if (!this.ready()) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'square';
@@ -34,8 +54,7 @@ class SoundFX {
   // Arena buzzer horn (dual-tone sawtooth)
   playArenaBuzzer() {
     try {
-      this.init();
-      if (!this.ctx) return;
+      if (!this.ready()) return;
       const t = this.ctx.currentTime;
       const osc1 = this.ctx.createOscillator();
       const osc2 = this.ctx.createOscillator();
@@ -64,8 +83,7 @@ class SoundFX {
   // Net swish / basket made
   playScore() {
     try {
-      this.init();
-      if (!this.ctx) return;
+      if (!this.ready()) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'sine';
@@ -83,8 +101,7 @@ class SoundFX {
   // Turnover / wrong pick
   playTurnover() {
     try {
-      this.init();
-      if (!this.ctx) return;
+      if (!this.ready()) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'triangle';
@@ -102,8 +119,7 @@ class SoundFX {
   // Win fanfare
   playWin() {
     try {
-      this.init();
-      if (!this.ctx) return;
+      if (!this.ready()) return;
       [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();

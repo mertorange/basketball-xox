@@ -13,6 +13,7 @@ import { hasSeat } from './online.js';
 import { OnlineGame } from './onlinegame.js';
 import { PlayByPlay } from './scoresheet.js';
 import { PlayerSlip } from './slip.js';
+import { sfx } from './sound.js';
 
 let active = null; // the running controller
 
@@ -112,6 +113,12 @@ function setupHandlers() {
   $('btn-draw-yes').addEventListener('click', () => active && active.answerDraw && active.answerDraw(true));
   $('btn-draw-no').addEventListener('click', () => active && active.answerDraw && active.answerDraw(false));
 
+  $('btn-sound').addEventListener('click', () => {
+    sfx.setMuted(!sfx.muted);
+    renderSoundButton();
+  });
+  renderSoundButton();
+
   $('btn-game-rules').addEventListener('click', () => openModal(modals.rules));
   $('btn-ack-rules').addEventListener('click', () => closeModal(modals.rules));
   $('btn-rematch-match').addEventListener('click', () => {
@@ -139,6 +146,14 @@ function setupHandlers() {
     const line = document.querySelector('#win-stroke line');
     if (line && active && active.game) drawWinStroke(active.game.winning_line, active.game.winner);
   });
+}
+
+function renderSoundButton() {
+  const button = $('btn-sound');
+  button.classList.toggle('muted', sfx.muted);
+  button.setAttribute('aria-pressed', String(sfx.muted));
+  button.setAttribute('aria-label', sfx.muted ? 'Sound is off; turn it on' : 'Sound is on; turn it off');
+  $('sound-label').textContent = sfx.muted ? 'Muted' : 'Sound';
 }
 
 async function startController(controller) {
