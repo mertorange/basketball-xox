@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=10">
+  <link rel="stylesheet" href="/static/style.css?v=11">
 </head>
 <body>
   <main class="sheet">
@@ -107,11 +107,11 @@
         </fieldset>
 
         <fieldset class="field">
-          <legend class="field-label">Valid answers per box, at least</legend>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="density" value="1"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">1 <small>hard</small></span></label>
-            <label class="choice"><input type="radio" name="density" value="2" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">2</span></label>
-            <label class="choice"><input type="radio" name="density" value="3"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">3 <small>easy</small></span></label>
+          <legend class="field-label">Difficulty</legend>
+          <div class="choices choices-wide">
+            <label class="choice"><input type="radio" name="difficulty" value="easy"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Easy<small>plenty of stars fit every box</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="medium" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Medium<small>a few well-known names a box</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="hard"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Hard<small>one to a handful of known names; deep cuts</small></span></label>
           </div>
         </fieldset>
 
@@ -342,6 +342,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=10"></script>
+  <script type="module" src="/static/js/main.js?v=11"></script>
 </body>
 </html>

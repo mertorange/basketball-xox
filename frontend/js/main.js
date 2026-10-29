@@ -43,7 +43,7 @@ function readSettings(form) {
     mode: data.get('mode'),
     league: data.get('league'),
     clock: parseInt(data.get('clock'), 10) || 0,
-    density: parseInt(data.get('density'), 10) || 2,
+    difficulty: data.get('difficulty') || 'medium',
     style: data.get('style') || 'mixed',
     bestOf: parseInt(data.get('best_of'), 10) || 1
   };
@@ -161,7 +161,7 @@ async function createRoom(settings) {
   try {
     const { code } = await api.createRoom({
       league: settings.league,
-      min_answers: settings.density,
+      difficulty: settings.difficulty,
       shot_clock: settings.clock,
       grid_style: settings.style,
       best_of: settings.bestOf
@@ -267,7 +267,7 @@ function showLobby(room, code, spectator = false) {
     s.grid_style === 'mixed' ? 'mixed grid' : 'classic grid',
     `best of ${s.best_of}`,
     CLOCK_LABEL(s.shot_clock),
-    `${s.min_answers}+ answers a box`
+    `${s.difficulty} difficulty`
   ].join(' · ');
 
   $('lobby-seats').innerHTML = ['X', 'O'].map(mark => {

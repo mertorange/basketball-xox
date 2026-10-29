@@ -20,7 +20,7 @@ def build_router(game_manager) -> APIRouter:
             league=req.league,
             player1_name=req.player1_name,
             player2_name=req.player2_name,
-            min_answers=req.min_answers,
+            difficulty=req.difficulty,
             shot_clock=req.shot_clock,
             grid_style=req.grid_style,
             first_player=req.first_player,

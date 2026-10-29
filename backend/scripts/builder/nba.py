@@ -64,6 +64,8 @@ class Person:
     high_school: bool = False                       # went pro straight from high school
     wikidata_country: Optional[str] = None
     country: Optional[str] = None                   # resolved birth country
+    workload: dict = field(default_factory=dict)    # (season, franchise) -> (games, minutes), regular season
+    wiki_links: Optional[int] = None                # Wikimedia pages about the player (Wikidata sitelinks)
 
     @property
     def name(self):
@@ -83,23 +85,30 @@ class Person:
         self.awards |= other.awards
         self.college_only |= other.college_only
         self.high_school |= other.high_school
+        self.add_workload(other.workload)
+
+    def add_workload(self, workload):
+        """Sources overlap season by season; the larger count for a season wins."""
+        for key, (games, minutes) in workload.items():
+            old = self.workload.get(key, (0, 0))
+            self.workload[key] = (max(old[0], games), max(old[1], minutes))
 
 
 def build_nba_database(out_dir):
     print("Building NBA database...")
-    career, season_births, fte_players = load_fivethirtyeight()
+    career, season_births, fte_players, fte_workload = load_fivethirtyeight()
     snapshots = load_snapshots()
 
     people = collect_roster_people(snapshots, season_births)
     add_espn_rosters(people)
     people = merge_roster_duplicates(people)
-    add_fivethirtyeight_careers(people, career)
+    add_fivethirtyeight_careers(people, career, fte_workload)
 
     wikidata = load_wikidata_players()
     matched = match_wikidata(people, wikidata)
     assign_countries(people)
-    people += wikidata_only_people(people, wikidata, matched, career)
-    people += fivethirtyeight_only_people(people, fte_players)
+    people += wikidata_only_people(people, wikidata, matched, career, fte_workload)
+    people += fivethirtyeight_only_people(people, fte_players, fte_workload)
 
     history = next((s for s in reversed(snapshots) if s.awards and s.playoff_series), None)
     if history:
@@ -119,12 +128,16 @@ def collect_roster_people(snapshots, season_births):
     for snap in snapshots:
         for p in snap.players:
             stints = set()
+            workload = {}
             if p.get("tid") in snap.teams:
                 stints.add((int(snap.season), snap.teams[p["tid"]], False))
             # 2019-20 onwards: the full stats history, mid-season moves and playoff runs included
             for s in p.get("stats", []):
                 if s.get("tid") in snap.teams and str(s.get("season", "")).isdigit():
                     stints.add((int(s["season"]), snap.teams[s["tid"]], bool(s.get("playoffs"))))
+                    if not s.get("playoffs") and s.get("gp"):
+                        key = (int(s["season"]), snap.teams[s["tid"]])
+                        workload[key] = (int(s["gp"]), int(round(s.get("min") or 0)))
             if not stints:  # draft prospects and players without NBA games
                 continue
             name = clean_player_name(p.get("name") or f"{p.get('firstName', '')} {p.get('lastName', '')}")
@@ -141,6 +154,7 @@ def collect_roster_people(snapshots, season_births):
             person = people.setdefault((name_key(name), birth_year), Person(born=birth_year))
             person.names.append((snap.season, name))
             person.stints |= stints
+            person.add_workload(workload)
             country = resolve_birthplace(loc)
             if country:
                 person.countries.append((snap.season, country))
@@ -282,15 +296,16 @@ def merge_roster_duplicates(people):
 
 # ---------- FiveThirtyEight and Wikidata ----------
 
-def add_fivethirtyeight_careers(people, career):
+def add_fivethirtyeight_careers(people, career, workload):
     enriched = 0
     for person in people:
         candidates = career.get((base_name_key(person.name), person.born), {}) if person.born else {}
         if len(candidates) == 1:
-            stints = next(iter(candidates.values()))
+            pid, stints = next(iter(candidates.items()))
             if not {team for _, team, _ in stints} <= person.franchises:
                 enriched += 1
             person.stints |= stints
+            person.add_workload(workload.get(pid, {}))
     print(f"  Career history added teams for {enriched} players")
 
 
@@ -312,6 +327,7 @@ def match_wikidata(people, wikidata):
         entry = wikidata[qid]
         matched.add(qid)
         person.wikidata_country = entry["country"]
+        person.wiki_links = entry["links"]
         person.teams |= wikidata_teams(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON, include_undated=False)
         person.stints |= {(season, team, None) for season, team in
                           wikidata_seasons(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON)}
@@ -319,7 +335,7 @@ def match_wikidata(people, wikidata):
     return matched
 
 
-def wikidata_only_people(people, wikidata, matched, career):
+def wikidata_only_people(people, wikidata, matched, career, workload):
     """Players no roster snapshot covers (retired before 1995 or between snapshots).
 
     FiveThirtyEight supplies their 1977+ teams when it knows them. A Wikidata player
@@ -338,10 +354,12 @@ def wikidata_only_people(people, wikidata, matched, career):
         base = base_name_key(entry["name"])
         if any(b is None or abs(b - entry["born"]) <= 3 for b in known[base]):
             continue
-        person = Person(born=entry["born"], names=[(0, entry["name"])])
+        person = Person(born=entry["born"], names=[(0, entry["name"])], wiki_links=entry["links"])
         stints = career.get((base, entry["born"]), {})
         if len(stints) == 1:
-            person.stints |= next(iter(stints.values()))
+            pid, fte_stints = next(iter(stints.items()))
+            person.stints |= fte_stints
+            person.add_workload(workload.get(pid, {}))
             person.teams |= wikidata_teams(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON,
                                            include_undated=entry["born"] < 1957)
             person.stints |= {(s, t, None) for s, t in wikidata_seasons(entry, before=FIVETHIRTYEIGHT_FIRST_SEASON)}
@@ -358,7 +376,7 @@ def wikidata_only_people(people, wikidata, matched, career):
     return added
 
 
-def fivethirtyeight_only_people(people, fte_players):
+def fivethirtyeight_only_people(people, fte_players, workload):
     """1977-2020 players neither the rosters nor Wikidata know (Reggie Jordan).
 
     FiveThirtyEight has no birthplaces, so their country stays empty and they never
@@ -374,7 +392,9 @@ def fivethirtyeight_only_people(people, fte_players):
         base = base_name_key(name)
         if any(b is None or abs(b - born) <= 3 for b in known[base]):
             continue
-        added.append(Person(born=born, names=[(0, clean_player_name(name))], stints=set(stints)))
+        person = Person(born=born, names=[(0, clean_player_name(name))], stints=set(stints))
+        person.add_workload(workload.get(pid, {}))
+        added.append(person)
         known[base].append(born)
     print(f"  {len(added)} players added from FiveThirtyEight alone")
     return added
@@ -499,4 +519,10 @@ def export_player(person):
         player["draft"] = {"round": rnd, "pick": pick}
     if person.colleges and not person.high_school:
         player["college"] = max(person.colleges)[1]
+    if person.workload:
+        # Regular-season totals from 1977 on; earlier seasons have no game counts
+        player["stats"] = {"games": sum(g for g, _ in person.workload.values()),
+                           "minutes": sum(m for _, m in person.workload.values())}
+    if person.wiki_links is not None:
+        player["wiki_pages"] = person.wiki_links
     return player

@@ -53,6 +53,10 @@ class CriteriaIndex:
     def of_kind(self, *kinds: str) -> List[CriterionSpec]:
         return [s for s in self.specs.values() if s.kind in kinds]
 
+    def members(self) -> Dict[Tuple[str, str], FrozenSet[int]]:
+        """Criterion key -> positions in catalog.players of the players who satisfy it."""
+        return self._members
+
     def answer_count(self, a: CriterionSpec, b: CriterionSpec) -> int:
         return len(self._members[a.key] & self._members[b.key])
 

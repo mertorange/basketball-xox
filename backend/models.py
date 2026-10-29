@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 
 Mark = Literal["X", "O"]
 GridStyle = Literal["classic", "mixed"]
+# How many well-known players fit each box (see backend/game/board.py)
+Difficulty = Literal["easy", "medium", "hard"]
 # Grids in a series; the first to win more than half takes it (drawn grids don't count)
 BestOf = Literal[1, 3, 5, 7]
 
@@ -40,7 +42,7 @@ class NewGameRequest(BaseModel):
     league: Literal["nba", "euroleague"] = "nba"
     player1_name: str = Field("Player 1", max_length=24)
     player2_name: str = Field("Player 2", max_length=24)
-    min_answers: int = Field(2, ge=1, le=4)
+    difficulty: Difficulty = "medium"
     shot_clock: Optional[int] = Field(60, ge=0, le=600)
     grid_style: GridStyle = "mixed"
     first_player: Mark = "X"
@@ -48,7 +50,7 @@ class NewGameRequest(BaseModel):
 
 class CreateRoomRequest(BaseModel):
     league: Literal["nba", "euroleague"] = "nba"
-    min_answers: int = Field(2, ge=1, le=4)
+    difficulty: Difficulty = "medium"
     shot_clock: int = Field(30, ge=0, le=600)
     grid_style: GridStyle = "mixed"
     best_of: BestOf = 3
@@ -80,7 +82,7 @@ class GameState(BaseModel):
     game_id: str
     league: str
     grid_style: GridStyle = "mixed"
-    min_answers: int = 2
+    difficulty: Difficulty = "medium"
     shot_clock: Optional[int] = 60
     row_criteria: List[Criterion]
     col_criteria: List[Criterion]

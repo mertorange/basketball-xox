@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))  # builder
 sys.path.insert(0, str(ROOT))                            # backend
 
 from backend.catalog.criteria import TEAM, build_index  # noqa: E402
+from backend.catalog.fame import is_well_known  # noqa: E402
 from backend.catalog.players import LEAGUE_FILES, PlayerCatalog  # noqa: E402
 from backend.game.board import BoardGenerator  # noqa: E402
 from builder.euroleague import build_euroleague_database  # noqa: E402
@@ -39,6 +40,24 @@ MAX_SHRINK = 0.10
 # Fewest players a criterion team may have before the release counts as broken
 MIN_TEAM_PLAYERS = {"nba": 100, "euroleague": 15}
 MIN_PLAYERS = {"nba": 4000, "euroleague": 2000}
+
+# Grid difficulty rests on fame (backend/catalog/fame.py): these must rank as well known,
+# and these must not. A source that drops page counts or stats shows up here first.
+FAME_CHECKS = {
+    "nba": {
+        "famous": ["LeBron James", "Michael Jordan", "Stephen Curry", "Kevin Durant", "Victor Wembanyama",
+                   "Pete Maravich", "Bill Russell", "Wilt Chamberlain", "Steve Nash", "Yao Ming",
+                   "Jeremy Lin", "Dennis Rodman"],
+        "unknown": ["Reggie Jordan", "Gary Grant"],
+    },
+    "euroleague": {
+        "famous": ["Vassilis Spanoulis", "Sergio Llull", "Dimitris Diamantidis", "Milos Teodosic", "Shane Larkin",
+                   "Mike James", "Walter Tavares", "Keith Langford", "Kostas Sloukas", "Nando De Colo"],
+        "unknown": ["Onuralp Bitim"],
+    },
+}
+# Share of NBA players with a Wikimedia page count; it falls if the Wikidata match breaks
+MIN_NBA_PAGE_SHARE = 0.7
 
 
 def validate(release: Path, current: Path) -> list:
@@ -57,13 +76,31 @@ def validate(release: Path, current: Path) -> list:
             members = sum(1 for p in new.players if spec.matches(p))
             if members < MIN_TEAM_PLAYERS[league]:
                 problems.append(f"{league}: {spec.label} has only {members} players")
+        problems += fame_problems(league, new)
         generator = BoardGenerator(index, rng=random.Random(0))
         for style in ("classic", "mixed"):
             for _ in range(10):
-                rows, cols = generator.generate(style, min_answers=2)
+                rows, cols = generator.generate(style, "medium")
                 if not generator.is_solvable(rows, cols, 1):
                     problems.append(f"{league}: an unsolvable {style} grid")
                     break
+    return problems
+
+
+def fame_problems(league: str, catalog: PlayerCatalog) -> list:
+    problems = []
+    for expect, names in FAME_CHECKS[league].items():
+        for name in names:
+            players = catalog.find(name)
+            if not players:
+                problems.append(f"{league}: {name} is missing")
+            elif any(is_well_known(league, p) for p in players) != (expect == "famous"):
+                problems.append(f"{league}: {name} should {'' if expect == 'famous' else 'not '}rank as well known "
+                                f"(fame {max(p['fame'] for p in players)})")
+    if league == "nba":
+        share = sum("wiki_pages" in p for p in catalog.players) / max(len(catalog.players), 1)
+        if share < MIN_NBA_PAGE_SHARE:
+            problems.append(f"nba: only {share:.0%} of players have a Wikimedia page count")
     return problems
 
 

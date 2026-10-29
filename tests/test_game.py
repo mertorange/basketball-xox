@@ -17,7 +17,7 @@ def set_board(game, index, rows, cols):
 
 
 def test_move_flow(manager, nba_index):
-    game = manager.create_game("nba", min_answers=1, grid_style="classic")
+    game = manager.create_game("nba", grid_style="classic")
     set_board(game, nba_index,
               [(TEAM, "Boston Celtics"), (TEAM, "Miami Heat"), (AWARD, "champion")],
               [(TEAM, "Los Angeles Lakers"), (TEAM, "Chicago Bulls"), (TEAM, "Golden State Warriors")])
@@ -39,7 +39,7 @@ def test_move_flow(manager, nba_index):
 
 
 def test_same_named_players(manager, nba_index):
-    game = manager.create_game("nba", min_answers=1, grid_style="classic")
+    game = manager.create_game("nba", grid_style="classic")
     set_board(game, nba_index,
               [(TEAM, "Miami Heat"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")],
               [(AWARD, "mvp"), (TEAM, "San Antonio Spurs"), (TEAM, "Golden State Warriors")])
@@ -49,7 +49,7 @@ def test_same_named_players(manager, nba_index):
 
 
 def test_win(manager, nba_index):
-    game = manager.create_game("nba", min_answers=1, grid_style="classic")
+    game = manager.create_game("nba", grid_style="classic")
     set_board(game, nba_index,
               [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
               [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")])
@@ -65,6 +65,6 @@ def test_win(manager, nba_index):
 
 
 def test_shot_clock_violation(manager):
-    game = manager.create_game("nba", min_answers=1)
+    game = manager.create_game("nba")
     assert manager.trigger_shot_clock_violation(game.game_id).current_player == "O"
     assert manager.trigger_shot_clock_violation("missing") is None

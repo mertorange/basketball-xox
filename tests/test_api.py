@@ -21,17 +21,17 @@ def test_search_returns_names_only(manager):
 
 def test_game_round_trip(manager):
     client = make_client(manager)
-    game = client.post("/api/new-game", json={"league": "nba", "min_answers": 1, "grid_style": "classic"}).json()
+    game = client.post("/api/new-game", json={"league": "nba", "grid_style": "classic"}).json()
     assert len(game["row_criteria"]) == 3
     assert client.get(f"/api/game/{game['game_id']}").status_code == 200
     assert client.get("/api/game/missing").status_code == 404
-    bad = client.post("/api/new-game", json={"league": "nba", "min_answers": 9})
+    bad = client.post("/api/new-game", json={"league": "nba", "difficulty": "impossible"})
     assert bad.status_code == 422
 
 
 def test_answers_only_after_the_game(manager, nba_index):
     client = make_client(manager)
-    game_id = client.post("/api/new-game", json={"league": "nba", "min_answers": 1,
+    game_id = client.post("/api/new-game", json={"league": "nba",
                                                  "grid_style": "classic"}).json()["game_id"]
     game = manager.get_game(game_id)
     game.row_criteria = [to_criterion(nba_index.get(TEAM, t)) for t in
@@ -57,7 +57,7 @@ def test_answers_only_after_the_game(manager, nba_index):
 
 def test_skip_turn_and_draw(manager):
     client = make_client(manager)
-    game_id = client.post("/api/new-game", json={"league": "nba", "min_answers": 1, "grid_style": "classic",
+    game_id = client.post("/api/new-game", json={"league": "nba", "grid_style": "classic",
                                                  "first_player": "X"}).json()["game_id"]
     res = client.post("/api/skip-turn", json={"game_id": game_id})
     assert res.status_code == 200 and res.json()["current_player"] == "O"
@@ -71,7 +71,7 @@ def test_skip_turn_and_draw(manager):
 
 def test_same_device_routes_refuse_online_games(manager):
     client = make_client(manager)
-    game = manager.create_game("nba", min_answers=1, grid_style="classic", online=True)
+    game = manager.create_game("nba", grid_style="classic", online=True)
     gid = {"game_id": game.game_id}
     for path in ("/api/skip-turn", "/api/draw", "/api/shot-clock-violation"):
         assert client.post(path, json=gid).status_code == 409
@@ -85,7 +85,7 @@ def test_same_device_routes_refuse_online_games(manager):
 
 def test_same_device_moves_and_clock(manager):
     client = make_client(manager)
-    game_id = client.post("/api/new-game", json={"league": "nba", "min_answers": 1,
+    game_id = client.post("/api/new-game", json={"league": "nba",
                                                  "grid_style": "classic"}).json()["game_id"]
     move = client.post("/api/move", json={"game_id": game_id, "row": 0, "col": 0, "player_name": "Nobody"})
     assert move.status_code == 200 and "not found" in move.json()["message"]

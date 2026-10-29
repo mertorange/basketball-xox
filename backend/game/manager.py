@@ -34,14 +34,14 @@ class GameManager:
         self.generators = {league: BoardGenerator(index) for league, index in indexes.items()}
 
     def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
-                    min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed",
+                    difficulty: str = "medium", shot_clock: Optional[int] = 60, grid_style: str = "mixed",
                     first_player: str = "X", online: bool = False) -> GameState:
-        rows, cols = self.generators[league].generate(grid_style, min_answers)
+        rows, cols = self.generators[league].generate(grid_style, difficulty)
         game = GameState(
             game_id=uuid.uuid4().hex[:8],
             league=LEAGUE_LABELS[league],
             grid_style=grid_style,
-            min_answers=min_answers,
+            difficulty=difficulty,
             shot_clock=shot_clock,
             row_criteria=[to_criterion(s) for s in rows],
             col_criteria=[to_criterion(s) for s in cols],

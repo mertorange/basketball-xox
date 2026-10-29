@@ -14,16 +14,18 @@ FIVETHIRTYEIGHT_FIRST_SEASON = 1977
 
 
 def load_fivethirtyeight():
-    """Returns (career, season_births, players) from FiveThirtyEight's player-season table.
+    """Returns (career, season_births, players, workload) from FiveThirtyEight's table.
 
     career: (base name, possible birth year) -> {player_id: {(season, franchise, playoffs)}}
     season_births: (base name, season) -> {player_id: birth year}
     players: player_id -> (name, birth year, {(season, franchise, playoffs)})
+    workload: player_id -> {(season, franchise): (games, minutes)}, regular season only
     """
     print("Fetching FiveThirtyEight player-season history ...")
     career = defaultdict(lambda: defaultdict(set))
     season_births = defaultdict(dict)
     players = {}
+    workload = defaultdict(dict)
     for row in csv.DictReader(io.StringIO(http_get(FIVETHIRTYEIGHT_URL))):
         team = BREF_TEAM_TO_FRANCHISE.get(row["team_id"])
         if not team or not row["age"].isdigit():
@@ -38,4 +40,7 @@ def load_fivethirtyeight():
         season_births[(base, season)][row["player_id"]] = birth_year - 1
         entry = players.setdefault(row["player_id"], (row["name_common"], birth_year - 1, set()))
         entry[2].add(stint)
-    return career, season_births, players
+        if row["type"] == "RS" and row["G"].isdigit():
+            minutes = int(row["Min"]) if row["Min"].isdigit() else 0
+            workload[row["player_id"]][(season, team)] = (int(row["G"]), minutes)
+    return career, season_births, players, workload

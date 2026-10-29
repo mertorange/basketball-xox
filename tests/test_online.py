@@ -25,7 +25,7 @@ def online(manager):
 
 
 def create_room(client, shot_clock=0):
-    res = client.post("/api/rooms", json={"league": "nba", "min_answers": 1, "shot_clock": shot_clock,
+    res = client.post("/api/rooms", json={"league": "nba", "shot_clock": shot_clock,
                                           "grid_style": "classic"})
     assert res.status_code == 200
     return res.json()["code"]
@@ -310,7 +310,7 @@ def test_best_of_three_series(online):
 
 def test_best_of_one(online):
     client, rooms, manager = online
-    res = client.post("/api/rooms", json={"league": "nba", "min_answers": 1, "shot_clock": 0,
+    res = client.post("/api/rooms", json={"league": "nba", "shot_clock": 0,
                                           "grid_style": "classic", "best_of": 1})
     assert rooms.get(res.json()["code"]).settings["best_of"] == 1
     assert client.post("/api/rooms", json={"best_of": 4}).status_code == 422

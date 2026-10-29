@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List
 
+from .fame import assign_fame
+
 # HOOPGRID_DATA_DIR points the app (or the tests) at another set of dataset files
 DATA_DIR = Path(os.environ.get("HOOPGRID_DATA_DIR") or Path(__file__).resolve().parent.parent / "data")
 LEAGUE_FILES = {"nba": "nba_data.json", "euroleague": "euroleague_data.json"}
@@ -20,6 +22,7 @@ class PlayerCatalog:
         self.teams: List[str] = dataset.get("teams", [])
         self.countries: List[str] = dataset.get("countries", [])
         self.players: List[Player] = dataset.get("players", [])
+        assign_fame(league, self.players)
         self._by_name: Dict[str, List[Player]] = {}
         for player in self.players:
             self._by_name.setdefault(player["name"].lower(), []).append(player)
@@ -50,11 +53,8 @@ class PlayerCatalog:
 
 
 def notability(player: Player) -> float:
-    """A rough fame score for ordering answer lists: awards, then career length and travel."""
-    seasons = player.get("seasons") or [0, 0]
-    stats = player.get("stats") or {}
-    return (5 * len(player.get("awards", ())) + (seasons[1] - seasons[0]) + len(player.get("teams", ()))
-            + stats.get("games", 0) / 50)
+    """How well known a player is, for ordering answer lists; set when the catalog loads."""
+    return player.get("fame_score", 0)
 
 
 def load_catalogs(data_dir: Path = DATA_DIR) -> Dict[str, PlayerCatalog]:

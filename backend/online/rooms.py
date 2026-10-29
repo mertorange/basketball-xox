@@ -316,7 +316,7 @@ class RoomManager:
         s = room.settings
         game = self.games.create_game(
             league=s["league"], player1_name=room.seats["X"].name, player2_name=room.seats["O"].name,
-            min_answers=s["min_answers"], shot_clock=s["shot_clock"], grid_style=s["grid_style"],
+            difficulty=s["difficulty"], shot_clock=s["shot_clock"], grid_style=s["grid_style"],
             first_player=room.next_first, online=True,
         )
         room.game_id = game.game_id

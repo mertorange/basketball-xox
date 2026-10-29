@@ -10,14 +10,15 @@ dönüştüğü, hangi kurallarla birleştirildiği ve bilinen eksikleri. Son g�
 | | NBA | EuroLeague |
 |---|---|---|
 | Dosya | `backend/data/nba_data.json` | `backend/data/euroleague_data.json` |
-| Oyuncu | 4.918 | 2.372 |
+| Oyuncu | 4.919 | 2.372 |
 | Kriter takımı | 30 franchise | 23 kulüp |
 | Ülke | 88 | 81 |
 | Ülkesi boş oyuncu | 171 | 13 |
 | Oyuncu başına takım (ortalama) | 2,67 | 1,83 |
 | Ödüllü oyuncu | şampiyon 461, All-NBA 227, ROY 73, MIP 40, MVP 37, Finals MVP 36, 6MOY 35, DPOY 26 | şampiyon 308, Final Four 752 |
 | Draft bilgisi / kolej / sezon aralığı | 2.112 / 1.920 / 4.193 | — / — / 2.348 |
-| Kariyer istatistiği | — | 2.027 |
+| Kariyer istatistiği | 3.833 (maç, dakika; 1977'den beri) | 2.027 |
+| Wikimedia sayfa sayısı | 4.024 | — |
 
 İki dosya da `backend/scripts/build_databases.py` ile üretilir. Elle düzenlenmez; düzeltme
 gerekiyorsa builder'daki tablolara (alias, override) eklenir ve dosyalar yeniden üretilir.
@@ -39,7 +40,9 @@ gerekiyorsa builder'daki tablolara (alias, override) eklenir ve dosyalar yeniden
       "seasons": [1970, 1989],
       "awards": ["all_nba", "champion", "finals_mvp", "mvp", "roy"],
       "draft": {"round": 1, "pick": 1},
-      "college": "UCLA"
+      "college": "UCLA",
+      "stats": {"games": 1210, "minutes": 44815},
+      "wiki_pages": 88
     }
   ]
 }
@@ -55,7 +58,8 @@ Yalnızca `name`, `country`, `teams` her oyuncuda vardır; diğer alanlar bilinm
 | `awards` | NBA: `champion`, `mvp`, `finals_mvp`, `all_nba`, `roy`, `dpoy`, `sixth_man`, `mip`. EL: `champion`, `final_four`. |
 | `draft` | NBA draft'ı: `round` 1/2 ve tur içi `pick`; `round: 0` draft edilmemiş. Yoksa bilinmiyor. |
 | `college` | NBA öncesi kolej. Liseden NBA'e gelenlerde yok. |
-| `stats` | EuroLeague kariyer toplamları: `games`, `points`, `rebounds`, `assists` (2000-01'den beri). |
+| `stats` | NBA: normal sezon `games` ve `minutes` toplamı (1977'den beri; öncesinde maç sayısı yok). EuroLeague: kariyer toplamları `games`, `points`, `rebounds`, `assists` (2000-01'den beri). |
+| `wiki_pages` | NBA: oyuncunun Wikimedia sayfa sayısı (Wikidata sitelinks; kaç dilde Vikipedi maddesi olduğu). Wikidata eşleşmesi yoksa yazılmaz. Ünlülük ölçüsü olarak kullanılır (§3.1). |
 
 İsimler ASCII'dir (`Luka Doncic`, `Aleksandar Dordevic`); arama küçük harf alt dize eşleşmesidir.
 Aynı adlı farklı oyuncular ayrı kayıttır (Mike James, Glen Rice…); oyun kareye uyanı kabul eder.
@@ -83,8 +87,41 @@ habersizdir.
   buluşamaz; üretici bunları baştan eler.
 - **Dönem**: sezonun başladığı yıl sayılır; 1989-90 sezonu 1980'lere girer.
 - **Izgara tipi**: *Klasik* yalnızca takım + doğum ülkesi; *Karışık* (varsayılan) sütunları çoğunlukla
-  takım tutar, satırlara 2–3 farklı türden kriter koyar (`backend/game/board.py`). Her kutuda en az
-  "valid answers per box" kadar cevap aranır; bulunamazsa eşik düşürülür, en son klasiğe dönülür.
+  takım tutar, satırlara 1–4 farklı türden kriter koyar (`backend/game/board.py`; zorluk arttıkça daha çok).
+
+### 3.1 Ünlülük ve zorluk
+
+Zorluk cevap sayısıyla değil **tanınmış cevap** sayısıyla ölçülür: kırk cevabı olan ama hepsi kısa
+yedek kariyerlerden oluşan kare zordur, az cevabı olup biri süperstar olan kare kolaydır.
+
+**Ünlülük** (`backend/catalog/fame.py`) veri yüklenirken her oyuncu için ligi içinde 0–100 arası bir
+yüzdelik olarak hesaplanır; formül veride değil kodda olduğu için veri yeniden üretilmeden ayarlanabilir.
+
+- **NBA**: Wikimedia sayfa sayısı (en ağır etken; 1977 öncesi oyuncuları da kapsar), normal sezon
+  dakikaları, ağırlıklı ödüller (MVP 4, All-NBA ve Finals MVP 3, DPOY ve ROY 2, diğerleri 1) ve ilk 10
+  draft seçimi (henüz oynamamış #1 seçim de tanınır). Wikidata ile eşleşmeyen oyuncuya benzer
+  dakikadaki oyuncuların ortanca sayfa sayısı verilir. **Tanınmış** = ilk %10 (~500 oyuncu).
+- **EuroLeague**: yalnızca EuroLeague'deki kariyer (sayı, maç, şampiyonluk, Final Four). Vikipedi
+  kullanılmaz: çok dilli ülkelerin oyuncularını ve NBA/milli takımla ünlenenleri öne çıkarırdı
+  (Keith Langford gibi Amerikalı EuroLeague efsanelerinin çoğu tek dilde maddeye sahip). İstatistiklerin
+  göremediği birkaç isim elle listelenmiştir (2000 öncesi Jasikevičius ve Rebraca, 1990'larda zirve
+  yapan Alphonso Ford, tek sezonluk 2012 MVP'si Kirilenko, ikinci yazılışla kayıtlı ünlüler).
+  **Tanınmış** = ilk %15 (~350 oyuncu).
+
+**Zorluk seviyeleri** her karede bulunması gereken tanınmış cevap aralığını belirler; uyan ızgaralar
+arasından kareleri birbirine en yakın olan seçilir, böylece aynı ızgarada hem bedava hem imkânsız kare
+olmaz. Seviye karşılanamazsa önce üst sınır iki katına çıkarılır, sonra aynı seviyede klasik ızgara
+denenir, en son herhangi bir çözülebilir ızgaraya dönülür.
+
+| Seviye | NBA (kare başına tanınmış cevap) | EuroLeague |
+|---|---|---|
+| Kolay | en az 8 | en az 6 |
+| Orta (varsayılan) | 3–30 | 2–25 |
+| Zor | 1–6 | 1–6, daha az kriter, çoğunlukla kulüp çiftleri |
+
+Yenileme kontrolleri (§5) ünlülüğü de sınar: LeBron, Wembanyama, Maravich, Spanoulis, Langford gibi
+isimler tanınmış, Reggie Jordan ve Onuralp Bitim gibileri tanınmamış çıkmalı; NBA oyuncularının en az
+%70'inin sayfa sayısı olmalı. Biri tutmazsa sürüm reddedilir.
 
 ---
 
@@ -96,8 +133,8 @@ habersizdir.
 |---|---|---|---|
 | [Basketball GM topluluk rosterları](https://github.com/alexnoob/BasketBall-GM-Rosters) | İsim, doğum yılı, doğum yeri, kolej, draft, sezon takımı; 2019-20 sonrası dosyalarda tüm kariyerin `stats` geçmişi (sezon ortası takaslar, playoff'lar); 2022-23 sonrası dosyalarda 1947'den beri **lig ödülleri** (MVP, Finals MVP, ROY, DPOY, 6MOY, MIP, All-NBA) ve **playoff serileri** | 1995-96, 2009-10, 2015-16 … 2025-26 | **Belirtilmemiş** (§8) |
 | ESPN kadro uç noktası `site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{id}/roster` | Güncel sezon kadroları, doğum tarihi/yeri, kolej. Snapshot'lar bir sezon geride olduğu için yaz transferleri buradan gelir (Marcus Smart → Houston, LeBron James → Philadelphia, Temmuz 2026) | Yalnızca güncel sezon | Resmî olmayan, anahtarsız (§8) |
-| [FiveThirtyEight nba-player-advanced-metrics](https://github.com/fivethirtyeight/nba-player-advanced-metrics) `nba-data-historical.csv` | Oyuncu-sezon-takım satırları (normal sezon ve playoff ayrı), yaş | 1977 – 2020 | CC BY 4.0 (README'de atıf var) |
-| [Wikidata](https://query.wikidata.org) SPARQL | Basketbolcu mesleğindeki (P106) kişilerin takım üyelikleri (P54, başlangıç P580, bitiş P582), doğum tarihi, doğum yeri ülkesi, koç mesleği | 1940'lardan bugüne, düzensiz | CC0 |
+| [FiveThirtyEight nba-player-advanced-metrics](https://github.com/fivethirtyeight/nba-player-advanced-metrics) `nba-data-historical.csv` | Oyuncu-sezon-takım satırları (normal sezon ve playoff ayrı), yaş, maç (`G`) ve dakika (`Min`) | 1977 – 2020 | CC BY 4.0 (README'de atıf var) |
+| [Wikidata](https://query.wikidata.org) SPARQL | Basketbolcu mesleğindeki (P106) kişilerin takım üyelikleri (P54, başlangıç P580, bitiş P582), doğum tarihi, doğum yeri ülkesi, koç mesleği, Wikimedia sayfa sayısı (`wikibase:sitelinks`) | 1940'lardan bugüne, düzensiz | CC0 |
 
 ### EuroLeague (resmî API, anahtarsız)
 
@@ -123,7 +160,7 @@ HOOPGRID_DATA_DIR=/tmp/x uvicorn backend.app:app --port 8001          # deneme v
 Sunucuda veri `refresh_data.py` ile yenilenir (Docker'da `docker compose run --rm builder`):
 yeni veri `releases/<zaman damgası>/` klasörüne üretilir; oyuncu sayısı canlı veriden %10'dan fazla
 düşmüşse, bir NBA takımında 100'den (EuroLeague'de 15'ten) az oyuncu kalmışsa ya da çözülemeyen ızgara
-üretiliyorsa sürüm reddedilir ve canlı veri olduğu gibi kalır. Geçerse `current` bağlantısı tek
+üretiliyorsa ya da ünlülük kontrolü (§3.1) tutmazsa sürüm reddedilir ve canlı veri olduğu gibi kalır. Geçerse `current` bağlantısı tek
 adımda yeni sürüme çevrilir, son 7 sürüm saklanır ve sunucuya `/admin/reload` ile haber verilir;
 açık odalar ve süren oyunlar başladıkları veriyle devam eder.
 
@@ -248,6 +285,13 @@ eski sürümle uyum için korunmuştur ("EA7 Emporio Armani Milan", "Virtus Sega
   çalıştırılmalı (sunucuya geçince günlük cron planlanıyor).
 - **EuroLeague isimleri** resmî kayıt adıdır ("Emanuel Ginobili"); 2000-01'de doğum ülkesi ~%32 boş.
 - İsim değiştiren oyuncu ayrı kayıt olabilir (Bobby Dixon / Ali Muhammed).
+- **Ödül sayıları** tutulmuyor, yalnızca alınıp alınmadığı: 7 kez All-NBA olan Pippen ile 1 kez olan
+  Tyson Chandler ünlülükte aynı ödül puanını alır. Tanınmış/tanınmamış ayrımını değil, cevap
+  listesinin en üstündeki sırayı etkiler.
+- **Wikidata eşleşmesi** bazı yıldızlarda tutmuyor (Kevin Durant, Tracy McGrady, Dwight Howard, Metta
+  World Peace…); bunlara benzer dakikadaki oyuncuların ortanca sayfa sayısı verilir (§3.1).
+- **EuroLeague'de ikinci yazılışla kayıtlı oyuncular** ayrı kayıttır (Edy / Walter Tavares, Theo /
+  Theodoros Papaloukas, Gigi / Luigi Datome); ünlülük listesinde elle işaretlidirler.
 
 ---
 

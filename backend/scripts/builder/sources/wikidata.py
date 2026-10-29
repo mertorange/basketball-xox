@@ -1,4 +1,5 @@
-"""Wikidata SPARQL: NBA franchise members, birth countries and pre-1977 stints (CC0).
+"""Wikidata SPARQL: NBA franchise members, birth countries, pre-1977 stints and how many
+Wikimedia pages each player has, which the game uses as a fame signal (CC0).
 
 Undated memberships mix in coaching jobs (Phil Jackson 'joins' the Bulls), and the Pelicans
 item also carries some 1988-2002 Charlotte Hornets stints, so Wikidata teams are only
@@ -19,9 +20,10 @@ BASKETBALL_COACH = "Q5137571"
 NOT_NBA_PLAYERS = {"Ettore Messina"}
 
 WIKIDATA_QUERY = """
-SELECT ?p ?pLabel ?dob ?team ?start ?end ?countryLabel ?coach WHERE {
+SELECT ?p ?pLabel ?dob ?team ?start ?end ?countryLabel ?coach ?links WHERE {
   VALUES ?team { %s }
   ?p p:P54 ?st . ?st ps:P54 ?team .
+  ?p wikibase:sitelinks ?links .  # Wikimedia pages about the player: a fame signal
   ?p wdt:P31 wd:Q5 ; wdt:P106 wd:Q3665646 .  # basketball players, not coaches or executives
   OPTIONAL { ?st pq:P580 ?start }
   OPTIONAL { ?st pq:P582 ?end }
@@ -58,6 +60,7 @@ def load_wikidata_players():
             "born": int(dob[:4]) if dob[:4].isdigit() else None,
             "countries": set(), "dated": set(), "undated": set(),
             "coach": row["coach"]["value"] == "true",
+            "links": int(row["links"]["value"]),
         })
         team = WIKIDATA_NBA_TEAMS[row["team"]["value"].rsplit("/", 1)[1]]
         start = row.get("start", {}).get("value", "")[:4]

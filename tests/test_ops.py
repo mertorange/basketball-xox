@@ -27,18 +27,18 @@ def test_rate_limiter_slides_over_a_minute():
 
 
 def test_game_keeps_its_data_after_a_reload(manager, nba_catalog):
-    game = manager.create_game("nba", min_answers=1, grid_style="classic")
+    game = manager.create_game("nba", grid_style="classic")
     old_index = manager.index_for(game)
     smaller = dict(SAMPLE_NBA, players=SAMPLE_NBA["players"][:4])
     manager.replace_indexes({"nba": build_index(PlayerCatalog("nba", smaller))})
     assert manager.index_for(game) is old_index
-    assert manager.create_game("nba", min_answers=1, grid_style="classic") is not None
+    assert manager.create_game("nba", grid_style="classic") is not None
     assert len(manager.indexes["nba"].catalog.players) == 4
 
 
 def test_prune_keeps_live_games(manager):
-    a = manager.create_game("nba", min_answers=1, grid_style="classic")
-    b = manager.create_game("nba", min_answers=1, grid_style="classic")
+    a = manager.create_game("nba", grid_style="classic")
+    b = manager.create_game("nba", grid_style="classic")
     assert manager.prune(-1, keep={b.game_id}) == 1
     assert manager.get_game(a.game_id) is None and manager.get_game(b.game_id) is not None
 

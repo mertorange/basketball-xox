@@ -40,14 +40,14 @@ export class HotSeatGame {
   async start(note = '') {
     this.ui.clock.stop();
     setStatus('Drawing up a new grid...');
-    const { league, clock, density, style } = this.settings;
+    const { league, clock, difficulty, style } = this.settings;
     // The first move alternates between grids
     const first = this.gamesPlayed % 2 === 0 ? 'X' : 'O';
     this.game = await api.newGame({
       league,
       player1_name: this.names.X,
       player2_name: this.names.O,
-      min_answers: density,
+      difficulty,
       shot_clock: clock,
       grid_style: style,
       first_player: first
