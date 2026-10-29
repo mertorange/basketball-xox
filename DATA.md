@@ -120,7 +120,14 @@ python backend/scripts/build_databases.py --league nba --out /tmp/x   # deneme �
 HOOPGRID_DATA_DIR=/tmp/x uvicorn backend.app:app --port 8001          # deneme verisiyle sunucu
 ```
 
-Önce başka bir klasöre üretip karşılaştırmak önerilir. Oyuncular isme, aynı adlılar takımlarına
+Sunucuda veri `refresh_data.py` ile yenilenir (Docker'da `docker compose run --rm builder`):
+yeni veri `releases/<zaman damgası>/` klasörüne üretilir; oyuncu sayısı canlı veriden %10'dan fazla
+düşmüşse, bir NBA takımında 100'den (EuroLeague'de 15'ten) az oyuncu kalmışsa ya da çözülemeyen ızgara
+üretiliyorsa sürüm reddedilir ve canlı veri olduğu gibi kalır. Geçerse `current` bağlantısı tek
+adımda yeni sürüme çevrilir, son 7 sürüm saklanır ve sunucuya `/admin/reload` ile haber verilir;
+açık odalar ve süren oyunlar başladıkları veriyle devam eder.
+
+Elle çalıştırırken önce başka bir klasöre üretip karşılaştırmak önerilir. Oyuncular isme, aynı adlılar takımlarına
 göre sıralanır; böylece kaynaklar değişmediyse iki çıktı arasındaki fark gerçek veri farkıdır.
 
 ### 5.1 Modüller (`backend/scripts/builder/`)

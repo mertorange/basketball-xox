@@ -1,0 +1,59 @@
+# Hoop Grid
+#
+#   Local:            docker compose up -d --build            -> http://localhost:8000
+#   Refresh the data: docker compose run --rm builder
+#   On a server:      docker compose --profile server up -d   (HTTPS through Caddy, set HOOPGRID_DOMAIN)
+#
+# Settings come from .env (copy .env.example).
+
+name: hoopgrid
+
+x-env: &env
+  HOOPGRID_ADMIN_TOKEN: ${HOOPGRID_ADMIN_TOKEN:-}
+  HOOPGRID_ALLOWED_ORIGINS: ${HOOPGRID_ALLOWED_ORIGINS:-*}
+
+services:
+  app:
+    build: .
+    image: hoopgrid:latest
+    restart: unless-stopped
+    environment: *env
+    volumes:
+      - hoopgrid-data:/data
+    ports:
+      # Bound to the host only; on a server Caddy is the way in
+      - "127.0.0.1:${HOOPGRID_PORT:-8000}:8000"
+    # Rooms live in memory: never scale this service past one container
+
+  builder:
+    image: hoopgrid:latest
+    profiles: ["tools"]
+    command: ["python", "backend/scripts/refresh_data.py"]
+    environment:
+      <<: *env
+      HOOPGRID_APP_URL: http://app:8000
+    volumes:
+      - hoopgrid-data:/data
+    depends_on:
+      - app
+
+  caddy:
+    image: caddy:2.8
+    profiles: ["server"]
+    restart: unless-stopped
+    environment:
+      HOOPGRID_DOMAIN: ${HOOPGRID_DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
+
+volumes:
+  hoopgrid-data:
+  caddy-data:
+  caddy-config:

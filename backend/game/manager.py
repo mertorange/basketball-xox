@@ -1,5 +1,6 @@
 """Running games: creation, moves, turnovers and results."""
 
+import time
 import uuid
 from typing import Dict, Optional
 
@@ -17,9 +18,17 @@ def to_criterion(spec: CriterionSpec) -> Criterion:
 
 class GameManager:
     def __init__(self, indexes: Dict[str, CriteriaIndex]):
+        self.active_games: Dict[str, GameState] = {}
+        # Each game keeps the criteria index it was created with, so a data reload
+        # mid-game never changes the answers to a grid already on screen
+        self.game_indexes: Dict[str, CriteriaIndex] = {}
+        self.created_at: Dict[str, float] = {}
+        self.replace_indexes(indexes)
+
+    def replace_indexes(self, indexes: Dict[str, CriteriaIndex]) -> None:
+        """New player data: new games use it, running games finish on their own."""
         self.indexes = indexes
         self.generators = {league: BoardGenerator(index) for league, index in indexes.items()}
-        self.active_games: Dict[str, GameState] = {}
 
     def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
                     min_answers: int = 2, shot_clock: Optional[int] = 60, grid_style: str = "mixed",
@@ -39,13 +48,15 @@ class GameManager:
             player2_name=player2_name.strip() or "Player 2",
         )
         self.active_games[game.game_id] = game
+        self.game_indexes[game.game_id] = self.indexes[league]
+        self.created_at[game.game_id] = time.monotonic()
         return game
 
     def get_game(self, game_id: str) -> Optional[GameState]:
         return self.active_games.get(game_id)
 
     def index_for(self, game: GameState) -> CriteriaIndex:
-        return self.indexes[game.league.lower()]
+        return self.game_indexes.get(game.game_id) or self.indexes[game.league.lower()]
 
     def trigger_shot_clock_violation(self, game_id: str) -> Optional[GameState]:
         game = self.active_games.get(game_id)
@@ -119,6 +130,16 @@ class GameManager:
 
     def discard(self, game_id: str) -> None:
         self.active_games.pop(game_id, None)
+        self.game_indexes.pop(game_id, None)
+        self.created_at.pop(game_id, None)
+
+    def prune(self, max_age: float, keep=()) -> int:
+        """Drops games older than max_age seconds, except those in keep; returns how many went."""
+        now = time.monotonic()
+        old = [gid for gid, created in self.created_at.items() if now - created > max_age and gid not in keep]
+        for game_id in old:
+            self.discard(game_id)
+        return len(old)
 
     @staticmethod
     def _turnover(game: GameState, message: str) -> MoveResult:

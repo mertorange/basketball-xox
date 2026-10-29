@@ -1,0 +1,6 @@
+# HTTPS in front of the game server. Caddy gets the certificate on its own and passes
+# WebSocket upgrades through, so /ws/rooms/... needs nothing extra.
+{$HOOPGRID_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:8000
+}

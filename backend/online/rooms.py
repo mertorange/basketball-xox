@@ -57,10 +57,11 @@ class Room:
 
 class RoomManager:
     def __init__(self, games: GameManager, disconnect_grace: float = DISCONNECT_GRACE,
-                 idle_ttl: float = IDLE_TTL):
+                 idle_ttl: float = IDLE_TTL, game_max_age: Optional[float] = None):
         self.games = games
         self.disconnect_grace = disconnect_grace
         self.idle_ttl = idle_ttl
+        self.game_max_age = game_max_age
         self.rooms: Dict[str, Room] = {}
 
     # ---------- Rooms ----------
@@ -102,6 +103,10 @@ class RoomManager:
         while True:
             await asyncio.sleep(interval)
             self.remove_idle()
+            if self.game_max_age:
+                # Same-device games are never closed explicitly
+                live = {room.game_id for room in self.rooms.values()}
+                self.games.prune(self.game_max_age, keep=live)
 
     # ---------- Connections ----------
 

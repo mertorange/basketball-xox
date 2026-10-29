@@ -31,31 +31,55 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 
 ## 🚀 Quick Start
 
-### 1. Requirements
-- Python 3.10+ (works seamlessly with Anaconda or standard Python)
-- Packages listed in `requirements.txt` (`fastapi`, `uvicorn`, `pydantic`)
+### 1. With Docker (recommended)
+```bash
+cp .env.example .env        # set HOOPGRID_ADMIN_TOKEN at least
+docker compose up -d --build
+```
+The game runs at **http://localhost:8000** (`HOOPGRID_PORT` changes the port). The image build runs the test suite and stops if a test fails. On first start the datasets baked into the image are copied to the `hoopgrid-data` volume.
 
-### 2. Launching the Game
-Simply run:
+Refresh the player data (new signings, trades) without stopping the game:
+```bash
+docker compose run --rm builder
+```
+It builds into a new release on the volume, checks it (player counts, team sizes, solvable grids), switches the `current` link only if every check passes, keeps the last 7 releases and tells the server to reload. Open rooms and running games are not interrupted.
+
+### 2. Without Docker
+Python 3.10+ and the packages in `requirements.txt` (`fastapi`, `uvicorn`, `pydantic`, `websockets`):
 ```bash
 python run.py
 ```
-This will launch the backend server and automatically open **http://localhost:8000** in your default web browser.
+This launches the server and opens **http://localhost:8000**. Or run uvicorn directly: `uvicorn backend.app:app --port 8000`.
 
-Alternatively, run manually with uvicorn:
+### 3. On a server
+On a VPS with Docker and a domain pointing at it:
 ```bash
-uvicorn backend.app:app --reload --port 8000
+git clone https://github.com/mertorange/basketball-xox.git && cd basketball-xox
+cp .env.example .env        # HOOPGRID_DOMAIN, HOOPGRID_ADMIN_TOKEN, HOOPGRID_ALLOWED_ORIGINS
+docker compose --profile server up -d --build
 ```
-
-### 3. Deploying online play
-Rooms live in the server's memory, so run **one** worker (`uvicorn backend.app:app --workers 1`). Behind a reverse proxy, forward WebSocket upgrades on `/ws/` (nginx: `proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade";`). Restarting the server ends open rooms.
+The `server` profile adds Caddy, which gets the HTTPS certificate and forwards WebSockets. For a daily data refresh add a cron line such as:
+```
+0 5 * * * cd /path/to/basketball-xox && docker compose run --rm builder >> refresh.log 2>&1
+```
+Rooms live in the app container's memory: keep a single `app` container with one worker (as configured), and expect a restart or redeploy to end open rooms. `GET /health` reports players, rooms and games.
 
 ### 4. Tests
 ```bash
-pip install pytest
+pip install pytest httpx
 python -m pytest tests
 ```
 `HOOPGRID_DATA_DIR=/some/dir` points the server (and the real-data tests) at another set of dataset files.
+
+### Settings (environment)
+| Variable | Purpose |
+|---|---|
+| `HOOPGRID_ADMIN_TOKEN` | Secret for `POST /admin/reload` (used by the data refresh); empty disables it |
+| `HOOPGRID_ALLOWED_ORIGINS` | CORS origins, comma separated (default `*`) |
+| `HOOPGRID_DOMAIN` | Public host name for Caddy (server profile) |
+| `HOOPGRID_PORT` | Host port of the app container (bound to 127.0.0.1) |
+| `HOOPGRID_RATE_LIMIT` | `0` turns off the per-IP limits on room creation, new games and search |
+| `HOOPGRID_DATA_DIR` | Where the server reads the datasets (Docker: `/data/current`) |
 
 ---
 
@@ -77,9 +101,11 @@ basketball-xox/
 │   │   ├── rooms.py          # Rooms, seats, server-side shot clock, reconnects, rematches
 │   │   ├── protocol.py       # WebSocket message types
 │   │   └── ws.py             # /api/rooms and /ws/rooms/{code}
+│   ├── config.py, ratelimit.py  # Settings from the environment, per-IP request limits
 │   ├── data/                 # Generated datasets (see DATA.md)
 │   └── scripts/
 │       ├── build_databases.py   # CLI
+│       ├── refresh_data.py      # Build -> check -> switch release -> reload the server
 │       └── builder/             # common.py, nba.py, euroleague.py, sources/<one per source>
 ├── frontend/
 │   ├── index.html            # Scoresheet layout
@@ -88,6 +114,10 @@ basketball-xox/
 │                             # online.js (room socket), api, board, clock, slip, scoresheet, sound, dom
 ├── tests/                    # pytest: criteria, board, game, API, online rooms, builder helpers
 ├── DATA.md                   # Data sources, pipeline, rules, gaps, licensing
+├── Dockerfile                # Test stage + app image (non-root, one worker, healthcheck)
+├── docker-compose.yml        # app, builder (data refresh), caddy (server profile)
+├── docker/                   # entrypoint (seeds the data volume), Caddyfile
+├── .env.example
 ├── requirements.txt
 └── run.py                    # One-click launcher
 ```
@@ -105,7 +135,8 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 
 ## 🛠️ Upcoming Roadmap / Future Extensions
 - [x] Stat & award criteria: NBA champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP, draft slots, colleges, eras; EuroLeague champion, Final Four, career totals. Not yet: *EuroLeague MVP* and *50+ Pt Game* (no source; see DATA.md).
-- [ ] Daily data refresh (cron) once the game runs on a server.
+- [x] Docker image and compose setup with a checked, zero-downtime data refresh.
+- [ ] Run it on a VPS with a daily refresh cron.
 - [ ] Connect SQLite / PostgreSQL database for full career player stats.
 - [x] Online multiplayer room codes via WebSockets (private rooms).
 - [ ] Spectator links and a post-game "all answers" view.

@@ -1,6 +1,7 @@
 """Shared helpers: HTTP, name keys, countries, dataset I/O."""
 
 import json
+import os
 import re
 import time
 import unicodedata
@@ -8,7 +9,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+# The live datasets; in Docker HOOPGRID_DATA_DIR points at the current release on the data volume
+DATA_DIR = Path(os.environ.get("HOOPGRID_DATA_DIR") or Path(__file__).resolve().parents[2] / "data")
 
 US_STATE_CODES = {
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY",
