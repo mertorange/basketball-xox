@@ -1,4 +1,4 @@
-// Hoop Grid: two-player basketball XOX on a scorer's sheet. This module owns the menu, the
+// Hoop-Tac-Toe: two-player basketball XOX on a scorer's sheet. This module owns the menu, the
 // screens and the dialogs; the game itself runs in a controller: HotSeatGame (one device)
 // or OnlineGame (a room shared over a WebSocket).
 

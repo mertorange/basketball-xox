@@ -1,4 +1,4 @@
-# Hoop Grid: one image for the game server and the data builder.
+# Hoop-Tac-Toe: one image for the game server and the data builder.
 # The test stage must pass for the final image to build.
 
 FROM python:3.12-slim AS base

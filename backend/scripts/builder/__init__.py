@@ -1,1 +1,1 @@
-"""Data builder for Hoop Grid: one module per source, one per league."""
+"""Data builder for Hoop-Tac-Toe: one module per source, one per league."""

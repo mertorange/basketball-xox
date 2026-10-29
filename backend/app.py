@@ -33,7 +33,7 @@ def create_app(room_manager_options: dict = None) -> FastAPI:
         yield
         cleanup.cancel()
 
-    app = FastAPI(title="Hoop Grid", description="2-Player Basketball Grid Tic-Tac-Toe", lifespan=lifespan)
+    app = FastAPI(title="Hoop-Tac-Toe", description="2-Player Basketball Grid Tic-Tac-Toe", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=config.ALLOWED_ORIGINS, allow_methods=["*"],
                        allow_headers=["*"])
     if config.RATE_LIMITS_ENABLED:
@@ -81,7 +81,7 @@ def create_app(room_manager_options: dict = None) -> FastAPI:
         index_path = FRONTEND_DIR / "index.html"
         if index_path.exists():
             return FileResponse(index_path)
-        return {"message": "Hoop Grid API is running."}
+        return {"message": "Hoop-Tac-Toe API is running."}
 
     return app
 

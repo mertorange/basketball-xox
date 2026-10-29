@@ -1,4 +1,4 @@
-# 🏀 Basketball XOX (Hoops Grid Tic-Tac-Toe)
+# 🏀 Hoop-Tac-Toe
 
 A competitive 2-player basketball trivia game blending **Tic-Tac-Toe (XOX)** with **Grid Trivia** (Immaculate Grid style).
 

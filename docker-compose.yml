@@ -1,4 +1,4 @@
-# Hoop Grid
+# Hoop-Tac-Toe
 #
 #   Local:            docker compose up -d --build            -> http://localhost:8000
 #   Refresh the data: docker compose run --rm builder

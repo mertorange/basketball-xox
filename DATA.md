@@ -1,4 +1,4 @@
-# Hoop Grid — Veri Belgesi
+# Hoop-Tac-Toe — Veri Belgesi
 
 Oyunun kullandığı oyuncu verisinin nereden geldiği, nasıl üretildiği, ızgara kriterlerine nasıl
 dönüştüğü, hangi kurallarla birleştirildiği ve bilinen eksikleri. Son güncelleme: 29 Ekim 2026.

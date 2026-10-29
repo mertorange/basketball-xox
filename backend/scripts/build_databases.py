@@ -1,5 +1,5 @@
 """
-Database Builder for Hoop Grid
+Database Builder for Hoop-Tac-Toe
 Rebuilds the NBA and EuroLeague player datasets in backend/data from public sources.
 
 The work lives in the `builder` package next to this file: one module per external
@@ -24,7 +24,7 @@ from builder.nba import build_nba_database  # noqa: E402
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Rebuild Hoop Grid player datasets.")
+    parser = argparse.ArgumentParser(description="Rebuild Hoop-Tac-Toe player datasets.")
     parser.add_argument("--league", choices=["nba", "euroleague", "all"], default="all")
     parser.add_argument("--out", type=Path, default=DATA_DIR,
                         help="output directory (default: backend/data, overwriting the current datasets)")

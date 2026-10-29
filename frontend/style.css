@@ -1,4 +1,4 @@
-/* Hoop Grid: a scorer's-table scoresheet. Paper, ink, ruled lines, one LED shot clock. */
+/* Hoop-Tac-Toe: a scorer's-table scoresheet. Paper, ink, ruled lines, one LED shot clock. */
 
 :root {
   --paper: #f6f1e7;
@@ -900,7 +900,7 @@ button:disabled { cursor: not-allowed; }
 
 /* Phones: one column, so the menu gets compact to fit; the option notes are left out */
 @media (max-width: 699px) {
-  .wordmark { font-size: 42px; }
+  .wordmark { font-size: 37px; } /* 'Hoop-Tac-Toe' on one line inside the 16px gutters */
   .form-head { padding-top: 14px; padding-bottom: 10px; }
   .form-sub { margin-top: 6px; }
   .field { padding-top: 10px; padding-bottom: 12px; }
