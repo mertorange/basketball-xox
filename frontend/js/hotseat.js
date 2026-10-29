@@ -1,6 +1,6 @@
 // Same-device play: both players share one screen; the browser runs the shot clock.
 
-import { isAgreedDraw, renderActions } from './actions.js';
+import { renderActions } from './actions.js';
 import { api } from './api.js';
 import { renderBoard } from './board.js';
 import { $ } from './dom.js';
@@ -19,9 +19,10 @@ export class HotSeatGame {
     this.game = null;
     this.scores = { X: 0, O: 0 };
     this.gamesPlayed = 0;
+    this.gridNo = 0;        // grids dealt in the current series
     this.cell = null;
     this.pending = false; // a pick is being checked; the clock must not also fire
-    this.drawArmed = false; // End as draw was pressed once; the second press confirms
+    this.drawArmed = false; // Draw this grid was pressed once; the second press confirms
     this.drawTimer = null;
   }
 
@@ -29,7 +30,14 @@ export class HotSeatGame {
     return mark === 'X' ? this.game.player1_name : this.game.player2_name;
   }
 
-  async start() {
+  /** The mark that has won more than half of the best-of, once one has. */
+  seriesWinner() {
+    const target = Math.floor(this.settings.bestOf / 2) + 1;
+    return ['X', 'O'].find(mark => this.scores[mark] >= target) || null;
+  }
+
+  /** Deals the next grid of the series; note goes before the tip-off line (an agreed draw). */
+  async start(note = '') {
     this.ui.clock.stop();
     setStatus('Drawing up a new grid...');
     const { league, clock, density, style } = this.settings;
@@ -45,11 +53,13 @@ export class HotSeatGame {
       first_player: first
     });
     this.gamesPlayed++;
-    this.ui.showGame({ league, gameId: this.game.game_id, names: this.names, room: null });
+    this.gridNo++;
+    this.ui.showGame({ league, gameId: this.game.game_id, names: this.names, room: null,
+      series: { bestOf: this.settings.bestOf, grid: this.gridNo } });
     renderTallies(this.scores);
     renderBoard(this.game, league);
     this.ui.playByPlay.reset();
-    setStatus(`${this.playerName(first)} to start. Pick a box.`);
+    setStatus(`${note}${this.playerName(first)} to start. Pick a box.`);
     this.disarmDraw();
     this.ui.clock.start(clock);
   }
@@ -66,7 +76,7 @@ export class HotSeatGame {
       visible: running,
       skip: running && !this.pending,
       draw: this.drawArmed
-        ? { label: 'Press again to end as draw', pending: true }
+        ? { label: 'Press again to draw', pending: true }
         : { disabled: this.pending }
     });
   }
@@ -141,7 +151,8 @@ export class HotSeatGame {
     }
   }
 
-  // Both players share the screen, so pressing twice is the agreement
+  // Both players share the screen, so pressing twice is the agreement. The grid is written off
+  // and a new one dealt; the series score stays as it is.
   drawPressed() {
     if (this.pending || !this.game || this.game.status === 'finished') return;
     if (!this.drawArmed) {
@@ -151,7 +162,7 @@ export class HotSeatGame {
       return;
     }
     this.disarmDraw();
-    this.endInDraw();
+    this.drawGrid();
   }
 
   disarmDraw() {
@@ -161,14 +172,13 @@ export class HotSeatGame {
     this.renderActions();
   }
 
-  async endInDraw() {
+  async drawGrid() {
     this.pending = true;
     this.ui.clock.stop();
     try {
-      this.game = await api.endInDraw(this.game.game_id);
-      renderBoard(this.game, this.settings.league);
-      this.renderActions();
-      this.finish('DRAW');
+      await api.endInDraw(this.game.game_id);
+      this.pending = false;
+      await this.start('Grid drawn by agreement. New grid: ');
     } catch (err) {
       console.error(err);
       setStatus('Could not reach the game server.', 'error');
@@ -201,25 +211,27 @@ export class HotSeatGame {
       sfx.playWin();
       this.scores[winner]++;
       renderTallies(this.scores);
-      setStatus(`${this.playerName(winner)} wins the grid.`, 'success');
+      const what = this.seriesWinner() && this.settings.bestOf > 1 ? 'the series' : 'the grid';
+      setStatus(`${this.playerName(winner)} wins ${what}.`, 'success');
     } else {
-      setStatus(isAgreedDraw(this.game) ? 'Draw by agreement.' : 'Draw. All nine boxes filled.');
+      setStatus('Draw. All nine boxes filled.');
     }
     setTimeout(() => this.ui.showFinal({
       winner,
       winnerName: winner === 'DRAW' ? null : this.playerName(winner),
       names: this.names,
       scores: this.scores,
-      waiting: null,
-      agreed: isAgreedDraw(this.game)
+      bestOf: this.settings.bestOf,
+      seriesWinner: this.seriesWinner()
     }), 900);
   }
 
+  /** Next grid; once the series is decided, a new series from 0–0. */
   rematch() {
-    return this.start();
-  }
-
-  newGrid() {
+    if (this.seriesWinner()) {
+      this.scores = { X: 0, O: 0 };
+      this.gridNo = 0;
+    }
     return this.start();
   }
 

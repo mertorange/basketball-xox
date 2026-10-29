@@ -5,7 +5,7 @@
     {"type": "room", ...snapshot}               the full room state, after every change
     {"type": "event", "kind", "mark", "text"}   something happened: for sounds and the log
                                                 (move, turnover, violation, skip, draw_offer,
-                                                draw_declined, final, ...)
+                                                draw_declined, grid_drawn, final, ...)
     {"type": "error", "reason"}
 """
 
@@ -45,7 +45,8 @@ class Skip(BaseModel):
 
 
 class OfferDraw(BaseModel):
-    """Ask the opponent to end the game as a draw; the offer stands until answered."""
+    """Ask the opponent to write this grid off as a draw (a new grid follows); the offer
+    stands until answered."""
     type: Literal["offer_draw"]
 
 
@@ -55,6 +56,7 @@ class AnswerDraw(BaseModel):
 
 
 class Rematch(BaseModel):
+    """Ready for the next grid; once the series is decided, for a new series."""
     type: Literal["rematch"]
 
 

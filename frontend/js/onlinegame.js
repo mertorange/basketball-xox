@@ -1,7 +1,7 @@
 // Online play: the server runs the game and the clock; this renders what it sends and
 // forwards the local player's actions.
 
-import { isAgreedDraw, renderActions } from './actions.js';
+import { renderActions } from './actions.js';
 import { lockBoard, renderBoard, showFocus } from './board.js';
 import { RoomConnection } from './online.js';
 import { renderTallies, setStatus } from './scoresheet.js';
@@ -23,6 +23,7 @@ export class OnlineGame {
     this.cell = null;
     this.fresh = null;          // box claimed by the last move, to animate its mark
     this.note = null;           // last thing that happened, shown before whose turn it is
+    this.nextNote = null;       // a note for the grid about to be dealt (an agreed draw)
     this.gameId = null;
     this.finalShownFor = null;
     this.conn = new RoomConnection(code, name, {
@@ -57,13 +58,14 @@ export class OnlineGame {
 
     if (game.game_id !== this.gameId) {
       this.gameId = game.game_id;
-      this.note = null;
+      this.note = this.nextNote;
+      this.nextNote = null;
       this.ui.playByPlay.reset();
       this.ui.hideFinal();
     }
     const league = room.settings.league;
     this.ui.showGame({ league, gameId: game.game_id, names: this.names(), room: room.code, you: room.you,
-      spectators: room.spectators });
+      spectators: room.spectators, series: { bestOf: room.series.best_of, grid: room.series.grid } });
     renderBoard(game, league, this.fresh);
     this.fresh = null;
     renderTallies(room.scores);
@@ -119,6 +121,9 @@ export class OnlineGame {
       case 'draw_declined':
         this.ui.playByPlay.log(event.mark, 'Said no to a draw');
         this.note = { text: mine ? 'You said no to a draw.' : `${who} said no to a draw.`, type: 'error' };
+        break;
+      case 'grid_drawn':
+        this.nextNote = { text: 'Grid drawn by agreement. New grid.', type: '' };
         break;
       case 'final':
         if (event.mark === this.room?.you) sfx.playWin();
@@ -201,13 +206,16 @@ export class OnlineGame {
     const opponent = room.you === 'X' ? 'O' : 'X';
     const me = room.seats[room.you];
     const them = room.seats[opponent];
+    const { best_of: bestOf, winner: seriesWinner } = room.series;
+    const next = seriesWinner ? 'a new series' : 'the next grid';
     let waiting = null;
     if (!them) waiting = 'Your opponent left the room.';
     else if (me && me.rematch) waiting = `Waiting for ${them.name}...`;
-    else if (them.rematch) waiting = `${them.name} wants a rematch.`;
+    else if (them.rematch) waiting = `${them.name} is ready for ${next}.`;
 
     if (this.spectator) waiting = null;
-    const verdict = winner === 'DRAW' ? (isAgreedDraw(room.game) ? 'Draw by agreement.' : 'Draw.') : winner === room.you ? 'You win the grid.' : `${this.nameOf(winner)} wins the grid.`;
+    const what = seriesWinner && bestOf > 1 ? 'the series' : 'the grid';
+    const verdict = winner === 'DRAW' ? 'Draw.' : winner === room.you ? `You win ${what}.` : `${this.nameOf(winner)} wins ${what}.`;
     setStatus(this.note ? `${this.note.text} ${verdict}` : verdict, winner === room.you ? 'success' : '');
 
     const details = {
@@ -215,10 +223,11 @@ export class OnlineGame {
       winnerName: winner === 'DRAW' ? null : (winner === room.you ? 'You' : this.nameOf(winner)),
       names: this.names(),
       scores: room.scores,
+      bestOf,
+      seriesWinner,
       waiting,
       canRematch: Boolean(them) && !(me && me.rematch),
       byForfeit: winner !== 'DRAW' && !room.game.winning_line,
-      agreed: isAgreedDraw(room.game),
       spectating: this.spectator
     };
     if (this.finalShownFor === room.game.game_id) {

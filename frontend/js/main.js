@@ -44,7 +44,8 @@ function readSettings(form) {
     league: data.get('league'),
     clock: parseInt(data.get('clock'), 10) || 0,
     density: parseInt(data.get('density'), 10) || 2,
-    style: data.get('style') || 'mixed'
+    style: data.get('style') || 'mixed',
+    bestOf: parseInt(data.get('best_of'), 10) || 1
   };
 }
 
@@ -94,7 +95,6 @@ function setupHandlers() {
 
   $('btn-game-exit').addEventListener('click', leaveToMenu);
   $('btn-lobby-leave').addEventListener('click', leaveToMenu);
-  $('btn-game-new').addEventListener('click', () => active && active.newGrid && active.newGrid());
   $('btn-ready').addEventListener('click', () => {
     if (!active || !active.ready) return;
     active.ready();
@@ -163,7 +163,8 @@ async function createRoom(settings) {
       league: settings.league,
       min_answers: settings.density,
       shot_clock: settings.clock,
-      grid_style: settings.style
+      grid_style: settings.style,
+      best_of: settings.bestOf
     });
     startController(new OnlineGame(ui, code, onlineName()));
   } catch (err) {
@@ -214,9 +215,10 @@ function showMenu(error = null) {
 
 /**
  * names: { X, O }; room: the room code online, null on one device; you: the local seat online
- * (null when watching); spectators: how many are watching an online room
+ * (null when watching); spectators: how many are watching an online room;
+ * series: { bestOf, grid } where grid counts the grids dealt in this series
  */
-function showGame({ league, gameId, names, room, you = null, spectators = 0 }) {
+function showGame({ league, gameId, names, room, you = null, spectators = 0, series }) {
   show('game');
   $('meta-league').textContent = league === 'euroleague' ? 'EuroLeague' : 'NBA';
   $('meta-game').textContent = gameId.toUpperCase();
@@ -224,7 +226,7 @@ function showGame({ league, gameId, names, room, you = null, spectators = 0 }) {
   $('meta-room').textContent = room || '';
   $('meta-watch-wrap').hidden = !spectators;
   $('meta-watch').textContent = spectators;
-  $('btn-game-new').hidden = Boolean(room);
+  $('meta-series').textContent = series.bestOf > 1 ? `Best of ${series.bestOf} · Grid ${series.grid}` : 'Best of 1';
   $('text-name-x').textContent = names.X;
   $('text-name-o').textContent = names.O;
   $('label-x').textContent = you === 'X' ? 'Team A · You' : 'Team A';
@@ -263,6 +265,7 @@ function showLobby(room, code, spectator = false) {
   $('lobby-settings').textContent = [
     s.league === 'euroleague' ? 'EuroLeague' : 'NBA',
     s.grid_style === 'mixed' ? 'mixed grid' : 'classic grid',
+    `best of ${s.best_of}`,
     CLOCK_LABEL(s.shot_clock),
     `${s.min_answers}+ answers a box`
   ].join(' · ');
@@ -298,30 +301,39 @@ async function copyLink(sourceId, buttonId) {
   setTimeout(() => { button.textContent = label; }, 1600);
 }
 
+/** The series line under a result: 'Best of 3: Ann 2 – 1 Ben', or nothing for a single grid. */
+function seriesLine(names, scores, bestOf) {
+  return bestOf > 1 ? ` Best of ${bestOf}: ${names.X} ${scores.X} – ${scores.O} ${names.O}.` : '';
+}
+
 /**
- * winner: 'X' | 'O' | 'DRAW'; winnerName: shown in the title; waiting: online rematch status line;
- * canRematch: false once the local player has asked for a rematch; byForfeit: the other side left;
- * agreed: a draw both players asked for, with boxes still open; spectating: no rematch button at all
+ * winner: 'X' | 'O' | 'DRAW' for the grid; winnerName: shown in the title ('You' for the local
+ * player online); seriesWinner: the mark that has taken the series, or null while it goes on;
+ * waiting: online status line for the next grid; canRematch: false once the local player is ready;
+ * byForfeit: the other side left; spectating: no next-grid button at all
  */
-function showFinal({ winner, winnerName, names, scores, waiting = null, canRematch = true, byForfeit = false,
-                     agreed = false, spectating = false }) {
+function showFinal({ winner, winnerName, names, scores, bestOf, seriesWinner = null, waiting = null,
+                     canRematch = true, byForfeit = false, spectating = false }) {
   renderActions({ visible: false });
   const stamp = $('go-stamp');
   stamp.className = 'stamp';
+  const tally = seriesLine(names, scores, bestOf);
   if (winner === 'X' || winner === 'O') {
-    stamp.textContent = 'Final';
+    const what = seriesWinner && bestOf > 1 ? 'the series' : 'the grid';
+    stamp.textContent = seriesWinner ? 'Final' : 'Grid';
     stamp.classList.add(winner.toLowerCase());
-    $('go-title').textContent = winnerName === 'You' ? 'You win' : `${winnerName} wins`;
-    $('go-desc').textContent = `${byForfeit ? 'By forfeit' : 'Three in a row'}. Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
+    $('go-title').textContent = winnerName === 'You' ? `You win ${what}` : `${winnerName} wins ${what}`;
+    $('go-desc').textContent = `${byForfeit ? 'By forfeit' : 'Three in a row'}.${tally}`;
   } else {
     stamp.textContent = 'Draw';
     stamp.classList.add('draw');
     $('go-title').textContent = 'No winner';
-    const how = agreed ? 'Ended as a draw by agreement.' : 'All nine boxes filled without a line.';
-    $('go-desc').textContent = `${how} Series: ${names.X} ${scores.X} – ${scores.O} ${names.O}`;
+    $('go-desc').textContent = `All nine boxes filled without a line.${tally}`;
   }
   $('go-waiting').textContent = waiting || '';
-  $('btn-rematch-match').disabled = !canRematch;
-  $('btn-rematch-match').hidden = spectating;
+  const next = $('btn-rematch-match');
+  next.textContent = !seriesWinner ? 'Next grid' : bestOf > 1 ? 'New series' : 'Play again';
+  next.disabled = !canRematch;
+  next.hidden = spectating;
   openModal(modals.gameover);
 }

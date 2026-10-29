@@ -1,4 +1,4 @@
-// The buttons under the grid: skip the turn, end the game as a draw.
+// The buttons under the grid: skip the turn, write the grid off as a draw.
 
 import { $ } from './dom.js';
 
@@ -12,13 +12,9 @@ export function renderActions({ visible = true, skip = false, draw = {} } = {}) 
   $('game-actions').hidden = !visible;
   $('btn-skip').disabled = !skip;
   const button = $('btn-draw');
-  button.textContent = draw.label || 'End as draw';
+  button.textContent = draw.label || 'Draw this grid';
   button.disabled = Boolean(draw.disabled);
   button.classList.toggle('pending', Boolean(draw.pending));
   $('draw-answer').hidden = !draw.answer;
 }
 
-/** True when a finished game still had open boxes and no line: the players agreed to stop. */
-export function isAgreedDraw(game) {
-  return game.winner === 'DRAW' && game.grid.flat().some(cell => !cell.claimed_by);
-}

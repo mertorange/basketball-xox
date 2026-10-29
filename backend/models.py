@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 
 Mark = Literal["X", "O"]
 GridStyle = Literal["classic", "mixed"]
+# Grids in a series; the first to win more than half takes it (drawn grids don't count)
+BestOf = Literal[1, 3, 5, 7]
 
 
 class CriterionType(str, Enum):
@@ -49,6 +51,7 @@ class CreateRoomRequest(BaseModel):
     min_answers: int = Field(2, ge=1, le=4)
     shot_clock: int = Field(30, ge=0, le=600)
     grid_style: GridStyle = "mixed"
+    best_of: BestOf = 3
 
 
 class MoveRequest(BaseModel):

@@ -232,6 +232,7 @@ def test_skip_turn(online):
 def test_draw_offer_declined_then_accepted(online):
     client, rooms, manager = online
     code, room, a, b, _, _ = start_match(client, rooms, manager)
+    first_game = room.game_id
 
     a.send_json({"type": "answer_draw", "accept": True})  # nothing to answer yet
     assert "no draw offer" in recv_until(a, lambda m: m["type"] == "error")["reason"]
@@ -245,23 +246,74 @@ def test_draw_offer_declined_then_accepted(online):
     b.send_json({"type": "answer_draw", "accept": False})
     assert recv_until(a, lambda m: m["type"] == "event" and m["kind"] == "draw_declined")["mark"] == "O"
     snap = room_msg(a, lambda m: m["draw_offer"] is None)
-    assert snap["phase"] == "playing"
+    assert snap["phase"] == "playing" and snap["game"]["game_id"] == first_game
 
     b.send_json({"type": "offer_draw"})
     room_msg(a, lambda m: m["draw_offer"] == "O")
     a.send_json({"type": "answer_draw", "accept": True})
-    final = room_msg(b, lambda m: m["phase"] == "final")
-    assert final["game"]["winner"] == "DRAW" and final["draw_offer"] is None
-    assert final["scores"] == {"X": 0, "O": 0}
+    assert recv_until(b, lambda m: m["type"] == "event" and m["kind"] == "grid_drawn")["mark"] == "X"
+    # Only the grid is drawn: a new one is dealt straight away and the series goes on
+    snap = room_msg(b, lambda m: m["game"]["game_id"] != first_game)
+    assert snap["phase"] == "playing" and snap["draw_offer"] is None
+    assert snap["scores"] == {"X": 0, "O": 0} and snap["series"]["grid"] == 2
+    assert snap["game"]["current_player"] == "O"  # starts still alternate
+    assert manager.get_game(first_game) is None
 
 
-def test_both_offering_a_draw_ends_the_game(online):
+def test_both_offering_a_draw_deals_a_new_grid(online):
     client, rooms, manager = online
     code, room, a, b, _, _ = start_match(client, rooms, manager)
+    first_game = room.game_id
     a.send_json({"type": "offer_draw"})
     room_msg(b, lambda m: m["draw_offer"] == "X")
     b.send_json({"type": "offer_draw"})
-    assert room_msg(a, lambda m: m["phase"] == "final")["game"]["winner"] == "DRAW"
+    snap = room_msg(a, lambda m: m["game"]["game_id"] != first_game)
+    assert snap["phase"] == "playing" and snap["series"]["grid"] == 2
+
+
+def win_grid_for_x(rooms, manager, room, a, b):
+    """Plays the room's current grid to a line of X on a known board."""
+    game = manager.get_game(room.game_id)
+    index = manager.indexes["nba"]
+    game.row_criteria = [to_criterion(index.get(*k)) for k in ROWS]
+    game.col_criteria = [to_criterion(index.get(*k)) for k in COLS]
+    picks = [(a, 0, 0, "Alpha One"), (b, 1, 0, "Gamma Three"), (a, 0, 1, "Beta Two"),
+             (b, 2, 0, "Nobody"), (a, 0, 2, "Delta Four")]
+    if game.current_player == "O":
+        picks.insert(0, (b, 2, 2, "Nobody"))  # a turnover hands X the ball
+    for ws, row, col, name in picks:
+        ws.send_json({"type": "pick", "row": row, "col": col, "name": name})
+        recv_until(ws, lambda m: m["type"] == "room")
+    return room_msg(b, lambda m: m["phase"] == "final")
+
+
+def test_best_of_three_series(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    assert room.settings["best_of"] == 3
+
+    final = win_grid_for_x(rooms, manager, room, a, b)
+    assert final["scores"] == {"X": 1, "O": 0} and final["series"]["winner"] is None
+
+    for ws in (a, b):
+        ws.send_json({"type": "rematch"})
+    room_msg(a, lambda m: m["phase"] == "playing" and m["series"]["grid"] == 2)
+    final = win_grid_for_x(rooms, manager, room, a, b)
+    assert final["scores"] == {"X": 2, "O": 0} and final["series"]["winner"] == "X"
+
+    # Once the series is decided, the next rematch starts a new one from 0-0
+    for ws in (a, b):
+        ws.send_json({"type": "rematch"})
+    snap = room_msg(a, lambda m: m["phase"] == "playing" and m["series"]["grid"] == 1)
+    assert snap["scores"] == {"X": 0, "O": 0} and snap["series"]["winner"] is None
+
+
+def test_best_of_one(online):
+    client, rooms, manager = online
+    res = client.post("/api/rooms", json={"league": "nba", "min_answers": 1, "shot_clock": 0,
+                                          "grid_style": "classic", "best_of": 1})
+    assert rooms.get(res.json()["code"]).settings["best_of"] == 1
+    assert client.post("/api/rooms", json={"best_of": 4}).status_code == 422
 
 
 def test_spectators_cannot_skip_or_offer(online):

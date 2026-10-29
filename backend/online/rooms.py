@@ -49,6 +49,7 @@ class Room:
     scores: Dict[str, int] = field(default_factory=lambda: {"X": 0, "O": 0})
     game_id: Optional[str] = None
     next_first: str = "X"                  # who starts the next game; alternates
+    grid_no: int = 0                       # grids started in the current series
     focus: Optional[dict] = None           # the box the player on the clock has open
     draw_offer: Optional[str] = None       # the mark that asked for a draw, until answered
     deadline: Optional[float] = None       # event-loop time the current turn runs out
@@ -89,6 +90,12 @@ class RoomManager:
         if game:
             return "playing" if game.status == "in_progress" else "final"
         return "lobby" if len(room.seats) == 2 else "waiting"
+
+    @staticmethod
+    def series_winner(room: Room) -> Optional[str]:
+        """The mark that has won more than half of the best-of, once one has."""
+        target = room.settings.get("best_of", 1) // 2 + 1
+        return next((mark for mark, wins in room.scores.items() if wins >= target), None)
 
     def remove_idle(self) -> None:
         now = time.monotonic()
@@ -248,7 +255,7 @@ class RoomManager:
             return  # already asked
         if room.draw_offer is not None:
             # Both asked at once: that is an agreement
-            await self._agree_draw(room, game)
+            await self._agree_draw(room, game, seat)
             return
         room.draw_offer = seat.mark
         await self._event(room, "draw_offer", seat.mark, f"{seat.name} asked for a draw")
@@ -259,15 +266,18 @@ class RoomManager:
         if room.draw_offer is None or room.draw_offer == seat.mark:
             raise RoomError("There is no draw offer to answer.")
         if msg.accept:
-            await self._agree_draw(room, game)
+            await self._agree_draw(room, game, seat)
             return
         room.draw_offer = None
         await self._event(room, "draw_declined", seat.mark, f"{seat.name} said no to a draw")
         await self._broadcast(room)
 
-    async def _agree_draw(self, room: Room, game) -> None:
+    async def _agree_draw(self, room: Room, game, seat: Seat) -> None:
+        """An agreed draw writes off this grid only: a new one tips off and the series goes on."""
         self.games.end_in_draw(game.game_id)
-        await self._finish(room, "DRAW")
+        self._stop_clock(room)
+        await self._event(room, "grid_drawn", seat.mark, "Grid drawn by agreement")
+        await self._start_game(room)
         await self._broadcast(room)
 
     def _running_game(self, room: Room):
@@ -279,8 +289,11 @@ class RoomManager:
     async def _on_rematch(self, room: Room, seat: Seat) -> None:
         if self.phase(room) != "final":
             return
-        seat.rematch = True
+        seat.rematch = True  # next grid, or a new series once this one is decided
         if len(room.seats) == 2 and all(s.rematch for s in room.seats.values()):
+            if self.series_winner(room):
+                room.scores = {"X": 0, "O": 0}
+                room.grid_no = 0
             await self._start_game(room)
         await self._broadcast(room)
 
@@ -307,6 +320,7 @@ class RoomManager:
             first_player=room.next_first, online=True,
         )
         room.game_id = game.game_id
+        room.grid_no += 1
         room.next_first = other_player(room.next_first)
         room.focus = None
         room.draw_offer = None
@@ -382,6 +396,8 @@ class RoomManager:
             "seats": {mark: {"name": s.name, "connected": s.connected, "ready": s.ready, "rematch": s.rematch}
                       for mark, s in room.seats.items()},
             "scores": room.scores,
+            "series": {"best_of": room.settings.get("best_of", 1), "grid": room.grid_no,
+                       "winner": self.series_winner(room)},
             "game": game.model_dump(mode="json") if game else None,
             "turn_ms_left": ms_left,
             "focus": room.focus,

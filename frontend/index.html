@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=8">
+  <link rel="stylesheet" href="/static/style.css?v=9">
 </head>
 <body>
   <main class="sheet">
@@ -97,6 +97,16 @@
         </fieldset>
 
         <fieldset class="field">
+          <legend class="field-label">Series</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="best_of" value="1"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Best of 1</span></label>
+            <label class="choice"><input type="radio" name="best_of" value="3" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Best of 3</span></label>
+            <label class="choice"><input type="radio" name="best_of" value="5"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Best of 5</span></label>
+            <label class="choice"><input type="radio" name="best_of" value="7"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Best of 7</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
           <legend class="field-label">Valid answers per box, at least</legend>
           <div class="choices">
             <label class="choice"><input type="radio" name="density" value="1"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">1 <small>hard</small></span></label>
@@ -168,12 +178,12 @@
         <dl class="meta">
           <div><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
           <div><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
+          <div><dt>Series</dt><dd id="meta-series">&mdash;</dd></div>
           <div id="meta-room-wrap" hidden><dt>Room</dt><dd id="meta-room"></dd></div>
           <div id="meta-watch-wrap" hidden><dt>Watching</dt><dd id="meta-watch">0</dd></div>
         </dl>
         <nav class="head-actions">
           <button type="button" class="btn-text" id="btn-game-rules">Rules</button>
-          <button type="button" class="btn-text" id="btn-game-new">New grid</button>
           <button type="button" class="btn-text" id="btn-game-exit">Menu</button>
         </nav>
       </header>
@@ -237,7 +247,7 @@
       <div class="game-actions" id="game-actions" hidden>
         <button type="button" class="btn btn-line" id="btn-skip">Skip turn</button>
         <div class="draw-wrap">
-          <button type="button" class="btn btn-line" id="btn-draw">End as draw</button>
+          <button type="button" class="btn btn-line" id="btn-draw">Draw this grid</button>
           <div class="draw-answer" id="draw-answer" hidden>
             <button type="button" class="btn-small btn-small-ink" id="btn-draw-yes">Yes</button>
             <button type="button" class="btn-small" id="btn-draw-no">No</button>
@@ -323,7 +333,8 @@
         <li>Country criteria mean the player's country of birth. Awards, draft slots, colleges, eras and career totals work the same way: the player must fit both.</li>
         <li>A wrong name, a player already used, or an expired shot clock is a turnover: the turn passes.</li>
         <li>Three boxes in a row, column or diagonal wins. Nine boxes without a line is a draw.</li>
-        <li>Stuck? Skip turn passes the ball to your opponent. End as draw stops the grid with no winner: online the other player has to say yes; on one device, press it twice.</li>
+        <li>A match is a series: best of 1, 3, 5 or 7 grids. The first to win more than half takes it; drawn grids don't count.</li>
+        <li>Stuck? Skip turn passes the ball to your opponent. Draw this grid writes the grid off and deals a new one: online the other player has to say yes; on one device, press it twice.</li>
       </ol>
       <div class="slip-actions">
         <button type="button" class="btn btn-ink" id="btn-ack-rules">Got it</button>
@@ -331,6 +342,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=8"></script>
+  <script type="module" src="/static/js/main.js?v=9"></script>
 </body>
 </html>
