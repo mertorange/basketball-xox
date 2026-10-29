@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Teko:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=17">
+  <link rel="stylesheet" href="/static/style.css?v=24">
 </head>
 <body>
   <main class="sheet">
@@ -278,6 +278,16 @@
       <div class="game-main">
       <div class="board-wrap" id="board-wrap">
         <div class="board" id="grid-table">
+          <svg class="court" viewBox="0 0 300 300" preserveAspectRatio="none" aria-hidden="true">
+            <rect class="paint" x="102" y="0" width="96" height="114"/>
+            <path d="M0 1H300M102 0V114H198V0M132 24H168"/>
+            <circle cx="150" cy="31.5" r="4.5"/>
+            <path d="M126 31.5A24 24 0 0 0 174 31.5"/>
+            <circle cx="150" cy="114" r="36"/>
+            <path d="M18 0V85A142.5 142.5 0 0 0 282 85V0"/>
+            <path d="M0 282H300M114 282A36 36 0 0 1 186 282"/>
+          </svg>
+          <svg class="plays" id="plays" aria-hidden="true"></svg>
           <div class="corner" id="corner-mark" aria-hidden="true"></div>
           <div class="crit crit-col" id="ch-0"></div>
           <div class="crit crit-col" id="ch-1"></div>
@@ -402,6 +412,13 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=17"></script>
+  <!-- Dry-erase marker: a slightly ragged edge for the X and O strokes -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="marker-edge" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="4"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.2"/>
+    </filter>
+  </svg>
+  <script type="module" src="/static/js/main.js?v=24"></script>
 </body>
 </html>

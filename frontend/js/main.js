@@ -6,6 +6,7 @@ import { renderActions } from './actions.js';
 import { api } from './api.js';
 import { showAnswers } from './answers.js';
 import { drawWinStroke } from './board.js';
+import { drawPlays } from './plays.js';
 import { ShotClock } from './clock.js';
 import { $, closeModal, escapeHtml, isOpen, openModal } from './dom.js';
 import { HotSeatGame, readNames } from './hotseat.js';
@@ -181,6 +182,7 @@ function setupHandlers() {
   window.addEventListener('resize', () => {
     const line = document.querySelector('#win-stroke line');
     if (line && active && active.game) drawWinStroke(active.game.winning_line, active.game.winner);
+    if (active && active.game) drawPlays(active.game);
   });
 }
 

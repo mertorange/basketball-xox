@@ -667,7 +667,7 @@ button:disabled { cursor: not-allowed; }
   pointer-events: none;
   overflow: visible;
 }
-.win-stroke line {
+.win-stroke path {
   stroke-width: 6;
   stroke-linecap: round;
   stroke-dasharray: 1;
@@ -1189,3 +1189,122 @@ button:disabled { cursor: not-allowed; }
 .btn-sound.muted { color: var(--ink-faint); }
 .btn-sound.muted .waves { display: none; }
 .btn-sound.muted .cross { display: inline; }
+
+
+/* ---------- The tactics board ---------- */
+
+/* The grid is a coach's magnetic board: a hardwood court printed under the nine boxes with
+   white lines, the criteria on white magnetic name strips around it, everything else in
+   black dry-erase marker: the grid, the X and O, the plays between a team's answers and
+   the arrow through the winning three. */
+:root {
+  --laminate: #f7f6f1;            /* the board around the printed court */
+  --board-marker: #22252a;        /* black dry-erase marker (not --marker, the orange highlighter) */
+  --court-floor: #e3bd88;
+  --court-floor-light: #e8c592;
+  --court-floor-dark: #ddb37c;
+  --court-paint: rgba(160, 82, 30, 0.2);
+  --court-line: #fffdf7;
+  --win-line: #d1302a;             /* red marker, for the winning three only */
+}
+
+.board {
+  position: relative;
+  border-color: var(--board-marker);
+  border-radius: 3px;
+  background: var(--laminate);
+  box-shadow: 0 0 0 5px #c9ccd1, 0 0 0 6px #8f949b, 0 8px 18px rgba(40, 20, 4, 0.3);
+}
+.board > * { border-color: var(--board-marker); }
+.board > .court, .board > .plays { border: 0; }
+
+/* The printed court under the boxes (the board's last three columns and rows) */
+.court {
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 75%;
+  height: 75%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(110, 60, 20, 0.1) 0 1px, transparent 1px 8.33%),
+    repeating-linear-gradient(90deg, var(--court-floor) 0 8.33%, var(--court-floor-light) 8.33% 16.66%, var(--court-floor-dark) 16.66% 25%);
+  fill: none;
+  stroke: var(--court-line);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+.court path, .court circle { vector-effect: non-scaling-stroke; }
+.court .paint { fill: var(--court-paint); stroke: none; }
+
+/* Plays sit on the court, under the boxes' contents, so no line crosses a name */
+.plays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+.plays path {
+  fill: none;
+  stroke: var(--board-marker);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#marker-edge);
+}
+.plays .screen .end { stroke-width: 3.4; }
+/* The newest play draws on like a marker stroke (each stroke's timing is set in plays.js) */
+.plays .fresh path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: pen 0.2s linear forwards; }
+
+.cell, .crit, .corner { position: relative; z-index: 1; }
+.cell { background: transparent; }
+.board-wrap.locked .cell:not(.claimed):hover { background: transparent; }
+.cell:not(.claimed)::before {
+  background:
+    linear-gradient(var(--court-line), var(--court-line)) center / 12px 1.5px no-repeat,
+    linear-gradient(var(--court-line), var(--court-line)) center / 1.5px 12px no-repeat;
+}
+.cell:not(.claimed):hover { background: rgba(255, 253, 247, 0.28); }
+.cell.selected { background: rgba(255, 253, 247, 0.45); }
+
+/* Names straight on the court; a faint glow in the floor's colour keeps a court line from
+   running through the letters */
+.cell-player, .cell-meta {
+  background: none;
+  text-shadow: 0 0 2px var(--court-floor), 0 0 3px var(--court-floor), 0 0 5px var(--court-floor);
+}
+.cell-meta { color: var(--ink-soft); }
+
+/* Criteria written straight on the board around the court */
+.crit, .corner { background: transparent; isolation: isolate; }
+.crit-type { color: var(--ink-faint); }
+
+/* Whose turn: written in the corner in marker, with a note */
+.corner {
+  color: var(--board-marker) !important;
+  font-size: 9cqmin;
+  filter: url(#marker-edge);
+  flex-direction: column;
+  gap: 0.6cqmin;
+}
+.corner:not(:empty)::after {
+  content: 'to play';
+  font-family: var(--label);
+  font-size: clamp(8px, 1.7cqmin, 11px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  filter: none;
+}
+
+/* X and O in black dry-erase marker: the shape tells the teams apart, as on a real board */
+.mark path { filter: url(#marker-edge); stroke-width: 7; }
+.mark-x path, .mark-o path { stroke: var(--board-marker); }
+
+/* The winning three: a heavy marker arrow, then its head */
+/* The winning three: one straight red stroke, drawn on (no arrow) */
+.win-stroke path { stroke: var(--win-line); stroke-width: 6; fill: none; }
