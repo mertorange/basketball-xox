@@ -689,8 +689,25 @@ button:disabled { cursor: not-allowed; }
   cursor: pointer;
   border-bottom: 1px dotted var(--rule);
 }
-.suggestions li[aria-selected="true"],
 .suggestions li:hover { background: rgba(242, 208, 75, 0.45); }
+/* The chosen name: what Enter or Submit sends */
+.suggestions li[aria-selected="true"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.suggestions li[aria-selected="true"]::after {
+  content: 'Enter ↵';
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--marker);
+}
 .suggestions li.none { color: var(--ink-faint); cursor: default; font-family: var(--mono); font-size: 12px; }
 .suggestions mark { background: none; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 
