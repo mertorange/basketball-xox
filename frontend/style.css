@@ -32,6 +32,7 @@ body {
   font-size: 16px;
   line-height: 1.4;
   min-height: 100vh;
+  display: flow-root; /* keeps the sheet's margin inside the page, so a one-screen sheet doesn't scroll */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -100,6 +101,38 @@ button:disabled { cursor: not-allowed; }
 }
 
 .setup { display: flex; flex-direction: column; }
+.setup-go { display: flex; flex-direction: column; }
+
+/* Wide screens: two columns, so the whole form fits on a laptop screen. Left: what to play;
+   right: how to play it, the names and the button. */
+@media (min-width: 700px) {
+  .sheet:has(> #screen-menu:not(.hidden)) { max-width: 1080px; }
+  .setup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: linear-gradient(var(--rule), var(--rule)) center / 1px 100% no-repeat;
+  }
+  .field-play { grid-area: 1 / 1; }
+  .field-competition { grid-area: 2 / 1; }
+  .field-grid { grid-area: 3 / 1; }
+  .field-difficulty { grid-area: 4 / 1; }
+  .field-clock { grid-area: 1 / 2; }
+  .field-series { grid-area: 2 / 2; }
+  .teams-field, .join-field { grid-area: 3 / 2; }
+  .setup-go { grid-area: 4 / 2; display: flex; flex-direction: column; justify-content: flex-end; }
+  /* Options side by side; their descriptions wrap underneath */
+  .setup .choices { gap: 10px 12px; }
+  .setup .choice { gap: 8px; }
+  /* Online: name and room code on one line */
+  .join-field { grid-template-columns: 1fr auto; align-items: end; gap: 10px 16px; }
+  .join-field .hint { grid-column: 1 / -1; }
+  .setup .choices-wide { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  .wordmark { font-size: 56px; }
+  .form-head { padding-top: 18px; padding-bottom: 12px; }
+  .field { padding-top: 12px; padding-bottom: 14px; }
+  .btn-tipoff { margin: 14px 32px 6px; }
+  .form-error { margin-bottom: 8px; }
+}
 
 .field {
   border: 0;
@@ -394,20 +427,69 @@ button:disabled { cursor: not-allowed; }
 .status.success { color: var(--ink); }
 .status.error { color: var(--x); }
 
+/* ---------- The game screen fills the window ---------- */
+
+/* The sheet is exactly one screen tall; the grid takes the room that's left */
+.sheet:has(> #screen-game:not(.hidden)) {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 32px);
+  margin: 16px auto;
+  max-width: 1180px;
+}
+#screen-game:not(.hidden) { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+/* Grid on the left, buttons and play-by-play in a column on the right */
+.game-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+}
+.game-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--rule);
+}
+.game-side .game-actions { flex-direction: column; align-items: stretch; padding: 16px; border-bottom: 1px solid var(--rule); }
+.game-side .game-actions .btn { width: 100%; min-width: 0; }
+.game-side .pbp { flex: 1; min-height: 0; overflow-y: auto; border-top: 0; }
+
+/* Portrait screens: the column moves under the grid, the log keeps a few lines */
+@media (orientation: portrait) {
+  .game-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .game-side { border-left: 0; border-top: 1px solid var(--rule); }
+  .game-side .game-actions { flex-direction: row; justify-content: center; border-bottom: 0; padding-bottom: 8px; }
+  .game-side .game-actions > * { flex: 1; max-width: 240px; }
+  .game-side .pbp { max-height: 104px; }
+}
+
 /* ---------- The grid ---------- */
 
+/* A 4x4 block of equal squares: the corner, three column and three row headers, nine boxes.
+   The wrap is a size container, so the board can be as big as its smaller side allows. */
 .board-wrap {
   position: relative;
-  padding: 20px 24px 24px;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  padding: 16px 24px;
 }
 
 .board {
+  width: 100cqmin;
+  height: 100cqmin;
   display: grid;
-  grid-template-columns: minmax(96px, 0.8fr) repeat(3, 1fr);
-  grid-template-rows: auto repeat(3, minmax(112px, auto));
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   border-top: 2px solid var(--ink);
   border-left: 2px solid var(--ink);
 }
+
+.board > * { min-width: 0; min-height: 0; }
 
 .board > * {
   border-right: 2px solid var(--ink);
@@ -419,27 +501,29 @@ button:disabled { cursor: not-allowed; }
   place-items: center;
   font-family: var(--display);
   font-weight: 900;
-  font-size: 44px;
+  font-size: 11cqmin;
   line-height: 1;
   background: var(--paper-deep);
 }
 .corner.turn-x { color: var(--x); }
 .corner.turn-o { color: var(--o); }
 
+/* Row and column headers are the same square, laid out the same way */
 .crit {
-  padding: 10px 10px 12px;
+  padding: 8%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0.6cqmin;
   background: var(--paper-deep);
-  min-width: 0;
+  overflow: hidden;
 }
-.crit-row { justify-content: center; }
 
 .crit-type {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: clamp(8px, 1.9cqmin, 10px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
@@ -448,11 +532,12 @@ button:disabled { cursor: not-allowed; }
 .crit-name {
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(16px, 2.6vw, 22px);
+  font-size: clamp(10px, 3.4cqmin, 22px);
   line-height: 1;
   text-transform: uppercase;
   hyphens: auto;
   overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .cell {
@@ -461,7 +546,7 @@ button:disabled { cursor: not-allowed; }
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 8px 6px 10px;
+  padding: 6%;
   background: var(--paper);
   text-align: center;
   min-width: 0;
@@ -485,10 +570,10 @@ button:disabled { cursor: not-allowed; }
 
 .mark {
   position: absolute;
-  top: 8px;
+  top: 6%;
   left: 50%;
   transform: translateX(-50%);
-  height: calc(100% - 58px);
+  height: 56%;
   aspect-ratio: 1;
   overflow: visible;
 }
@@ -513,7 +598,7 @@ button:disabled { cursor: not-allowed; }
   position: relative;
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(13px, 2vw, 17px);
+  font-size: clamp(9px, 2.7cqmin, 17px);
   line-height: 1.05;
   text-transform: uppercase;
   hyphens: auto;
@@ -522,7 +607,7 @@ button:disabled { cursor: not-allowed; }
 .cell-meta {
   position: relative;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: clamp(8px, 1.8cqmin, 10px);
   color: var(--ink-faint);
 }
 
@@ -751,13 +836,76 @@ button:disabled { cursor: not-allowed; }
 .final-desc { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
 .final .slip-actions { justify-content: center; }
 
+/* Phones: one column, so the menu gets compact to fit; the option notes are left out */
+@media (max-width: 699px) {
+  .wordmark { font-size: 42px; }
+  .form-head { padding-top: 14px; padding-bottom: 10px; }
+  .form-sub { margin-top: 6px; }
+  .field { padding-top: 10px; padding-bottom: 12px; }
+  .field .field-label { margin-bottom: 8px; }
+  .setup .choices, .setup .choices-wide { gap: 8px 14px; }
+  .setup .choice { gap: 7px; min-height: 26px; }
+  .setup .choice-box { width: 20px; height: 20px; }
+  .setup .choice input:checked + .choice-box::before, .setup .choice input:checked + .choice-box::after { width: 20px; }
+  .setup .choice-text { font-size: 18px; }
+  .setup .choice-text small { display: none; }
+  .teams-field { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .line-field input { font-size: 22px; }
+  .btn-tipoff { margin-top: 12px; padding: 10px 16px; font-size: 24px; }
+  .form-error { min-height: 0; }
+  .form-foot { display: none; }
+  /* Online: name, code and Join on one line */
+  .join-field { grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
+  .join-field .hint { display: none; }
+  .join-row { flex-wrap: nowrap; gap: 10px; }
+  .join-row .line-field { flex-basis: 4.6em; }
+  .join-row .btn { padding: 8px 10px; min-height: 38px; }
+}
+
+/* ---------- Short screens ---------- */
+
+@media (max-height: 760px) {
+  .game-head { padding-top: 8px; padding-bottom: 8px; }
+  .team { padding-top: 8px; padding-bottom: 14px; }
+  .team-mark { font-size: 40px; }
+  .clock { margin: 6px 0; padding: 6px 12px 4px; }
+  .clock-digits { width: 52px; height: 44px; }
+  .clock-digits.three { width: 78px; }
+  .status { min-height: 0; padding-top: 7px; padding-bottom: 7px; }
+  .board-wrap { padding-top: 10px; padding-bottom: 10px; }
+}
+
+/* Phones on their side: every pixel of height goes to the grid */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sheet:has(> #screen-game:not(.hidden)) { height: 100dvh; margin: 0; border-top: 0; border-bottom: 0; box-shadow: none; }
+  .game-head { padding: 4px 16px; gap: 12px; }
+  .game-head .meta { display: none; }
+  .game-head .head-actions { margin-left: auto; }
+  .wordmark-small { font-size: 22px; }
+  .team { padding: 4px 16px 12px; gap: 10px; }
+  .team-mark { font-size: 30px; width: 22px; }
+  .team-name { font-size: 18px; }
+  .tally { margin-top: 2px; }
+  .team-x .possession { left: 48px; }
+  .team-o .possession { right: 48px; }
+  .clock { margin: 4px 0; padding: 4px 10px 2px; gap: 2px; }
+  .clock-digits { width: 40px; height: 34px; }
+  .clock-digits.three { width: 60px; }
+  .clock-label { display: none; }
+  .status { padding: 4px 16px; font-size: 12px; }
+  .board-wrap { padding: 6px 12px; }
+  .game-main { grid-template-columns: minmax(0, 1fr) 200px; }
+  .game-side .game-actions { padding: 8px 12px; gap: 6px; }
+  .game-side .game-actions .btn { min-height: 34px; padding: 6px 8px; font-size: 11px; }
+  .game-side .pbp { padding: 6px 12px; }
+}
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 640px) {
   .sheet { margin: 0; border-left: 0; border-right: 0; box-shadow: none; }
   .form-head, .field { padding-left: 16px; padding-right: 16px; }
   .form-no { display: none; }
-  .teams-field { grid-template-columns: 1fr; gap: 16px; }
   .btn-tipoff { margin: 20px 16px 8px; }
   .form-error { margin: 0 16px 12px; }
   .form-foot { padding: 12px 16px; }
@@ -768,7 +916,6 @@ button:disabled { cursor: not-allowed; }
   .meta div:first-child { border-left: 0; padding-left: 0; }
   .head-actions { margin-left: auto; }
 
-  .table-row { position: sticky; top: 0; z-index: 5; background: var(--paper); }
   .team { padding: 10px 10px 16px; gap: 8px; }
   .team-mark { font-size: 36px; width: 24px; }
   .team-name { font-size: 18px; }
@@ -779,17 +926,11 @@ button:disabled { cursor: not-allowed; }
   .clock-digits.three { width: 84px; }
 
   .status { padding: 9px 16px; font-size: 12px; }
-  .board-wrap { padding: 12px 8px 16px; }
-  .board { grid-template-columns: minmax(64px, 0.7fr) repeat(3, 1fr); grid-template-rows: auto repeat(3, minmax(92px, auto)); }
-  .corner { font-size: 30px; }
-  .crit { padding: 6px 5px 8px; }
-  .crit-type { font-size: 9px; }
-  .crit-name { font-size: 14px; }
-  .cell-player { font-size: 12px; }
-  .pbp { padding: 12px 16px 16px; }
-  .game-actions { padding: 0 16px 16px; gap: 8px; }
-  .game-actions > * { flex: 1; }
-  .game-actions .btn { min-width: 0; width: 100%; padding: 10px 8px; font-size: 12px; }
+  .sheet:has(> #screen-game:not(.hidden)) { height: 100dvh; margin: 0; }
+  .board-wrap { padding: 8px; }
+  .pbp { padding: 8px 16px 10px; }
+  .game-side .game-actions { padding: 8px 16px 4px; gap: 8px; }
+  .game-actions .btn { min-width: 0; width: 100%; padding: 8px; font-size: 12px; min-height: 38px; }
 
   .overlay { padding: 16px 10px; }
   .slip { padding: 16px; }

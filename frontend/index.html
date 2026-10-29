@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=11">
+  <link rel="stylesheet" href="/static/style.css?v=12">
 </head>
 <body>
   <main class="sheet">
@@ -23,7 +23,7 @@
       </header>
 
       <form class="setup" id="setup-form" autocomplete="off" data-mode="hotseat">
-        <fieldset class="field">
+        <fieldset class="field field-play">
           <legend class="field-label">Play</legend>
           <div class="choices choices-wide">
             <label class="choice">
@@ -54,7 +54,7 @@
           <p class="hint">Or set up a new room below and send the code to your opponent.</p>
         </div>
 
-        <fieldset class="field">
+        <fieldset class="field field-competition">
           <legend class="field-label">Competition</legend>
           <div class="choices choices-wide">
             <label class="choice">
@@ -70,7 +70,7 @@
           </div>
         </fieldset>
 
-        <fieldset class="field">
+        <fieldset class="field field-grid">
           <legend class="field-label">Grid</legend>
           <div class="choices choices-wide">
             <label class="choice">
@@ -86,7 +86,7 @@
           </div>
         </fieldset>
 
-        <fieldset class="field">
+        <fieldset class="field field-clock">
           <legend class="field-label">Shot clock per turn</legend>
           <div class="choices">
             <label class="choice"><input type="radio" name="clock" value="30"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">30 sec</span></label>
@@ -96,7 +96,7 @@
           </div>
         </fieldset>
 
-        <fieldset class="field">
+        <fieldset class="field field-series">
           <legend class="field-label">Series</legend>
           <div class="choices">
             <label class="choice"><input type="radio" name="best_of" value="1"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Best of 1</span></label>
@@ -106,7 +106,7 @@
           </div>
         </fieldset>
 
-        <fieldset class="field">
+        <fieldset class="field field-difficulty">
           <legend class="field-label">Difficulty</legend>
           <div class="choices choices-wide">
             <label class="choice"><input type="radio" name="difficulty" value="easy"><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Easy<small>plenty of stars fit every box</small></span></label>
@@ -126,8 +126,10 @@
           </label>
         </div>
 
-        <button type="submit" class="btn btn-ink btn-tipoff" id="btn-launch-game">Tip-off</button>
-        <p class="form-error" id="menu-error" role="alert"></p>
+        <div class="setup-go">
+          <button type="submit" class="btn btn-ink btn-tipoff" id="btn-launch-game">Tip-off</button>
+          <p class="form-error" id="menu-error" role="alert"></p>
+        </div>
       </form>
 
       <footer class="form-foot">
@@ -219,6 +221,7 @@
 
       <p class="status" id="game-status-text" role="status" aria-live="polite"></p>
 
+      <div class="game-main">
       <div class="board-wrap" id="board-wrap">
         <div class="board" id="grid-table">
           <div class="corner" id="corner-mark" aria-hidden="true"></div>
@@ -244,6 +247,7 @@
         <svg class="win-stroke" id="win-stroke" aria-hidden="true"></svg>
       </div>
 
+      <div class="game-side">
       <div class="game-actions" id="game-actions" hidden>
         <button type="button" class="btn btn-line" id="btn-skip">Skip turn</button>
         <div class="draw-wrap">
@@ -259,6 +263,8 @@
         <h2 class="field-label">Play-by-play</h2>
         <ol class="pbp-log" id="pbp-log"></ol>
       </section>
+      </div>
+      </div>
     </section>
   </main>
 
@@ -342,6 +348,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=11"></script>
+  <script type="module" src="/static/js/main.js?v=12"></script>
 </body>
 </html>
