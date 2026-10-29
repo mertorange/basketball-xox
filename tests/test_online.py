@@ -337,3 +337,18 @@ def test_room_games_refuse_the_same_device_routes(online):
                                           "player_name": "Alpha One"}).status_code == 409
     game = manager.get_game(gid)
     assert game.current_player == "X" and game.grid[0][0].claimed_by is None
+
+
+def test_custom_room_deals_custom_grids(online):
+    client, rooms, manager = online
+    res = client.post("/api/rooms", json={"league": "nba", "shot_clock": 0, "grid_style": "custom",
+                                          "categories": ["award"]})
+    code = res.json()["code"]
+    assert rooms.get(code).settings["categories"] == ["award"]
+    a, _ = join(client, code, "Ann")
+    b, _ = join(client, code, "Ben")
+    a.send_json({"type": "ready"})
+    b.send_json({"type": "ready"})
+    game = room_msg(a, lambda m: m["phase"] == "playing")["game"]
+    assert game["categories"] == ["award"]
+    assert {c["type"] for c in game["row_criteria"] + game["col_criteria"]} <= {"team", "award"}

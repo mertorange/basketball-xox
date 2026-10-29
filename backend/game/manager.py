@@ -2,7 +2,7 @@
 
 import time
 import uuid
-from typing import Dict, Optional, Set
+from typing import Dict, List, Optional, Set
 
 from ..catalog.criteria import CriteriaIndex, CriterionSpec
 from ..catalog.players import notability
@@ -35,12 +35,16 @@ class GameManager:
 
     def create_game(self, league: str = "nba", player1_name: str = "Player 1", player2_name: str = "Player 2",
                     difficulty: str = "medium", shot_clock: Optional[int] = 60, grid_style: str = "mixed",
-                    first_player: str = "X", online: bool = False) -> GameState:
-        rows, cols = self.generators[league].generate(grid_style, difficulty)
+                    first_player: str = "X", online: bool = False,
+                    categories: Optional[List[str]] = None) -> GameState:
+        if grid_style != "custom":
+            categories = None
+        rows, cols = self.generators[league].generate(grid_style, difficulty, categories)
         game = GameState(
             game_id=uuid.uuid4().hex[:8],
             league=LEAGUE_LABELS[league],
             grid_style=grid_style,
+            categories=categories,
             difficulty=difficulty,
             shot_clock=shot_clock,
             row_criteria=[to_criterion(s) for s in rows],

@@ -38,9 +38,24 @@ window.addEventListener('DOMContentLoaded', setupHandlers);
 
 // ---------- Menu ----------
 
+// What the category boxes mean, for the lobby line
+const CATEGORY_LABELS = {
+  country: 'birth country', college: 'college', draft: 'draft slot', award: 'awards', career: 'career marks',
+  era: 'eras'
+};
+
+/** Custom grids: the ticked categories the chosen league has (teams are always in). */
+function readCategories(form) {
+  return [...form.querySelectorAll('input[name=category]:checked')]
+    .filter(input => !input.closest('.choice').hidden)
+    .map(input => input.value);
+}
+
 function readSettings(form) {
   const data = new FormData(form);
+  const style = data.get('style') || 'mixed';
   return {
+    categories: style === 'custom' ? readCategories(form) : null,
     mode: data.get('mode'),
     league: data.get('league'),
     clock: parseInt(data.get('clock'), 10) || 0,
@@ -51,14 +66,22 @@ function readSettings(form) {
 }
 
 function syncMenuMode() {
-  const mode = new FormData($('setup-form')).get('mode');
+  const data = new FormData($('setup-form'));
+  const mode = data.get('mode');
   $('setup-form').dataset.mode = mode;
   $('btn-launch-game').textContent = mode === 'online' ? 'Create room' : 'Tip-off';
+  // The category picker only shows for custom grids, with the chosen league's categories
+  $('custom-categories').hidden = data.get('style') !== 'custom';
+  const league = data.get('league');
+  $('custom-categories').querySelectorAll('[data-leagues]').forEach(choice => {
+    choice.hidden = !choice.dataset.leagues.split(' ').includes(league);
+  });
 }
 
 function setupHandlers() {
   const form = $('setup-form');
-  form.querySelectorAll('input[name=mode]').forEach(input => input.addEventListener('change', syncMenuMode));
+  form.querySelectorAll('input[name=mode], input[name=style], input[name=league]')
+    .forEach(input => input.addEventListener('change', syncMenuMode));
 
   // An invite link (?room=KQ7M) opens the menu in online mode with the code filled in;
   // a watch link (?room=KQ7M&watch=1) goes straight in as a spectator
@@ -179,6 +202,7 @@ async function createRoom(settings) {
       difficulty: settings.difficulty,
       shot_clock: settings.clock,
       grid_style: settings.style,
+      categories: settings.categories,
       best_of: settings.bestOf
     });
     startController(new OnlineGame(ui, code, onlineName()));
@@ -279,7 +303,9 @@ function showLobby(room, code, spectator = false) {
   const s = room.settings;
   $('lobby-settings').textContent = [
     s.league === 'euroleague' ? 'EuroLeague' : 'NBA',
-    s.grid_style === 'mixed' ? 'mixed grid' : 'classic grid',
+    s.grid_style === 'custom'
+      ? `custom grid: teams${(s.categories || []).map(c => `, ${CATEGORY_LABELS[c] || c}`).join('')}`
+      : `${s.grid_style} grid`,
     `best of ${s.best_of}`,
     CLOCK_LABEL(s.shot_clock),
     `${s.difficulty} difficulty`

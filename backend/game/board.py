@@ -83,22 +83,35 @@ class BoardGenerator:
             key: members & known for key, members in index.members().items()
         }
 
-    def generate(self, style: str = "mixed", difficulty: str = "medium") -> Board:
+    def generate(self, style: str = "mixed", difficulty: str = "medium",
+                 categories: Optional[List[str]] = None) -> Board:
         """The most even grid that fits the level. If none does: the level loosened, then a
-        classic grid at the level (better than an easier mixed one), then any solvable grid."""
-        styles = [style, "classic"] if style == "mixed" else [style]
-        tries = [(st, level) for st in styles for level in loosened(self.levels[difficulty])]
-        tries += [(st, FALLBACK) for st in styles]
-        for st, level in tries:
-            board = self._search(st, level)
+        classic grid at the level (better than an easier mixed one), then any solvable grid.
+
+        style "custom" uses only the non-team kinds in `categories` (teams are always in);
+        when those can't make a grid it falls back to teams alone, never to unchosen kinds.
+        """
+        if style == "custom":
+            chosen = [kind for kind in self.other_kinds if kind in set(categories or ())]
+            styles = [("custom", chosen), ("custom", [])]
+        else:
+            styles = [(style, self.other_kinds)] + ([("classic", None)] if style == "mixed" else [])
+        tries = [(st, kinds, level) for st, kinds in styles for level in loosened(self.levels[difficulty])]
+        tries += [(st, kinds, FALLBACK) for st, kinds in styles]
+        for st, kinds, level in tries:
+            board = self._search(st, level, kinds)
             if board:
                 return board
         raise RuntimeError("No solvable grid found")
 
-    def _search(self, style: str, level: Level) -> Optional[Board]:
+    def _search(self, style: str, level: Level, kinds: Optional[List[str]] = None) -> Optional[Board]:
         fits = []
         for _ in range(ATTEMPTS):
-            rows, cols = self._draw_mixed(level.layouts) if style == "mixed" else self._draw_classic()
+            if style == "classic":
+                rows, cols = self._draw_classic()
+            else:
+                # Mixed grids take each kind at most once; a custom one may repeat a chosen kind
+                rows, cols = self._draw_mixed(level.layouts, kinds, distinct=style == "mixed")
             known = self._known_counts(rows, cols, level)
             if known is not None:
                 fits.append((self._spread(known), rows, cols))
@@ -148,12 +161,12 @@ class BoardGenerator:
         teams = self.rng.sample(self.teams, 6)
         return teams[:3], teams[3:]
 
-    def _draw_mixed(self, layouts) -> Board:
+    def _draw_mixed(self, layouts, kinds: List[str], distinct: bool = True) -> Board:
         other_rows, other_cols = self.rng.choice(layouts)
-        # A league with fewer kinds than the layout asks for gets fewer twists
-        other_rows = min(other_rows, len(self.other_kinds))
-        other_cols = min(other_cols, len(self.other_kinds) - other_rows)
-        others = self._draw_others(other_rows + other_cols)
+        others = self._draw_others(other_rows + other_cols, kinds, distinct)
+        # Fewer twists than the layout asks for (few kinds to draw from): rows keep theirs first
+        other_rows = min(other_rows, len(others))
+        other_cols = len(others) - other_rows
         teams = self.rng.sample(self.teams, 6 - len(others))
         rows = others[:other_rows] + teams[:3 - other_rows]
         cols = others[other_rows:] + teams[3 - other_rows:]
@@ -161,8 +174,19 @@ class BoardGenerator:
         self.rng.shuffle(cols)
         return rows, cols
 
-    def _draw_others(self, count: int) -> List[CriterionSpec]:
-        """Non-team criteria from distinct kinds, each kind equally likely, so a league
-        with many colleges does not crowd out awards."""
-        kinds = self.rng.sample(self.other_kinds, count)
-        return [self.rng.choice(self.by_kind[kind]) for kind in kinds]
+    def _draw_others(self, count: int, kinds: List[str], distinct: bool) -> List[CriterionSpec]:
+        """Non-team criteria, each kind equally likely, so a league with many colleges does
+        not crowd out awards. distinct: one per kind; otherwise a kind may come back with a
+        different criterion (MVP and Rookie of the Year)."""
+        if not kinds:
+            return []
+        if distinct:
+            picks = self.rng.sample(kinds, min(count, len(kinds)))
+        else:
+            picks = [self.rng.choice(kinds) for _ in range(count)]
+        chosen: List[CriterionSpec] = []
+        for kind in picks:
+            options = [spec for spec in self.by_kind[kind] if spec not in chosen]
+            if options:
+                chosen.append(self.rng.choice(options))
+        return chosen

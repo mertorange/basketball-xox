@@ -23,6 +23,7 @@ def build_router(game_manager) -> APIRouter:
             difficulty=req.difficulty,
             shot_clock=req.shot_clock,
             grid_style=req.grid_style,
+            categories=req.categories,
             first_player=req.first_player,
         )
 

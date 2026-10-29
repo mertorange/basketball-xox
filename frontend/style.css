@@ -129,6 +129,18 @@ button:disabled { cursor: not-allowed; }
 .setup { display: flex; flex-direction: column; }
 .setup-go { display: flex; flex-direction: column; }
 
+/* Custom grids: the category picker under the Grid choices, hidden until Custom is ticked */
+.custom-categories { margin-top: 8px; padding-top: 7px; border-top: 1px dotted var(--rule); }
+.custom-categories[hidden], .custom-categories .choice[hidden] { display: none; }
+.custom-categories .field-label { margin-bottom: 5px; }
+.custom-categories .choices { gap: 6px 14px; }
+.custom-categories .choice { gap: 6px; min-height: 22px; }
+.custom-categories .choice-box { width: 18px; height: 18px; }
+.custom-categories .choice input:checked + .choice-box::before,
+.custom-categories .choice input:checked + .choice-box::after { width: 18px; height: 2.5px; }
+.custom-categories .choice-text { font-size: 17px; }
+.custom-categories .cat-locked { cursor: default; opacity: 0.6; }
+
 /* Wide screens: two columns, so the whole form fits on a laptop screen. Left: what to play;
    right: how to play it, the names and the button. */
 @media (min-width: 700px) {
@@ -889,6 +901,14 @@ button:disabled { cursor: not-allowed; }
   .btn-tipoff { margin-top: 12px; padding: 10px 16px; font-size: 24px; }
   .form-error { min-height: 0; }
   .form-foot { display: none; }
+  /* Custom categories: two short lines; the always-on Teams box is left to the heading */
+  .custom-categories .cat-locked { display: none; }
+  .custom-categories .choices { gap: 5px 10px; }
+  .custom-categories .choice-text { font-size: 15px; }
+  .custom-categories .choice-box { width: 16px; height: 16px; }
+  .custom-categories .choice input:checked + .choice-box::before,
+  .custom-categories .choice input:checked + .choice-box::after { width: 16px; }
+  .field { padding-top: 8px; padding-bottom: 10px; }
   /* Online: name, code and Join on one line */
   .join-field { grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
   .join-field .hint { display: none; }

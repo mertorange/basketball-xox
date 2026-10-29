@@ -6,7 +6,9 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 Mark = Literal["X", "O"]
-GridStyle = Literal["classic", "mixed"]
+GridStyle = Literal["classic", "mixed", "custom"]
+# Kinds a custom grid can mix with teams; which ones exist depends on the league
+Category = Literal["country", "college", "draft", "award", "career", "era"]
 # How many well-known players fit each box (see backend/game/board.py)
 Difficulty = Literal["easy", "medium", "hard"]
 # Grids in a series; the first to win more than half takes it (drawn grids don't count)
@@ -45,6 +47,7 @@ class NewGameRequest(BaseModel):
     difficulty: Difficulty = "medium"
     shot_clock: Optional[int] = Field(60, ge=0, le=600)
     grid_style: GridStyle = "mixed"
+    categories: Optional[List[Category]] = Field(None, max_length=6)  # custom grids only
     first_player: Mark = "X"
 
 
@@ -53,6 +56,7 @@ class CreateRoomRequest(BaseModel):
     difficulty: Difficulty = "medium"
     shot_clock: int = Field(30, ge=0, le=600)
     grid_style: GridStyle = "mixed"
+    categories: Optional[List[Category]] = Field(None, max_length=6)  # custom grids only
     best_of: BestOf = 3
 
 
@@ -82,6 +86,7 @@ class GameState(BaseModel):
     game_id: str
     league: str
     grid_style: GridStyle = "mixed"
+    categories: Optional[List[str]] = None
     difficulty: Difficulty = "medium"
     shot_clock: Optional[int] = 60
     row_criteria: List[Criterion]

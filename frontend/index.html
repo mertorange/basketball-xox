@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Teko:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=13">
+  <link rel="stylesheet" href="/static/style.css?v=14">
 </head>
 <body>
   <main class="sheet">
@@ -76,13 +76,30 @@
             <label class="choice">
               <input type="radio" name="style" value="mixed" checked>
               <span class="choice-box" aria-hidden="true"></span>
-              <span class="choice-text">Mixed<small>teams with awards, draft, college, eras and career marks</small></span>
+              <span class="choice-text">Mixed<small>teams with awards, eras, draft and more</small></span>
             </label>
             <label class="choice">
               <input type="radio" name="style" value="classic">
               <span class="choice-box" aria-hidden="true"></span>
-              <span class="choice-text">Classic<small>teams and countries of birth only</small></span>
+              <span class="choice-text">Classic<small>teams and birth countries</small></span>
             </label>
+            <label class="choice">
+              <input type="radio" name="style" value="custom">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span class="choice-text">Custom<small>pick the categories yourself</small></span>
+            </label>
+          </div>
+          <div class="custom-categories" id="custom-categories" hidden>
+            <span class="field-label">Categories with teams</span>
+            <div class="choices">
+            <label class="choice cat-locked" title="Every grid is built on teams"><input type="checkbox" checked disabled><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Teams</span></label>
+            <label class="choice" data-leagues="nba euroleague"><input type="checkbox" name="category" value="country" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Birth country</span></label>
+            <label class="choice" data-leagues="nba"><input type="checkbox" name="category" value="college" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">College</span></label>
+            <label class="choice" data-leagues="nba"><input type="checkbox" name="category" value="draft" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Draft slot</span></label>
+            <label class="choice" data-leagues="nba euroleague"><input type="checkbox" name="category" value="award" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Awards</span></label>
+            <label class="choice" data-leagues="nba euroleague"><input type="checkbox" name="category" value="career" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Career marks</span></label>
+            <label class="choice" data-leagues="nba euroleague"><input type="checkbox" name="category" value="era" checked><span class="choice-box" aria-hidden="true"></span><span class="choice-text">Eras</span></label>
+            </div>
           </div>
         </fieldset>
 
@@ -356,6 +373,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=13"></script>
+  <script type="module" src="/static/js/main.js?v=14"></script>
 </body>
 </html>

@@ -86,3 +86,35 @@ def test_thin_data_falls_back_to_a_solvable_grid(nba_index):
     for difficulty in DIFFICULTIES:
         rows, cols = generator.generate("mixed", difficulty)
         assert generator.is_solvable(rows, cols, 1)
+
+
+def test_custom_grids_use_only_the_chosen_categories(nba_index):
+    generator = BoardGenerator(nba_index, rng=random.Random(5))
+    for categories in (["award"], ["award", "draft"], []):
+        for _ in range(5):
+            rows, cols = generator.generate("custom", "medium", categories)
+            assert generator.is_solvable(rows, cols, 1)
+            assert {s.kind for s in rows + cols} <= {TEAM, *categories}
+
+
+def test_custom_ignores_categories_the_league_lacks(nba_index):
+    generator = BoardGenerator(nba_index, rng=random.Random(6))
+    generator.other_kinds = [k for k in generator.other_kinds if k != "college"]  # as in the EuroLeague
+    rows, cols = generator.generate("custom", "medium", ["college"])
+    assert {s.kind for s in rows + cols} == {TEAM}
+
+
+@pytest.mark.parametrize("league,categories", [("nba", ["award"]), ("nba", ["era", "draft"]),
+                                               ("euroleague", ["career"])])
+def test_real_data_custom_grids(league, categories):
+    catalog = PlayerCatalog.load(league)
+    if not catalog.players:
+        pytest.skip("dataset not built")
+    generator = BoardGenerator(build_index(catalog), rng=random.Random(4))
+    used = set()
+    for _ in range(8):
+        rows, cols = generator.generate("custom", "medium", categories)
+        kinds = {s.kind for s in rows + cols}
+        assert kinds <= {TEAM, *categories}
+        used |= kinds
+    assert used - {TEAM}, "the chosen categories never showed up"

@@ -95,3 +95,16 @@ def test_same_device_moves_and_clock(manager):
     assert client.post("/api/move", json=missing).status_code == 404
     assert client.post("/api/shot-clock-violation", json={"game_id": "missing"}).status_code == 404
     assert client.get(f"/api/cell-info/{game_id}/0/0").status_code == 404  # removed: it leaked answer counts
+
+
+def test_custom_grid_categories(manager):
+    client = make_client(manager)
+    game = client.post("/api/new-game", json={"league": "nba", "grid_style": "custom",
+                                               "categories": ["award"]}).json()
+    assert game["grid_style"] == "custom" and game["categories"] == ["award"]
+    assert {c["type"] for c in game["row_criteria"] + game["col_criteria"]} <= {"team", "award"}
+    # Categories only count for custom grids
+    mixed = client.post("/api/new-game", json={"league": "nba", "categories": ["award"]}).json()
+    assert mixed["categories"] is None
+    bad = client.post("/api/new-game", json={"league": "nba", "grid_style": "custom", "categories": ["team"]})
+    assert bad.status_code == 422
