@@ -14,11 +14,13 @@ export class OnlineGame {
    * @param {object} ui  shared screen parts from main.js (see HotSeatGame) plus
    *                     showLobby(room, code), hideFinal(), setPresence(seats, you), showMenu(error)
    */
-  /** spectator: watch the room without a seat */
-  constructor(ui, code, name, { spectator = false } = {}) {
+  /** spectator: watch the room without a seat; autoReady: joined from the join page, whose
+   *  Ready button means ready as soon as both seats are taken */
+  constructor(ui, code, name, { spectator = false, autoReady = false } = {}) {
     this.ui = ui;
     this.code = code;
     this.spectator = spectator;
+    this.autoReady = autoReady;
     this.room = null;
     this.cell = null;
     this.fresh = null;          // box claimed by the last move, to animate its mark
@@ -48,6 +50,10 @@ export class OnlineGame {
   onRoom(room) {
     this.room = room;
     const { phase, game } = room;
+    if (this.autoReady && phase === 'lobby' && room.seats[room.you] && !room.seats[room.you].ready) {
+      this.autoReady = false; // once: after a game, Ready in the lobby is the player's own call
+      this.conn.send('ready');
+    }
     if (phase === 'waiting' || phase === 'lobby' || !game) {
       this.ui.clock.stop();
       renderActions({ visible: false });

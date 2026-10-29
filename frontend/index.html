@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Teko:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=15">
+  <link rel="stylesheet" href="/static/style.css?v=16">
 </head>
 <body>
   <main class="sheet">
@@ -152,6 +152,35 @@
       <footer class="form-foot">
         <span>Name a player who fits both the row and the column. Three in a row wins.</span>
       </footer>
+    </section>
+
+    <!-- JOIN FROM A LINK: the room's settings are fixed, so only a name and Ready -->
+    <section class="screen hidden" id="screen-join">
+      <header class="form-head">
+        <div>
+          <h1 class="wordmark">Room <span id="join-code-title">&mdash;</span></h1>
+          <p class="form-sub">You've been invited to a game</p>
+        </div>
+        <span class="form-no">Online</span>
+      </header>
+
+      <div class="field">
+        <span class="field-label">Game options</span>
+        <p class="join-info" id="join-settings">Looking up the room...</p>
+      </div>
+
+      <div class="field" id="join-name-field">
+        <label class="line-field">
+          <span class="field-label">Your name</span>
+          <input type="text" id="join-name" value="" placeholder="Player" maxlength="16" spellcheck="false">
+        </label>
+      </div>
+
+      <div class="join-actions">
+        <button type="button" class="btn btn-ink btn-tipoff" id="btn-join-ready" disabled>Ready</button>
+        <button type="button" class="btn btn-line" id="btn-join-menu" hidden>Go to the menu</button>
+      </div>
+      <p class="form-error" id="join-error" role="alert"></p>
     </section>
 
     <!-- ONLINE LOBBY -->
@@ -373,6 +402,6 @@
     </div>
   </div>
 
-  <script type="module" src="/static/js/main.js?v=15"></script>
+  <script type="module" src="/static/js/main.js?v=16"></script>
 </body>
 </html>

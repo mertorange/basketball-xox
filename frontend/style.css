@@ -271,7 +271,7 @@ button:disabled { cursor: not-allowed; }
   background: transparent;
   border: 0;
   border-bottom: 2px solid var(--ink);
-  padding: 2px 0 4px;
+  padding: 2px 12px 4px; /* room before the first letter, lined up with the options box */
   border-radius: 0;
 }
 .line-field input:focus { outline: none; background: var(--tint); }
@@ -1021,7 +1021,25 @@ button:disabled { cursor: not-allowed; }
 
 #screen-lobby .field { border: 0; border-bottom: 1px solid var(--rule); }
 #screen-lobby .field-label { margin-bottom: 10px; }
-#lobby-code { letter-spacing: 0.06em; }
+#lobby-code, #join-code-title { letter-spacing: 0.06em; }
+
+/* Join page: the room's options as plain text in a box, then a name and Ready */
+#screen-join .field { border: 0; border-bottom: 1px solid var(--rule); }
+#screen-join .field[hidden] { display: none; }
+.join-info {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+  font-family: var(--label);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.join-actions { display: flex; flex-direction: column; padding: 0 32px; }
+.join-actions .btn-tipoff { margin: 20px 0 8px; }
+.join-actions .btn-line { margin: 20px 0 8px; }
+.join-actions [hidden] { display: none; }
+#screen-join .form-error { margin-top: 4px; }
 
 .invite { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .invite code {
@@ -1090,6 +1108,7 @@ button:disabled { cursor: not-allowed; }
 @media (max-width: 640px) {
   .join-row { flex-wrap: wrap; }
   .lobby-actions { padding: 0 16px; flex-wrap: wrap; }
+  .join-actions { padding: 0 16px; }
   .lobby-actions .btn-line { order: 2; }
 }
 

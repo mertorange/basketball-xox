@@ -18,7 +18,7 @@ import { sfx } from './sound.js';
 
 let active = null; // the running controller
 
-const screens = { menu: $('screen-menu'), lobby: $('screen-lobby'), game: $('screen-game') };
+const screens = { menu: $('screen-menu'), join: $('screen-join'), lobby: $('screen-lobby'), game: $('screen-game') };
 const modals = { gameover: $('modal-gameover'), rules: $('modal-rules-popup'), answers: $('modal-answers') };
 
 const ui = {
@@ -98,6 +98,9 @@ function setupHandlers() {
   } else if (invited && hasSeat(invited)) {
     // A reload mid-game: this tab already has a seat, so go straight back to it
     startController(new OnlineGame(ui, invited, onlineName()));
+  } else if (invited) {
+    // An invite: the room's settings are fixed, so a page with just a name and Ready
+    showJoin(invited);
   }
 
   form.addEventListener('submit', async (e) => {
@@ -111,6 +114,15 @@ function setupHandlers() {
     }
   });
   $('btn-join-room').addEventListener('click', joinRoom);
+  $('btn-join-ready').addEventListener('click', joinAndReady);
+  $('join-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!$('btn-join-ready').disabled) joinAndReady();
+    }
+  });
+  $('btn-join-menu').addEventListener('click', () => showMenu());
+  $('name-online').value = $('name-online').value || savedName();
   $('join-code').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -198,6 +210,9 @@ function onlineName() {
 
 async function createRoom(settings) {
   try {
+    localStorage.setItem(NAME_KEY, onlineName());
+  } catch (e) {}
+  try {
     const { code } = await api.createRoom({
       league: settings.league,
       difficulty: settings.difficulty,
@@ -226,7 +241,67 @@ async function joinRoom() {
     $('menu-error').textContent = `No room with the code ${code}.`;
     return;
   }
-  startController(new OnlineGame(ui, code, onlineName()));
+  showJoin(code, $('name-online').value.trim());
+}
+
+// ---------- Joining a room ----------
+
+const NAME_KEY = 'hoopgrid:name';
+
+function savedName() {
+  try {
+    return localStorage.getItem(NAME_KEY) || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+/** The join page: the room's options as text, a name, and Ready (nothing else to change). */
+async function showJoin(code, name = '') {
+  show('join');
+  history.replaceState(null, '', `?room=${code}`);
+  $('join-code-title').textContent = code;
+  $('join-settings').textContent = 'Looking up the room...';
+  $('join-error').textContent = '';
+  $('join-name').value = name || savedName();
+  $('join-name-field').hidden = false;
+  $('btn-join-ready').hidden = false;
+  $('btn-join-ready').disabled = true;
+  $('btn-join-menu').hidden = true;
+  $('btn-join-ready').dataset.code = code;
+
+  let room;
+  try {
+    room = await api.roomInfo(code);
+  } catch (err) {
+    joinClosed(`There's no room ${code} any more. It may have ended.`);
+    return;
+  }
+  $('join-settings').textContent = settingsText(room.settings, ', ');
+  if (room.players >= 2) {
+    joinClosed('This room already has two players.');
+    return;
+  }
+  $('btn-join-ready').disabled = false;
+  $('join-name').focus();
+}
+
+function joinClosed(reason) {
+  if ($('join-settings').textContent === 'Looking up the room...') $('join-settings').textContent = '—';
+  $('join-error').textContent = reason;
+  $('join-name-field').hidden = true;
+  $('btn-join-ready').hidden = true;
+  $('btn-join-menu').hidden = false;
+}
+
+function joinAndReady() {
+  const code = $('btn-join-ready').dataset.code;
+  const name = $('join-name').value.trim() || 'Player';
+  try {
+    localStorage.setItem(NAME_KEY, name);
+  } catch (e) {}
+  $('btn-join-ready').disabled = true;
+  startController(new OnlineGame(ui, code, name, { autoReady: true }));
 }
 
 function leaveToMenu() {
@@ -283,7 +358,21 @@ function setPresence(seats, you) {
   });
 }
 
-const CLOCK_LABEL = (s) => (s ? `${s} sec clock` : 'no clock');
+const CLOCK_LABEL = (s) => (s ? `${s} sec shot clock` : 'no shot clock');
+
+/** A room's options in words, e.g. 'NBA, mixed grid, best of 3, 60 sec shot clock, medium difficulty'. */
+function settingsText(s, separator) {
+  const grid = s.grid_style === 'custom'
+    ? `custom grid: teams${(s.categories || []).map(c => ` + ${CATEGORY_LABELS[c] || c}`).join('')}`
+    : `${s.grid_style} grid`;
+  return [
+    s.league === 'euroleague' ? 'EuroLeague' : 'NBA',
+    grid,
+    `best of ${s.best_of}`,
+    CLOCK_LABEL(s.shot_clock),
+    `${s.difficulty} difficulty`
+  ].join(separator);
+}
 
 function showLobby(room, code, spectator = false) {
   show('lobby');
@@ -302,16 +391,7 @@ function showLobby(room, code, spectator = false) {
     $('btn-ready').disabled = true;
     return;
   }
-  const s = room.settings;
-  $('lobby-settings').textContent = [
-    s.league === 'euroleague' ? 'EuroLeague' : 'NBA',
-    s.grid_style === 'custom'
-      ? `custom grid: teams${(s.categories || []).map(c => `, ${CATEGORY_LABELS[c] || c}`).join('')}`
-      : `${s.grid_style} grid`,
-    `best of ${s.best_of}`,
-    CLOCK_LABEL(s.shot_clock),
-    `${s.difficulty} difficulty`
-  ].join(' · ');
+  $('lobby-settings').textContent = settingsText(room.settings, ' · ');
 
   $('lobby-seats').innerHTML = ['X', 'O'].map(mark => {
     const seat = room.seats[mark];
