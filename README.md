@@ -136,11 +136,50 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 
 ---
 
-## 🛠️ Upcoming Roadmap / Future Extensions
-- [x] Stat & award criteria: NBA champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP, draft slots, colleges, eras; EuroLeague champion, Final Four, career totals. Not yet: *EuroLeague MVP* and *50+ Pt Game* (no source; see DATA.md).
+## 🛠️ Roadmap
+
+### Done
+- [x] Stat & award criteria: NBA champion, MVP, Finals MVP, All-NBA, ROY, DPOY, 6MOY, MIP, draft slots, colleges, eras; EuroLeague champion, Final Four, career totals.
+- [x] Online rooms over WebSockets: room codes, invite and watch links, server-side shot clock, reconnects, spectators.
+- [x] Post-game "all answers" view, most famous players first.
 - [x] Docker image and compose setup with a checked, zero-downtime data refresh.
+- [x] Best-of-1/3/5/7 series; *Skip turn*, and *Draw this grid* (both players agree; a new grid is dealt).
+- [x] Difficulty levels (Easy / Medium / Hard) counted in well-known answers per box, with a fame score per league.
+- [x] *Custom* grids: pick the categories mixed with teams.
+- [x] Autocomplete that only sends names from the list, so a typo never costs the turn.
+- [x] Basketball look (hardwood, scoreboard, varsity type), mute button, everything fits on one screen.
+- [x] Online games can't be played or skipped through the same-device HTTP routes.
+
+### Before a public launch
+- [ ] **Data licensing**: get written permission for the Basketball GM roster data (ZenGM's licence is not open source) or move awards, championships and recent rosters to open sources (Wikidata, Wikipedia); replace the unofficial ESPN roster feed; check the EuroLeague API terms. See DATA.md §8.
 - [ ] Run it on a VPS with a daily refresh cron.
-- [ ] Connect SQLite / PostgreSQL database for full career player stats.
-- [x] Online multiplayer room codes via WebSockets (private rooms).
-- [x] Spectator links and a post-game "all answers" view.
+- [ ] Rate-limit room lookups, WebSocket joins and messages; let the rate limiter forget old IPs.
+- [ ] Pin dependency versions.
+- [ ] "Unofficial fan game, not affiliated with the NBA, EuroLeague or any club" notice; drop "Official" from the menu.
+
+### Gameplay fixes
+- [ ] Merge EuroLeague players stored under two spellings (Edy / Walter Tavares, Theo / Theodoros Papaloukas, Gigi / Luigi Datome, Bobby Dixon / Ali Muhammed), who can currently be used twice.
+- [ ] Tell same-named players apart (Mike James) in the search list and in the used-player check.
+- [ ] Accent-insensitive search ("Dončić") and nicknames ("KD", "Penny", "Melo").
+- [ ] Free a lobby seat when its player leaves before tip-off.
+
+### If ads go in
+- [ ] Privacy policy page and a cookie consent banner (GDPR / KVKK).
+- [ ] Ad slots on the menu, lobby and result screens only, never during a turn.
+- [ ] A donation link as a lighter alternative.
+
+### Quality and data
+- [ ] Frontend smoke tests in a real browser.
+- [ ] Skip the release-switch test on Windows when symlinks aren't allowed.
+- [ ] Count awards (seven All-NBA teams, not one) and fix Wikidata matches for a few stars (Durant, McGrady, Dwight Howard).
+- [ ] EuroLeague MVP and *50+ point game* criteria (no source yet; see DATA.md).
+- [ ] Keep generated datasets out of git, or write one player per line.
+
+### Ideas
+- [ ] Rarity points: rarer correct answers score more, as a tiebreak.
+- [ ] Steal mode: take an opponent's box with a rarer player.
+- [ ] Make the centre box (it sits on four lines) the hardest.
+- [ ] Daily shared grid; play against a bot.
+- [ ] Show a claimed player's teams on the box.
 - [ ] Quick match queue, then accounts and ratings.
+- [ ] SQLite / PostgreSQL for full career stats.
