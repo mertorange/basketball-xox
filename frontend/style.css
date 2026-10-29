@@ -439,30 +439,38 @@ button:disabled { cursor: not-allowed; }
 }
 #screen-game:not(.hidden) { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
-/* Grid on the left, buttons and play-by-play in a column on the right */
+/* Three columns of the scorer's table: play-by-play under Team A, the grid under the clock,
+   the buttons under Team B. The side columns match, so the grid sits in the middle. */
 .game-main {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: 230px minmax(0, 1fr) 230px;
+  grid-template-areas: "log board actions";
 }
-.game-side {
-  display: flex;
+.board-wrap { grid-area: board; }
+.game-side { display: contents; }
+.game-side .pbp { grid-area: log; min-height: 0; overflow-y: auto; border-top: 0; border-right: 1px solid var(--rule); }
+.game-side .game-actions {
+  grid-area: actions;
   flex-direction: column;
-  min-height: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 16px;
   border-left: 1px solid var(--rule);
 }
-.game-side .game-actions { flex-direction: column; align-items: stretch; padding: 16px; border-bottom: 1px solid var(--rule); }
 .game-side .game-actions .btn { width: 100%; min-width: 0; }
-.game-side .pbp { flex: 1; min-height: 0; overflow-y: auto; border-top: 0; }
 
-/* Portrait screens: the column moves under the grid, the log keeps a few lines */
+/* Portrait screens: the buttons, then a few lines of the log, under the grid */
 @media (orientation: portrait) {
-  .game-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
-  .game-side { border-left: 0; border-top: 1px solid var(--rule); }
-  .game-side .game-actions { flex-direction: row; justify-content: center; border-bottom: 0; padding-bottom: 8px; }
+  .game-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas: "board" "actions" "log";
+  }
+  .game-side .game-actions { flex-direction: row; justify-content: center; border-left: 0; border-top: 1px solid var(--rule); padding-bottom: 8px; }
   .game-side .game-actions > * { flex: 1; max-width: 240px; }
-  .game-side .pbp { max-height: 104px; }
+  .game-side .pbp { max-height: 104px; border-right: 0; }
 }
 
 /* ---------- The grid ---------- */
@@ -894,7 +902,7 @@ button:disabled { cursor: not-allowed; }
   .clock-label { display: none; }
   .status { padding: 4px 16px; font-size: 12px; }
   .board-wrap { padding: 6px 12px; }
-  .game-main { grid-template-columns: minmax(0, 1fr) 200px; }
+  .game-main { grid-template-columns: 170px minmax(0, 1fr) 170px; }
   .game-side .game-actions { padding: 8px 12px; gap: 6px; }
   .game-side .game-actions .btn { min-height: 34px; padding: 6px 8px; font-size: 11px; }
   .game-side .pbp { padding: 6px 12px; }
