@@ -149,6 +149,8 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [x] Autocomplete that only sends names from the list, so a typo never costs the turn.
 - [x] Basketball look (hardwood, scoreboard, varsity type), mute button, everything fits on one screen.
 - [x] Online games can't be played or skipped through the same-device HTTP routes.
+- [x] Tactics board grid: printed hardwood court, black marker X and O, hand-drawn plays between a team's answers.
+- [x] Series scores on LED digits beside the shot clock; invite links open a join page with just a name and Ready.
 
 ### Before a public launch
 - [ ] **Data licensing**: get written permission for the Basketball GM roster data (ZenGM's licence is not open source) or move awards, championships and recent rosters to open sources (Wikidata, Wikipedia); replace the unofficial ESPN roster feed; check the EuroLeague API terms. See DATA.md §8.
@@ -158,10 +160,14 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [ ] "Unofficial fan game, not affiliated with the NBA, EuroLeague or any club" notice; drop "Official" from the menu.
 
 ### Gameplay fixes
-- [ ] Merge EuroLeague players stored under two spellings (Edy / Walter Tavares, Theo / Theodoros Papaloukas, Gigi / Luigi Datome, Bobby Dixon / Ali Muhammed), who can currently be used twice.
-- [ ] Tell same-named players apart (Mike James) in the search list and in the used-player check.
-- [ ] Accent-insensitive search ("Dončić") and nicknames ("KD", "Penny", "Melo").
+- [x] Merge players stored under two names or spellings in both leagues (Ron Artest / Metta World Peace, Edy / Walter Tavares...), who could be used twice.
+- [x] Tell same-named players apart (Mike James) in the search list and in the used-player check.
+- [x] Instant, accent-insensitive search with nicknames ("Dončić", "KD", "Penny", "Melo").
+- [x] Auto draw when neither team can complete a line.
+- [x] Fair turns in Custom grids, so Birth country no longer vanishes or crowds out other categories.
+- [x] Every decade gets a turn at Hard.
 - [ ] Free a lobby seat when its player leaves before tip-off.
+- [ ] A much bigger pool of boxes, so grids can't be memorised: team-and-decade headers ("Lakers, 2010s"), teammates ("Played with Kobe"), draft classes.
 
 ### If ads go in
 - [ ] Privacy policy page and a cookie consent banner (GDPR / KVKK).
