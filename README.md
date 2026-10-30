@@ -69,10 +69,10 @@ Rooms live in the app container's memory: keep a single `app` container with one
 
 ### 4. Tests
 ```bash
-pip install pytest httpx
+pip install -r requirements-dev.txt
 python -m pytest tests
 ```
-The browser smoke tests in `tests/test_browser.py` run only when Playwright is installed (`pip install playwright`). They use Edge or Chrome from the machine, or `playwright install chromium` on one without either. The Docker test stage skips them.
+The browser smoke tests in `tests/test_browser.py` run only when Playwright is installed (`pip install playwright==1.64.1`). They use Edge or Chrome from the machine, or `playwright install chromium` on one without either. The Docker test stage skips them.
 
 `HOOPGRID_DATA_DIR=/some/dir` points the server (and the real-data tests) at another set of dataset files.
 
@@ -83,7 +83,7 @@ The browser smoke tests in `tests/test_browser.py` run only when Playwright is i
 | `HOOPGRID_ALLOWED_ORIGINS` | CORS origins, comma separated (default `*`) |
 | `HOOPGRID_DOMAIN` | Public host name for Caddy (server profile) |
 | `HOOPGRID_PORT` | Host port of the app container (bound to 127.0.0.1) |
-| `HOOPGRID_RATE_LIMIT` | `0` turns off the per-IP limits on room creation, new games and search |
+| `HOOPGRID_RATE_LIMIT` | `0` turns off the per-IP limits on rooms, joins, room messages, new games and search |
 | `HOOPGRID_DATA_DIR` | Where the server reads the datasets (Docker: `/data/current`) |
 
 ---
@@ -157,9 +157,9 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 ### Before a public launch
 - [ ] **Data licensing**: get written permission for the Basketball GM roster data (ZenGM's licence is not open source) or move awards, championships and recent rosters to open sources (Wikidata, Wikipedia); replace the unofficial ESPN roster feed; check the EuroLeague API terms. See DATA.md §8.
 - [ ] Run it on a VPS with a daily refresh cron.
-- [ ] Rate-limit room lookups, WebSocket joins and messages; let the rate limiter forget old IPs.
-- [ ] Pin dependency versions.
-- [ ] "Unofficial fan game, not affiliated with the NBA, EuroLeague or any club" notice; drop "Official" from the menu.
+- [x] Rate-limit room lookups, WebSocket joins and messages; let the rate limiter forget old IPs.
+- [x] Pin dependency versions.
+- [x] "Unofficial fan game, not affiliated with the NBA, EuroLeague or any club" notice; drop "Official" from the menu.
 
 ### Gameplay fixes
 - [x] Merge players stored under two names or spellings in both leagues (Ron Artest / Metta World Peace, Edy / Walter Tavares...), who could be used twice.

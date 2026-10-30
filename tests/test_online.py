@@ -9,6 +9,7 @@ from backend.catalog.criteria import TEAM
 from backend.game.manager import to_criterion
 from backend.online.rooms import RoomManager
 from backend.online.ws import build_online_router
+from backend.ratelimit import RateLimiter
 
 ROWS = [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")]
 COLS = [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")]
@@ -18,7 +19,7 @@ COLS = [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago 
 def online(manager):
     rooms = RoomManager(manager, disconnect_grace=0.3)
     app = FastAPI()
-    app.include_router(build_online_router(rooms))
+    app.include_router(build_online_router(rooms, RateLimiter({})))
     with TestClient(app) as client, ExitStack() as sockets:
         client.sockets = sockets  # every socket a test opens is closed, even when it fails
         yield client, rooms, manager

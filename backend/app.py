@@ -36,15 +36,15 @@ def create_app(room_manager_options: dict = None) -> FastAPI:
     app = FastAPI(title="Hoop-Tac-Toe", description="2-Player Basketball Grid Tic-Tac-Toe", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=config.ALLOWED_ORIGINS, allow_methods=["*"],
                        allow_headers=["*"])
-    if config.RATE_LIMITS_ENABLED:
-        app.middleware("http")(rate_limit_middleware(RateLimiter(config.RATE_LIMITS)))
+    limiter = RateLimiter(config.RATE_LIMITS if config.RATE_LIMITS_ENABLED else {})
+    app.middleware("http")(rate_limit_middleware(limiter))
 
     app.state.game_manager = GameManager(load_indexes())
     # Rooms live in this process's memory: run a single worker (see README)
     options = {"game_max_age": config.GAME_MAX_AGE_SECONDS, **(room_manager_options or {})}
     app.state.room_manager = RoomManager(app.state.game_manager, **options)
     app.include_router(build_router(app.state.game_manager))
-    app.include_router(build_online_router(app.state.room_manager))
+    app.include_router(build_online_router(app.state.room_manager, limiter))
 
     @app.get("/health", include_in_schema=False)
     def health():

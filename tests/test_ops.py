@@ -100,3 +100,55 @@ def test_validate_accepts_the_shipped_data():
     if not (DATA_DIR / "nba_data.json").exists():
         pytest.skip("dataset not built")
     assert validate(DATA_DIR, DATA_DIR) == []
+
+
+def test_rate_limiter_counts_every_room_code_together():
+    limiter = RateLimiter({("GET", "/api/rooms/*"): 2, ("POST", "/api/rooms"): 1})
+    assert limiter.allow("1.1.1.1", "GET", "/api/rooms/AAAA")
+    assert limiter.allow("1.1.1.1", "GET", "/api/rooms/BBBB")
+    assert not limiter.allow("1.1.1.1", "GET", "/api/rooms/CCCC")
+    assert limiter.allow("1.1.1.1", "POST", "/api/rooms")       # the exact route counts apart
+
+
+def test_rate_limiter_forgets_old_clients():
+    now = [0.0]
+    limiter = RateLimiter({("GET", "/x"): 5}, clock=lambda: now[0])
+    for client in ("1.1.1.1", "2.2.2.2"):
+        limiter.allow(client, "GET", "/x")
+    now[0] = 61.0
+    limiter.allow("3.3.3.3", "GET", "/x")
+    assert [key[0] for key in limiter.hits] == ["3.3.3.3"]
+
+
+@pytest.fixture
+def limited_client(monkeypatch):
+    monkeypatch.setattr(config, "RATE_LIMITS_ENABLED", True)
+    monkeypatch.setattr(config, "RATE_LIMITS", {("GET", "/api/rooms/*"): 2, ("WS", "/ws/rooms/*"): 2,
+                                                ("WS", "message"): 2})
+    with TestClient(create_app()) as client:
+        yield client
+
+
+def test_room_lookups_are_limited_across_codes(limited_client):
+    assert [limited_client.get(f"/api/rooms/AAA{i}").status_code for i in range(3)] == [404, 404, 429]
+
+
+def test_room_joins_are_limited(limited_client):
+    reasons = []
+    for _ in range(3):
+        with limited_client.websocket_connect("/ws/rooms/NONE") as socket:
+            reasons.append(socket.receive_json()["reason"])
+    assert reasons == ["No room with that code."] * 2 + ["Too many joins, try again in a minute."]
+
+
+def test_room_messages_are_limited(limited_client):
+    code = limited_client.post("/api/rooms", json={}).json()["code"]
+    with limited_client.websocket_connect(f"/ws/rooms/{code}") as socket:
+        socket.send_json({"type": "join", "name": "Ann"})
+        while socket.receive_json()["type"] != "room":
+            pass
+        reasons = []
+        for _ in range(3):
+            socket.send_json({"type": "nonsense"})
+            reasons.append(socket.receive_json()["reason"])
+    assert reasons == ["Malformed message."] * 2 + ["Too many messages, slow down a little."]

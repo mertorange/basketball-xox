@@ -17,6 +17,9 @@ ADMIN_TOKEN = os.environ.get("HOOPGRID_ADMIN_TOKEN", "")
 RATE_LIMITS_ENABLED = os.environ.get("HOOPGRID_RATE_LIMIT", "1") != "0"
 RATE_LIMITS = {
     ("POST", "/api/rooms"): 10,
+    ("GET", "/api/rooms/*"): 30,  # every code counts together, so codes can't be guessed
+    ("WS", "/ws/rooms/*"): 30,    # joins and reconnects
+    ("WS", "message"): 240,       # sent on a room socket; a player sends a few each turn
     ("POST", "/api/new-game"): 30,
     ("GET", "/api/search-players"): 240,
     ("GET", "/api/players"): 30,  # the whole name list; a page loads it once per league

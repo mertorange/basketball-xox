@@ -94,6 +94,7 @@ def unique_answer(app, row, col) -> str:
 def test_menu_shows_custom_categories_only_when_ticked(open_page):
     page = open_page()
     expect(page.locator("#screen-menu")).to_be_visible()
+    expect(page.locator("#screen-menu .form-sub")).to_contain_text("not affiliated")
     expect(page.locator("#custom-categories")).to_be_hidden()
     page.locator("input[name=style][value=custom]").check(force=True)
     expect(page.locator("#custom-categories")).to_be_visible()

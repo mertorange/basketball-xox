@@ -4,11 +4,12 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from ..models import CreateRoomRequest
+from ..ratelimit import RateLimiter
 from .protocol import Join, Leave, client_message
 from .rooms import RoomError, RoomManager
 
 
-def build_online_router(rooms: RoomManager) -> APIRouter:
+def build_online_router(rooms: RoomManager, limiter: RateLimiter) -> APIRouter:
     router = APIRouter()
 
     @router.post("/api/rooms")
@@ -26,6 +27,11 @@ def build_online_router(rooms: RoomManager) -> APIRouter:
     @router.websocket("/ws/rooms/{code}")
     async def room_socket(ws: WebSocket, code: str):
         await ws.accept()
+        client = ws.client.host if ws.client else "unknown"
+        if not limiter.allow(client, "WS", ws.url.path):
+            await ws.send_json({"type": "error", "reason": "Too many joins, try again in a minute."})
+            await ws.close()
+            return
         room = rooms.get(code)
         if not room:
             await ws.send_json({"type": "error", "reason": "No room with that code."})
@@ -41,6 +47,8 @@ def build_online_router(rooms: RoomManager) -> APIRouter:
             while True:
                 data = await ws.receive_json()
                 try:
+                    if not limiter.allow(client, "WS", "message"):
+                        raise RoomError("Too many messages, slow down a little.")
                     msg = client_message.validate_python(data)
                     if isinstance(msg, Join):
                         raise RoomError("Already in the room.")

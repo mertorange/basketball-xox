@@ -13,7 +13,8 @@ COPY backend backend
 COPY frontend frontend
 
 FROM base AS test
-RUN pip install pytest httpx
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt
 COPY tests tests
 RUN HOOPGRID_RATE_LIMIT=0 python -m pytest -q -p no:cacheprovider tests && touch /tmp/tests-passed
 
