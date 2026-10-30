@@ -58,7 +58,10 @@ def test_real_data_difficulty_levels(league):
             counts = [k for _, k in generator.box_counts(rows, cols)]
             assert min(counts) >= level.min_known, (difficulty, counts)
             if level.max_known is not None:
-                assert max(counts) <= 2 * level.max_known, (difficulty, counts)  # at most loosened once
+                # At most loosened once; a decade's own boxes may go further at Hard
+                pairs = [(r, c) for r in rows for c in cols]
+                others = [k for k, (r, c) in zip(counts, pairs) if not (level.decade_turns and "era" in (r.kind, c.kind))]
+                assert max(others) <= 2 * level.max_known, (difficulty, counts)
             known += counts
         medians[difficulty] = sorted(known)[len(known) // 2]
     assert medians["easy"] > medians["medium"] > medians["hard"], medians
@@ -118,3 +121,32 @@ def test_real_data_custom_grids(league, categories):
         assert kinds <= {TEAM, *categories}
         used |= kinds
     assert used - {TEAM}, "the chosen categories never showed up"
+
+
+@pytest.mark.parametrize("league,categories", [("nba", ["country", "college", "draft", "award", "career", "era"]),
+                                               ("euroleague", ["country", "award", "career", "era"])])
+@pytest.mark.parametrize("difficulty", DIFFICULTIES)
+def test_real_data_custom_grids_give_every_tick_a_turn(league, categories, difficulty):
+    catalog = PlayerCatalog.load(league)
+    if not catalog.players:
+        pytest.skip("dataset not built")
+    generator = BoardGenerator(build_index(catalog), rng=random.Random(9))
+    seen = set()
+    for _ in range(30):
+        rows, cols = generator.generate("custom", difficulty, categories)
+        seen |= {s.kind for s in rows + cols}
+    assert set(categories) <= seen, set(categories) - seen
+
+
+@pytest.mark.parametrize("league", ["nba", "euroleague"])
+def test_real_data_every_decade_gets_a_turn_at_hard(league):
+    catalog = PlayerCatalog.load(league)
+    if not catalog.players:
+        pytest.skip("dataset not built")
+    index = build_index(catalog)
+    generator = BoardGenerator(index, rng=random.Random(6))
+    seen = set()
+    for _ in range(40):
+        rows, cols = generator.generate("custom", "hard", ["era"])
+        seen |= {s.key for s in rows + cols if s.kind == "era"}
+    assert seen == {s.key for s in index.of_kind("era")}

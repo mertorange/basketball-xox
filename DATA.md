@@ -120,6 +120,11 @@ denenir, en son herhangi bir çözülebilir ızgaraya dönülür.
 | Orta (varsayılan) | 3–30 | 2–25 |
 | Zor | 1–6 | 1–6, daha az kriter, çoğunlukla kulüp çiftleri |
 
+Zorda dönemler yalnızca bir on yılın etrafında kurulan ızgaralarda çıkar ve her on yıl eşit şansla
+seçilir: bir takımın 2000–19 arasında çok fazla tanınmış oyuncusu olduğu için sıradan çekilişte yalnızca
+en eski dönemler üst sınıra sığardı. On yıl önce dar kriterlerle (MVP, draft edilmemiş) eşlenir; olmazsa
+kendi kareleri sınırı aşabilir. Özel ızgarada her işaretli kategori sırayla ızgaranın başına geçer.
+
 Yenileme kontrolleri (§5) ünlülüğü de sınar: LeBron, Wembanyama, Maravich, Spanoulis, Langford gibi
 isimler tanınmış, Reggie Jordan ve Onuralp Bitim gibileri tanınmamış çıkmalı; NBA oyuncularının en az
 %70'inin sayfa sayısı olmalı. Biri tutmazsa sürüm reddedilir.
