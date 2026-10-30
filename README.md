@@ -72,6 +72,8 @@ Rooms live in the app container's memory: keep a single `app` container with one
 pip install pytest httpx
 python -m pytest tests
 ```
+The browser smoke tests in `tests/test_browser.py` run only when Playwright is installed (`pip install playwright`). They use Edge or Chrome from the machine, or `playwright install chromium` on one without either. The Docker test stage skips them.
+
 `HOOPGRID_DATA_DIR=/some/dir` points the server (and the real-data tests) at another set of dataset files.
 
 ### Settings (environment)
@@ -115,7 +117,7 @@ basketball-xox/
 │   ├── style.css             # Paper-and-ink styling
 │   └── js/                   # main.js (menu, screens), hotseat.js / onlinegame.js (controllers),
 │                             # online.js (room socket), api, board, clock, slip, scoresheet, sound, dom
-├── tests/                    # pytest: criteria, board, game, API, online rooms, builder helpers
+├── tests/                    # pytest: criteria, board, game, API, online rooms, builder helpers, browser smoke tests
 ├── DATA.md                   # Data sources, pipeline, rules, gaps, licensing
 ├── Dockerfile                # Test stage + app image (non-root, one worker, healthcheck)
 ├── docker-compose.yml        # app, builder (data refresh), caddy (server profile)
@@ -175,8 +177,8 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [ ] A donation link as a lighter alternative.
 
 ### Quality and data
-- [ ] Frontend smoke tests in a real browser.
-- [ ] Skip the release-switch test on Windows when symlinks aren't allowed.
+- [x] Frontend smoke tests in a real browser.
+- [x] Skip the release-switch test on Windows when symlinks aren't allowed.
 - [ ] Count awards (seven All-NBA teams, not one) and fix Wikidata matches for a few stars (Durant, McGrady, Dwight Howard).
 - [ ] EuroLeague MVP and *50+ point game* criteria (no source yet; see DATA.md).
 - [ ] Keep generated datasets out of git, or write one player per line.

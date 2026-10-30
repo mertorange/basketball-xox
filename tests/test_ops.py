@@ -59,7 +59,19 @@ def test_health_and_reload(app_client):
     assert res.status_code == 200 and res.json()["players"] == health["players"]
 
 
+def can_symlink(path):
+    """Windows only lets admins and Developer Mode create symlinks."""
+    try:
+        (path / "link").symlink_to("target")
+    except OSError:
+        return False
+    (path / "link").unlink()
+    return True
+
+
 def test_release_switch_and_prune(tmp_path):
+    if not can_symlink(tmp_path):
+        pytest.skip("this account can't create symlinks")
     releases = tmp_path / "releases"
     for stamp in ["20260101-000000", "20260102-000000", "20260103-000000"]:
         (releases / stamp).mkdir(parents=True)
