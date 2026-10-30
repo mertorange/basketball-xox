@@ -101,3 +101,24 @@ def test_shot_clock_violation(manager):
     game = manager.create_game("nba")
     assert manager.trigger_shot_clock_violation(game.game_id).current_player == "O"
     assert manager.trigger_shot_clock_violation("missing") is None
+
+
+def test_another_name_is_the_same_player(nba_catalog, nba_index):
+    from backend.catalog.criteria import build_index
+    from backend.catalog.players import PlayerCatalog
+    from backend.game.manager import GameManager
+    players = [dict(p) for p in nba_catalog.players]
+    players[0]["aliases"] = ["Al One"]
+    index = build_index(PlayerCatalog("nba", {"teams": nba_catalog.teams, "countries": nba_catalog.countries,
+                                              "players": players}))
+    assert [p["name"] for p in index.catalog.find("al one")] == ["Alpha One"]
+    assert index.catalog.name_list["aliases"]["Al One"] == {"name": "Alpha One", "key": None}
+
+    manager = GameManager({"nba": index})
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, index, [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
+              [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Golden State Warriors")])
+    placed = manager.make_move(game.game_id, 0, 0, "Al One")
+    assert placed.success and placed.cell.player_name == "Alpha One"  # the box shows the real name
+    again = manager.make_move(game.game_id, 0, 1, "Alpha One")        # O can't use the same player
+    assert not again.success and "already picked" in again.message

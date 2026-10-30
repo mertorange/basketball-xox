@@ -4,6 +4,7 @@ Season years follow the NBA convention in the dataset: a season is named after t
 ends, so the API's E2024 (2024-25) is season 2025.
 """
 
+from .aliases import apply_aliases
 from .common import clean_player_name, load_previous_players, name_key, write_dataset
 from .euroleague_clubs import STANDARD_EUROLEAGUE_CLUBS, normalize_euroleague_club
 from .sources.euroleague_api import (fetch_career_stats, fetch_champions, fetch_euroleague_people,
@@ -68,4 +69,5 @@ def build_euroleague_database(out_dir):
             by_key[name_key(entry["name"])] = entry
     print(f"  {carried} players carried over from the previous dataset")
 
-    write_dataset(out_dir, "euroleague_data.json", "EuroLeague", STANDARD_EUROLEAGUE_CLUBS, players)
+    write_dataset(out_dir, "euroleague_data.json", "EuroLeague", STANDARD_EUROLEAGUE_CLUBS,
+                  apply_aliases("euroleague", players))

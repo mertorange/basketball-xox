@@ -60,6 +60,7 @@ Yalnızca `name`, `country`, `teams` her oyuncuda vardır; diğer alanlar bilinm
 | `college` | NBA öncesi kolej. Liseden NBA'e gelenlerde yok. |
 | `stats` | NBA: normal sezon `games` ve `minutes` toplamı (1977'den beri; öncesinde maç sayısı yok). EuroLeague: kariyer toplamları `games`, `points`, `rebounds`, `assists` (2000-01'den beri). |
 | `born`, `pos` | Yalnızca **aynı adı taşıyan** oyuncularda (NBA'de 31 isim / 63 oyuncu, EuroLeague'de 2 / 4): doğum tarihi (`YYYY-AA-GG`, bilinmiyorsa yalnız yıl) ve son mevki (`PG`, `F`, `C`…). Oyuncu seçme listesinde ismin yanında gösterilir; seçim bu kişiye bağlanır. Diğer oyuncularda yazılmaz. |
+| `aliases` | Oyuncunun başka adları: eski isimler ve yazılışlar (Ron Artest, Enes Kanter, Edy Tavares) ve takma adlar (Shaq, KD, Chacho). Aramada ve cevapta aynı oyuncuya götürür; karede gerçek ad görünür. |
 | `wiki_pages` | NBA: oyuncunun Wikimedia sayfa sayısı (Wikidata sitelinks; kaç dilde Vikipedi maddesi olduğu). Wikidata eşleşmesi yoksa yazılmaz. Ünlülük ölçüsü olarak kullanılır (§3.1). |
 
 İsimler ASCII'dir (`Luka Doncic`, `Aleksandar Dordevic`); arama küçük harf alt dize eşleşmesidir.
@@ -106,7 +107,7 @@ yüzdelik olarak hesaplanır; formül veride değil kodda olduğu için veri yen
   kullanılmaz: çok dilli ülkelerin oyuncularını ve NBA/milli takımla ünlenenleri öne çıkarırdı
   (Keith Langford gibi Amerikalı EuroLeague efsanelerinin çoğu tek dilde maddeye sahip). İstatistiklerin
   göremediği birkaç isim elle listelenmiştir (2000 öncesi Jasikevičius ve Rebraca, 1990'larda zirve
-  yapan Alphonso Ford, tek sezonluk 2012 MVP'si Kirilenko, ikinci yazılışla kayıtlı ünlüler).
+  yapan Alphonso Ford, tek sezonluk 2012 MVP'si Kirilenko).
   **Tanınmış** = ilk %15 (~350 oyuncu).
 
 **Zorluk seviyeleri** her karede bulunması gereken tanınmış cevap aralığını belirler; uyan ızgaralar
@@ -172,6 +173,11 @@ açık odalar ve süren oyunlar başladıkları veriyle devam eder.
 
 Elle çalıştırırken önce başka bir klasöre üretip karşılaştırmak önerilir. Oyuncular isme, aynı adlılar takımlarına
 göre sıralanır; böylece kaynaklar değişmediyse iki çıktı arasındaki fark gerçek veri farkıdır.
+
+Aynı oyuncunun ayrı kayıtları `builder/aliases.py` tablosuyla her üretimin sonunda birleştirilir
+(takımlar ve ödüller birleşir, istatistikte büyük olan kalır); takma adlar da aynı dosyadadır. Tabloya
+yalnızca doğrulanmış çiftler eklenir: Tony / Tony L. Mitchell veya Cliff / Clifford Robinson gibi benzer
+adlar farklı kişilerdir.
 
 ### 5.1 Modüller (`backend/scripts/builder/`)
 
@@ -290,14 +296,11 @@ eski sürümle uyum için korunmuştur ("EA7 Emporio Armani Milan", "Virtus Sega
 - **Güncel sezon**: ESPN kadrosu çekildiği anı yansıtır; sezon içi takaslar için betik periyodik
   çalıştırılmalı (sunucuya geçince günlük cron planlanıyor).
 - **EuroLeague isimleri** resmî kayıt adıdır ("Emanuel Ginobili"); 2000-01'de doğum ülkesi ~%32 boş.
-- İsim değiştiren oyuncu ayrı kayıt olabilir (Bobby Dixon / Ali Muhammed).
 - **Ödül sayıları** tutulmuyor, yalnızca alınıp alınmadığı: 7 kez All-NBA olan Pippen ile 1 kez olan
   Tyson Chandler ünlülükte aynı ödül puanını alır. Tanınmış/tanınmamış ayrımını değil, cevap
   listesinin en üstündeki sırayı etkiler.
 - **Wikidata eşleşmesi** bazı yıldızlarda tutmuyor (Kevin Durant, Tracy McGrady, Dwight Howard, Metta
   World Peace…); bunlara benzer dakikadaki oyuncuların ortanca sayfa sayısı verilir (§3.1).
-- **EuroLeague'de ikinci yazılışla kayıtlı oyuncular** ayrı kayıttır (Edy / Walter Tavares, Theo /
-  Theodoros Papaloukas, Gigi / Luigi Datome); ünlülük listesinde elle işaretlidirler.
 
 ---
 

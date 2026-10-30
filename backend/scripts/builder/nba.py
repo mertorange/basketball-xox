@@ -10,6 +10,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Optional
 
+from .aliases import apply_aliases
 from .common import (base_name_key, canonical_country, clean_player_name, load_previous_players, name_key,
                      resolve_birthplace, write_dataset)
 from .nba_teams import STANDARD_NBA_TEAMS
@@ -124,7 +125,7 @@ def build_nba_database(out_dir):
         add_championships(people, champions_by_season(history))
 
     players = [export_player(p) for p in people]
-    players = [p for p in players if p["teams"]]
+    players = apply_aliases("nba", [p for p in players if p["teams"]])
     write_dataset(out_dir, "nba_data.json", "NBA", STANDARD_NBA_TEAMS, players)
 
 

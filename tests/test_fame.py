@@ -73,3 +73,13 @@ def test_real_data_passes_the_refresh_fame_checks(league):
     if not catalog.players:
         pytest.skip("dataset not built")
     assert fame_problems(league, catalog) == []
+
+
+@pytest.mark.parametrize("league,other,player", [("nba", "Ron Artest", "Metta World Peace"), ("nba", "Shaq", "Shaquille O'Neal"),
+                                                 ("euroleague", "Edy Tavares", "Walter Tavares"), ("euroleague", "Chacho", "Sergio Rodriguez")])
+def test_real_data_other_names_find_the_player(league, other, player):
+    catalog = PlayerCatalog.load(league)
+    if not catalog.players:
+        pytest.skip("dataset not built")
+    assert [p["name"] for p in catalog.find(other)] == [player]
+    assert other not in {p["name"] for p in catalog.players}

@@ -148,7 +148,7 @@ export class PlayerSlip {
       // players also show when they were born and where they played on the floor.
       this.list.innerHTML = options.map((option, i) =>
         `<li role="option" id="sugg-${i}" data-index="${i}" aria-selected="false">` +
-        `<span>${highlight(option.name, query)}</span>${option.key ? twinInfo(option) : ''}</li>`
+        `<span>${highlight(option.name, query)}</span>${optionInfo(option)}</li>`
       ).join('');
       this.list.querySelectorAll('li[data-index]').forEach((li, i) => {
         li.addEventListener('mousedown', (e) => e.preventDefault());
@@ -172,21 +172,22 @@ export class PlayerSlip {
   }
 }
 
-/** 'b. 23 Feb 1992 · C': what tells two players with one name apart. */
-function twinInfo({ born, pos }) {
-  const parts = [];
+/** The small box beside a name: the other name it matched, what tells twins apart, or both. */
+function optionInfo({ key, born, pos, aka }) {
+  const parts = aka ? [aka] : [];
   if (born) {
     const [year, month, day] = born.split('-');
     parts.push(month && day ? `b. ${Number(day)} ${MONTHS[Number(month) - 1]} ${year}` : `b. ${year}`);
   }
   if (pos) parts.push(pos);
-  return `<span class="twin-info">${escapeHtml(parts.join(' · ') || 'same name')}</span>`;
+  if (!parts.length) return key ? '<span class="twin-info">same name</span>' : '';
+  return `<span class="twin-info">${escapeHtml(parts.join(' · '))}</span>`;
 }
 
 function highlight(name, query) {
   // The names are ASCII, so the folded query lines up with the name letter for letter
   const q = fold(query);
-  const i = name.toLowerCase().indexOf(q);
+  const i = name.toLowerCase().indexOf(q); // no highlight when dots or an alias don't line up
   if (i < 0) return escapeHtml(name);
   return escapeHtml(name.slice(0, i)) + '<mark>' + escapeHtml(name.slice(i, i + q.length)) + '</mark>' +
     escapeHtml(name.slice(i + q.length));

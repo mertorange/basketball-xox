@@ -30,6 +30,7 @@ class PlayerCatalog:
         for same in self._by_name.values():
             for i, player in enumerate(same):
                 player["key"] = player_key(player, i if len(same) > 1 else None)
+        self._aliases: Dict[str, Player] = {alias.lower(): p for p in self.players for alias in p.get("aliases", ())}
         self.name_list = self._name_list()
 
     @classmethod
@@ -42,18 +43,24 @@ class PlayerCatalog:
 
     def find(self, name: str) -> List[Player]:
         """All players with this name; a few names belong to two different players."""
-        return self._by_name.get(name.strip().lower(), [])
+        key = name.strip().lower()
+        if key in self._by_name:
+            return self._by_name[key]
+        return [self._aliases[key]] if key in self._aliases else []
 
     def _name_list(self) -> Dict[str, Any]:
         """Every name for the autocomplete, which filters in the browser. Same-named players
-        come with what tells them apart (birth date, position) and their key; nothing about
-        teams, awards or countries, which would give answers away."""
+        come with what tells them apart (birth date, position) and their key, and other names
+        (Ron Artest, Shaq) with the player they lead to; nothing about teams, awards or
+        countries, which would give answers away."""
         twins = {}
         for same in self._by_name.values():
             if len(same) > 1:
                 twins[same[0]["name"]] = [{"key": p["key"], "born": p.get("born"), "pos": p.get("pos")}
                                           for p in sorted(same, key=lambda p: str(p.get("born") or ""))]
-        return {"names": sorted({p["name"] for p in self.players}), "twins": twins}
+        aliases = {alias: {"name": p["name"], "key": p["key"] if p["name"] in twins else None}
+                   for p in self.players for alias in p.get("aliases", ())}
+        return {"names": sorted({p["name"] for p in self.players}), "twins": twins, "aliases": aliases}
 
     def search(self, query: str, limit: int = 8) -> List[Player]:
         """Names containing the query, those starting with it first, one row per name."""

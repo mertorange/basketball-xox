@@ -2083,7 +2083,10 @@
         "points": 1484,
         "rebounds": 349,
         "assists": 395
-      }
+      },
+      "aliases": [
+        "Bobby Dixon"
+      ]
     },
     {
       "name": "Ali Traore",
@@ -3896,13 +3899,6 @@
       }
     },
     {
-      "name": "Armando Bacot",
-      "country": "USA",
-      "teams": [
-        "Fenerbahçe"
-      ]
-    },
-    {
       "name": "Armando Bacot Jr.",
       "country": "USA",
       "teams": [
@@ -3921,7 +3917,10 @@
         "points": 82,
         "rebounds": 62,
         "assists": 17
-      }
+      },
+      "aliases": [
+        "Armando Bacot"
+      ]
     },
     {
       "name": "Armel Traore",
@@ -5145,14 +5144,6 @@
       }
     },
     {
-      "name": "Bobby Dixon",
-      "country": "Turkey",
-      "teams": [
-        "Fenerbahçe",
-        "LDLC ASVEL Villeurbanne"
-      ]
-    },
-    {
       "name": "Bodian Massa",
       "country": "France",
       "teams": [
@@ -5632,13 +5623,6 @@
       }
     },
     {
-      "name": "Brandon Boston",
-      "country": "USA",
-      "teams": [
-        "Fenerbahçe"
-      ]
-    },
-    {
       "name": "Brandon Boston Jr.",
       "country": "USA",
       "teams": [
@@ -5656,7 +5640,10 @@
         "points": 135,
         "rebounds": 46,
         "assists": 8
-      }
+      },
+      "aliases": [
+        "Brandon Boston"
+      ]
     },
     {
       "name": "Brandon Davies",
@@ -10709,13 +10696,6 @@
       }
     },
     {
-      "name": "Dinos Mitoglou",
-      "country": "Greece",
-      "teams": [
-        "Panathinaikos"
-      ]
-    },
-    {
       "name": "Dionte Christmas",
       "country": "USA",
       "teams": [
@@ -11989,13 +11969,6 @@
         "rebounds": 257,
         "assists": 245
       }
-    },
-    {
-      "name": "Edy Tavares",
-      "country": "Cape Verde",
-      "teams": [
-        "Real Madrid"
-      ]
     },
     {
       "name": "Efe Demirel",
@@ -13482,7 +13455,10 @@
         "points": 2565,
         "rebounds": 610,
         "assists": 1384
-      }
+      },
+      "aliases": [
+        "Facu"
+      ]
     },
     {
       "name": "Federico Kammerichs",
@@ -14812,14 +14788,6 @@
       }
     },
     {
-      "name": "Gigi Datome",
-      "country": "Italy",
-      "teams": [
-        "EA7 Emporio Armani Milan",
-        "Fenerbahçe"
-      ]
-    },
-    {
       "name": "Gildas Gimenez",
       "country": "Burkina Faso",
       "teams": [
@@ -14910,7 +14878,7 @@
       }
     },
     {
-      "name": "Glynn Watson",
+      "name": "Glynn Watson Jr.",
       "country": "USA",
       "teams": [
         "LDLC ASVEL Villeurbanne"
@@ -14924,13 +14892,9 @@
         "points": 426,
         "rebounds": 71,
         "assists": 93
-      }
-    },
-    {
-      "name": "Glynn Watson Jr.",
-      "country": "USA",
-      "teams": [
-        "LDLC ASVEL Villeurbanne"
+      },
+      "aliases": [
+        "Glynn Watson"
       ]
     },
     {
@@ -15353,13 +15317,9 @@
         "points": 59,
         "rebounds": 26,
         "assists": 5
-      }
-    },
-    {
-      "name": "Gur Lavy",
-      "country": "Israel",
-      "teams": [
-        "Maccabi Tel Aviv"
+      },
+      "aliases": [
+        "Gur Lavy"
       ]
     },
     {
@@ -18522,13 +18482,6 @@
       }
     },
     {
-      "name": "Jeff Dowtin Jr.",
-      "country": "USA",
-      "teams": [
-        "Maccabi Tel Aviv"
-      ]
-    },
-    {
       "name": "Jeff Foote",
       "country": "USA",
       "teams": [
@@ -18617,7 +18570,10 @@
         "points": 153,
         "rebounds": 20,
         "assists": 46
-      }
+      },
+      "aliases": [
+        "Jeff Dowtin Jr."
+      ]
     },
     {
       "name": "Jehyve Floyd",
@@ -20628,7 +20584,10 @@
         "points": 4152,
         "rebounds": 548,
         "assists": 834
-      }
+      },
+      "aliases": [
+        "La Bomba"
+      ]
     },
     {
       "name": "Juan Jose Lopez",
@@ -20806,13 +20765,6 @@
       }
     },
     {
-      "name": "Juom Bol",
-      "country": "Spain",
-      "teams": [
-        "Baskonia"
-      ]
-    },
-    {
       "name": "Juom Maker Bol",
       "country": "South Sudan",
       "teams": [
@@ -20827,7 +20779,10 @@
         "points": 3,
         "rebounds": 1,
         "assists": 0
-      }
+      },
+      "aliases": [
+        "Juom Bol"
+      ]
     },
     {
       "name": "Jurica Golemac",
@@ -22282,7 +22237,10 @@
         "points": 1553,
         "rebounds": 885,
         "assists": 149
-      }
+      },
+      "aliases": [
+        "Dinos Mitoglou"
+      ]
     },
     {
       "name": "Konstantinos Papadakis",
@@ -23211,13 +23169,6 @@
       ]
     },
     {
-      "name": "Leo Cavaliere",
-      "country": "France",
-      "teams": [
-        "Paris Basketball"
-      ]
-    },
-    {
       "name": "Leo Mainoldi",
       "country": "Argentina",
       "teams": [
@@ -23368,7 +23319,10 @@
         "points": 246,
         "rebounds": 227,
         "assists": 50
-      }
+      },
+      "aliases": [
+        "Leo Cavaliere"
+      ]
     },
     {
       "name": "Levi Randolph",
@@ -24012,7 +23966,10 @@
         "points": 2278,
         "rebounds": 869,
         "assists": 248
-      }
+      },
+      "aliases": [
+        "Gigi Datome"
+      ]
     },
     {
       "name": "Luigi Suigo",
@@ -26586,13 +26543,6 @@
       }
     },
     {
-      "name": "Matt Costello",
-      "country": "USA",
-      "teams": [
-        "Valencia Basket"
-      ]
-    },
-    {
       "name": "Matt Freije",
       "country": "USA",
       "teams": [
@@ -26684,13 +26634,6 @@
       "seasons": [
         2021,
         2021
-      ]
-    },
-    {
-      "name": "Matt Morgan",
-      "country": "USA",
-      "teams": [
-        "Virtus Segafredo Bologna"
       ]
     },
     {
@@ -26872,7 +26815,10 @@
         "points": 1132,
         "rebounds": 572,
         "assists": 174
-      }
+      },
+      "aliases": [
+        "Matt Costello"
+      ]
     },
     {
       "name": "Matthew Mitchell",
@@ -26906,7 +26852,10 @@
         "points": 724,
         "rebounds": 113,
         "assists": 163
-      }
+      },
+      "aliases": [
+        "Matt Morgan"
+      ]
     },
     {
       "name": "Matthew Strazel",
@@ -29101,20 +29050,6 @@
       ]
     },
     {
-      "name": "Nate Reuvers",
-      "country": "USA",
-      "teams": [
-        "Valencia Basket"
-      ]
-    },
-    {
-      "name": "Nate Sestina",
-      "country": "USA",
-      "teams": [
-        "Valencia Basket"
-      ]
-    },
-    {
       "name": "Nate Wolters",
       "country": "USA",
       "teams": [
@@ -29172,7 +29107,10 @@
         "points": 657,
         "rebounds": 233,
         "assists": 36
-      }
+      },
+      "aliases": [
+        "Nate Reuvers"
+      ]
     },
     {
       "name": "Nathan Sestina",
@@ -29195,7 +29133,10 @@
         "points": 210,
         "rebounds": 89,
         "assists": 28
-      }
+      },
+      "aliases": [
+        "Nate Sestina"
+      ]
     },
     {
       "name": "Naz Mitrou Long",
@@ -30529,7 +30470,10 @@
         "points": 711,
         "rebounds": 252,
         "assists": 66
-      }
+      },
+      "aliases": [
+        "Nikos Rogkavopoulos"
+      ]
     },
     {
       "name": "Nikolas Sermpezis",
@@ -30668,13 +30612,6 @@
         "rebounds": 176,
         "assists": 146
       }
-    },
-    {
-      "name": "Nikos Rogkavopoulos",
-      "country": "Greece",
-      "teams": [
-        "Panathinaikos"
-      ]
     },
     {
       "name": "Nikos Zisis",
@@ -30832,23 +30769,6 @@
         "points": 774,
         "rebounds": 435,
         "assists": 129
-      }
-    },
-    {
-      "name": "O'Shae J Brissett",
-      "country": "Canada",
-      "teams": [
-        "Maccabi Tel Aviv"
-      ],
-      "seasons": [
-        2026,
-        2027
-      ],
-      "stats": {
-        "games": 44,
-        "points": 381,
-        "rebounds": 219,
-        "assists": 39
       }
     },
     {
@@ -31653,6 +31573,19 @@
       "country": "Canada",
       "teams": [
         "Maccabi Tel Aviv"
+      ],
+      "seasons": [
+        2026,
+        2027
+      ],
+      "stats": {
+        "games": 44,
+        "points": 381,
+        "rebounds": 219,
+        "assists": 39
+      },
+      "aliases": [
+        "O'Shae J Brissett"
       ]
     },
     {
@@ -35513,7 +35446,7 @@
       }
     },
     {
-      "name": "Saras Jasikevicius",
+      "name": "Sarunas Jasikevicius",
       "country": "Lithuania",
       "teams": [
         "FC Barcelona",
@@ -35536,17 +35469,10 @@
         "points": 2343,
         "rebounds": 355,
         "assists": 755
-      }
-    },
-    {
-      "name": "Sarunas Jasikevicius",
-      "country": "Lithuania",
-      "teams": [
-        "FC Barcelona",
-        "Fenerbahçe",
-        "Maccabi Tel Aviv",
-        "Panathinaikos",
-        "Zalgiris Kaunas"
+      },
+      "aliases": [
+        "Saras",
+        "Saras Jasikevicius"
       ]
     },
     {
@@ -36369,7 +36295,10 @@
         "points": 3772,
         "rebounds": 742,
         "assists": 1874
-      }
+      },
+      "aliases": [
+        "Chacho"
+      ]
     },
     {
       "name": "Serhat Cetin",
@@ -38430,22 +38359,13 @@
       }
     },
     {
-      "name": "Theo Papaloukas",
+      "name": "Theodoros Papaloukas",
       "country": "Greece",
       "teams": [
         "CSKA Moscow",
         "Maccabi Tel Aviv",
         "Olympiacos",
         "Panathinaikos"
-      ]
-    },
-    {
-      "name": "Theodoros Papaloukas",
-      "country": "Greece",
-      "teams": [
-        "CSKA Moscow",
-        "Maccabi Tel Aviv",
-        "Olympiacos"
       ],
       "seasons": [
         2002,
@@ -38460,7 +38380,10 @@
         "points": 1724,
         "rebounds": 599,
         "assists": 977
-      }
+      },
+      "aliases": [
+        "Theo Papaloukas"
+      ]
     },
     {
       "name": "Thierry Gadou",
@@ -40335,7 +40258,11 @@
         "points": 4455,
         "rebounds": 657,
         "assists": 1607
-      }
+      },
+      "aliases": [
+        "Kill Bill",
+        "V-Span"
+      ]
     },
     {
       "name": "Vassilis Toliopoulos",
@@ -41370,7 +41297,10 @@
         "points": 3061,
         "rebounds": 2197,
         "assists": 311
-      }
+      },
+      "aliases": [
+        "Edy Tavares"
+      ]
     },
     {
       "name": "Wendell Alexis",
@@ -41577,13 +41507,6 @@
       }
     },
     {
-      "name": "Will Rayman",
-      "country": "USA",
-      "teams": [
-        "Maccabi Tel Aviv"
-      ]
-    },
-    {
       "name": "Will Thomas",
       "country": "USA",
       "teams": [
@@ -41652,7 +41575,10 @@
         "points": 209,
         "rebounds": 189,
         "assists": 17
-      }
+      },
+      "aliases": [
+        "Will Rayman"
+      ]
     },
     {
       "name": "Willie Deane",
@@ -42409,13 +42335,6 @@
       }
     },
     {
-      "name": "Zac Seljaas",
-      "country": "USA",
-      "teams": [
-        "LDLC ASVEL Villeurbanne"
-      ]
-    },
-    {
       "name": "Zaccharie Risacher",
       "country": "Spain",
       "teams": [
@@ -42522,7 +42441,10 @@
         "points": 241,
         "rebounds": 107,
         "assists": 41
-      }
+      },
+      "aliases": [
+        "Zac Seljaas"
+      ]
     },
     {
       "name": "Zack Wright",

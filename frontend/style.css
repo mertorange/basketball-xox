@@ -1296,10 +1296,10 @@ button:disabled { cursor: not-allowed; }
 .corner {
   color: var(--board-marker) !important;
   font-size: 9cqmin;
-  filter: url(#marker-edge);
-  flex-direction: column;
   gap: 0.6cqmin;
 }
+/* On the letter only: on the box it would also rough up the grid lines around it */
+.corner .turn-letter { filter: url(#marker-edge); }
 .corner:not(:empty)::after {
   content: 'to play';
   font-family: var(--label);
@@ -1307,7 +1307,6 @@ button:disabled { cursor: not-allowed; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  filter: none;
 }
 
 /* X and O in black dry-erase marker: the shape tells the teams apart, as on a real board */

@@ -1725,7 +1725,7 @@
     },
     {
       "name": "Aleksandar Djordjevic",
-      "country": "",
+      "country": "Serbia",
       "teams": [
         "Portland Trail Blazers"
       ],
@@ -1736,15 +1736,11 @@
       "stats": {
         "games": 8,
         "minutes": 61
-      }
-    },
-    {
-      "name": "Aleksandar Dordevic",
-      "country": "Serbia",
-      "teams": [
-        "Portland Trail Blazers"
-      ],
-      "wiki_pages": 37
+      },
+      "wiki_pages": 37,
+      "aliases": [
+        "Aleksandar Dordevic"
+      ]
     },
     {
       "name": "Aleksandar Radojevic",
@@ -2488,7 +2484,11 @@
         "games": 914,
         "minutes": 37584
       },
-      "wiki_pages": 58
+      "wiki_pages": 58,
+      "aliases": [
+        "AI",
+        "The Answer"
+      ]
     },
     {
       "name": "Allen Leavell",
@@ -2913,7 +2913,10 @@
         "games": 846,
         "minutes": 26254
       },
-      "wiki_pages": 40
+      "wiki_pages": 40,
+      "aliases": [
+        "STAT"
+      ]
     },
     {
       "name": "Amari Bailey",
@@ -3949,7 +3952,7 @@
     },
     {
       "name": "Anfernee Hardaway",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Miami Heat",
         "New York Knicks",
@@ -3966,7 +3969,17 @@
       "stats": {
         "games": 704,
         "minutes": 23711
-      }
+      },
+      "wiki_pages": 34,
+      "draft": {
+        "round": 1,
+        "pick": 3
+      },
+      "college": "Memphis",
+      "aliases": [
+        "Penny",
+        "Penny Hardaway"
+      ]
     },
     {
       "name": "Anfernee Simons",
@@ -4066,14 +4079,6 @@
       "wiki_pages": 27
     },
     {
-      "name": "Ante Toni Zizic",
-      "country": "Croatia",
-      "teams": [
-        "Cleveland Cavaliers"
-      ],
-      "wiki_pages": 21
-    },
-    {
       "name": "Ante Zizic",
       "country": "Croatia",
       "teams": [
@@ -4090,7 +4095,11 @@
       "stats": {
         "games": 113,
         "minutes": 1517
-      }
+      },
+      "wiki_pages": 21,
+      "aliases": [
+        "Ante Toni Zizic"
+      ]
     },
     {
       "name": "Anthony Avent",
@@ -4294,7 +4303,10 @@
         "games": 787,
         "minutes": 27115
       },
-      "wiki_pages": 50
+      "wiki_pages": 50,
+      "aliases": [
+        "AD"
+      ]
     },
     {
       "name": "Anthony Edwards",
@@ -12776,7 +12788,10 @@
         "games": 1260,
         "minutes": 43514
       },
-      "wiki_pages": 53
+      "wiki_pages": 53,
+      "aliases": [
+        "Melo"
+      ]
     },
     {
       "name": "Caron Butler",
@@ -13457,7 +13472,10 @@
         "games": 1073,
         "minutes": 39330
       },
-      "wiki_pages": 65
+      "wiki_pages": 65,
+      "aliases": [
+        "Sir Charles"
+      ]
     },
     {
       "name": "Charles Bassey",
@@ -13497,26 +13515,6 @@
         "minutes": 910
       },
       "wiki_pages": 8
-    },
-    {
-      "name": "Charles Brown",
-      "country": "USA",
-      "teams": [
-        "Atlanta Hawks"
-      ],
-      "seasons": [
-        2020,
-        2020
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      },
-      "college": "Saint Joseph's",
-      "stats": {
-        "games": 10,
-        "minutes": 40
-      }
     },
     {
       "name": "Charles Claxton",
@@ -13927,7 +13925,10 @@
       "stats": {
         "games": 49,
         "minutes": 406
-      }
+      },
+      "aliases": [
+        "Charles Brown"
+      ]
     },
     {
       "name": "Charlie Criss",
@@ -14192,7 +14193,7 @@
     },
     {
       "name": "Cheese Johnson",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Golden State Warriors"
       ],
@@ -14203,7 +14204,11 @@
       "stats": {
         "games": 9,
         "minutes": 53
-      }
+      },
+      "wiki_pages": 5,
+      "aliases": [
+        "Lynbert \"Cheese\" Johnson"
+      ]
     },
     {
       "name": "Cheick Diallo",
@@ -14940,7 +14945,15 @@
       },
       "wiki_pages": 12,
       "born": "1990-04-29",
-      "pos": "SF"
+      "pos": "SF",
+      "draft": {
+        "round": 0,
+        "pick": 0
+      },
+      "college": "Dayton",
+      "aliases": [
+        "Christapher Johnson"
+      ]
     },
     {
       "name": "Chris Johnson",
@@ -15250,7 +15263,10 @@
         "games": 1354,
         "minutes": 45608
       },
-      "wiki_pages": 56
+      "wiki_pages": 56,
+      "aliases": [
+        "CP3"
+      ]
     },
     {
       "name": "Chris Porter",
@@ -15571,22 +15587,6 @@
         "pick": 0
       },
       "college": "Alabama"
-    },
-    {
-      "name": "Christapher Johnson",
-      "country": "USA",
-      "teams": [
-        "Utah Jazz"
-      ],
-      "seasons": [
-        2016,
-        2016
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      },
-      "college": "Dayton"
     },
     {
       "name": "Christian Anderson",
@@ -16524,7 +16524,10 @@
         "games": 1086,
         "minutes": 37537
       },
-      "wiki_pages": 39
+      "wiki_pages": 39,
+      "aliases": [
+        "The Glide"
+      ]
     },
     {
       "name": "Clyde Lee",
@@ -19838,7 +19841,7 @@
     },
     {
       "name": "Darius Washington",
-      "country": "",
+      "country": "USA",
       "teams": [
         "San Antonio Spurs"
       ],
@@ -19849,15 +19852,11 @@
       "stats": {
         "games": 18,
         "minutes": 146
-      }
-    },
-    {
-      "name": "Darius Washington, Jr.",
-      "country": "USA",
-      "teams": [
-        "San Antonio Spurs"
-      ],
-      "wiki_pages": 11
+      },
+      "wiki_pages": 11,
+      "aliases": [
+        "Darius Washington, Jr."
+      ]
     },
     {
       "name": "Darko Milicic",
@@ -20284,7 +20283,10 @@
         "games": 689,
         "minutes": 17070
       },
-      "wiki_pages": 17
+      "wiki_pages": 17,
+      "aliases": [
+        "Chocolate Thunder"
+      ]
     },
     {
       "name": "Darryl Johnson",
@@ -20547,27 +20549,6 @@
         "Sacramento Kings"
       ],
       "wiki_pages": 8
-    },
-    {
-      "name": "Dave Greenwood",
-      "country": "",
-      "teams": [
-        "Chicago Bulls",
-        "Denver Nuggets",
-        "Detroit Pistons",
-        "San Antonio Spurs"
-      ],
-      "seasons": [
-        1980,
-        1991
-      ],
-      "awards": [
-        "champion"
-      ],
-      "stats": {
-        "games": 823,
-        "minutes": 23370
-      }
     },
     {
       "name": "Dave Henderson",
@@ -20942,9 +20923,19 @@
       ],
       "seasons": [
         1980,
-        1990
+        1991
       ],
-      "wiki_pages": 13
+      "wiki_pages": 13,
+      "awards": [
+        "champion"
+      ],
+      "stats": {
+        "games": 823,
+        "minutes": 23370
+      },
+      "aliases": [
+        "Dave Greenwood"
+      ]
     },
     {
       "name": "David Harrison",
@@ -21061,7 +21052,11 @@
       "stats": {
         "games": 237,
         "minutes": 4583
-      }
+      },
+      "wiki_pages": 16,
+      "aliases": [
+        "David Ugochukwu Nwaba"
+      ]
     },
     {
       "name": "David Pope",
@@ -21214,15 +21209,6 @@
         "minutes": 16305
       },
       "wiki_pages": 23
-    },
-    {
-      "name": "David Ugochukwu Nwaba",
-      "country": "USA",
-      "teams": [
-        "Chicago Bulls",
-        "Cleveland Cavaliers"
-      ],
-      "wiki_pages": 16
     },
     {
       "name": "David Vanterpool",
@@ -21770,7 +21756,10 @@
         "games": 654,
         "minutes": 19509
       },
-      "wiki_pages": 34
+      "wiki_pages": 34,
+      "aliases": [
+        "Boogie"
+      ]
     },
     {
       "name": "DeMarcus Nelson",
@@ -22569,7 +22558,10 @@
         "games": 911,
         "minutes": 28839
       },
-      "wiki_pages": 62
+      "wiki_pages": 62,
+      "aliases": [
+        "The Worm"
+      ]
     },
     {
       "name": "Dennis Schroder",
@@ -24383,18 +24375,11 @@
       "stats": {
         "games": 234,
         "minutes": 1566
-      }
-    },
-    {
-      "name": "Didier Mbenga",
-      "country": "DR Congo",
-      "teams": [
-        "Dallas Mavericks",
-        "Golden State Warriors",
-        "Los Angeles Lakers",
-        "New Orleans Pelicans"
-      ],
-      "wiki_pages": 21
+      },
+      "wiki_pages": 21,
+      "aliases": [
+        "Didier Mbenga"
+      ]
     },
     {
       "name": "Dijon Thompson",
@@ -24668,7 +24653,10 @@
         "games": 864,
         "minutes": 23567
       },
-      "wiki_pages": 36
+      "wiki_pages": 36,
+      "aliases": [
+        "Glenn Rivers"
+      ]
     },
     {
       "name": "Domantas Sabonis",
@@ -26626,7 +26614,11 @@
         "games": 1054,
         "minutes": 35773
       },
-      "wiki_pages": 59
+      "wiki_pages": 59,
+      "aliases": [
+        "D-Wade",
+        "Flash"
+      ]
     },
     {
       "name": "Dylan Cardwell",
@@ -27848,11 +27840,12 @@
       "wiki_pages": 24
     },
     {
-      "name": "Efthimi Rentzias",
-      "country": "",
+      "name": "Efthimis Rentzias",
+      "country": "Greece",
       "teams": [
         "Philadelphia 76ers"
       ],
+      "wiki_pages": 10,
       "seasons": [
         2003,
         2003
@@ -27860,15 +27853,10 @@
       "stats": {
         "games": 35,
         "minutes": 144
-      }
-    },
-    {
-      "name": "Efthimis Rentzias",
-      "country": "Greece",
-      "teams": [
-        "Philadelphia 76ers"
-      ],
-      "wiki_pages": 10
+      },
+      "aliases": [
+        "Efthimi Rentzias"
+      ]
     },
     {
       "name": "Egor Demin",
@@ -28497,31 +28485,10 @@
       "stats": {
         "games": 713,
         "minutes": 15690
-      }
-    },
-    {
-      "name": "Enes Kanter",
-      "country": "Switzerland",
-      "teams": [
-        "Boston Celtics",
-        "New York Knicks",
-        "Oklahoma City Thunder",
-        "Portland Trail Blazers",
-        "Utah Jazz"
-      ],
-      "seasons": [
-        2012,
-        2021
-      ],
-      "draft": {
-        "round": 1,
-        "pick": 3
       },
-      "college": "Stoneridge PS (CA)",
-      "stats": {
-        "games": 641,
-        "minutes": 13932
-      }
+      "aliases": [
+        "Enes Kanter"
+      ]
     },
     {
       "name": "Ennis Whatley",
@@ -30331,7 +30298,14 @@
         1973,
         1978
       ],
-      "wiki_pages": 11
+      "wiki_pages": 11,
+      "stats": {
+        "games": 68,
+        "minutes": 1575
+      },
+      "aliases": [
+        "Freddie Boyd"
+      ]
     },
     {
       "name": "Fred Brown",
@@ -30587,21 +30561,6 @@
         "minutes": 67
       },
       "wiki_pages": 5
-    },
-    {
-      "name": "Freddie Boyd",
-      "country": "",
-      "teams": [
-        "Utah Jazz"
-      ],
-      "seasons": [
-        1977,
-        1978
-      ],
-      "stats": {
-        "games": 68,
-        "minutes": 1575
-      }
     },
     {
       "name": "Freddie Crawford",
@@ -31730,7 +31689,10 @@
         "games": 791,
         "minutes": 26536
       },
-      "wiki_pages": 32
+      "wiki_pages": 32,
+      "aliases": [
+        "The Iceman"
+      ]
     },
     {
       "name": "George Hill",
@@ -31784,7 +31746,7 @@
     },
     {
       "name": "George Johnson",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Denver Nuggets",
         "Indiana Pacers",
@@ -31801,7 +31763,11 @@
         "minutes": 9878
       },
       "born": "1956",
-      "pos": "PF"
+      "pos": "PF",
+      "wiki_pages": 7,
+      "aliases": [
+        "George L. Johnson"
+      ]
     },
     {
       "name": "George Kaftan",
@@ -31848,18 +31814,6 @@
         "minutes": 6
       },
       "wiki_pages": 10
-    },
-    {
-      "name": "George L. Johnson",
-      "country": "USA",
-      "teams": [
-        "Denver Nuggets",
-        "Indiana Pacers",
-        "Milwaukee Bucks",
-        "Philadelphia 76ers",
-        "Washington Wizards"
-      ],
-      "wiki_pages": 7
     },
     {
       "name": "George Lehmann",
@@ -32500,7 +32454,10 @@
         "games": 859,
         "minutes": 28234
       },
-      "wiki_pages": 62
+      "wiki_pages": 62,
+      "aliases": [
+        "Greek Freak"
+      ]
     },
     {
       "name": "Gigi Datome",
@@ -33151,19 +33108,6 @@
       "wiki_pages": 22
     },
     {
-      "name": "Greg \"Cadillac\" Anderson",
-      "country": "USA",
-      "teams": [
-        "Atlanta Hawks",
-        "Brooklyn Nets",
-        "Denver Nuggets",
-        "Detroit Pistons",
-        "Milwaukee Bucks",
-        "San Antonio Spurs"
-      ],
-      "wiki_pages": 14
-    },
-    {
       "name": "Greg Anderson",
       "country": "USA",
       "teams": [
@@ -33186,7 +33130,11 @@
       "stats": {
         "games": 680,
         "minutes": 14040
-      }
+      },
+      "wiki_pages": 14,
+      "aliases": [
+        "Greg \"Cadillac\" Anderson"
+      ]
     },
     {
       "name": "Greg Anthony",
@@ -34028,7 +33976,11 @@
         "games": 1238,
         "minutes": 44222
       },
-      "wiki_pages": 60
+      "wiki_pages": 60,
+      "aliases": [
+        "Akeem Olajuwon",
+        "The Dream"
+      ]
     },
     {
       "name": "Hakim Warrick",
@@ -34706,7 +34658,11 @@
       "stats": {
         "games": 997,
         "minutes": 26695
-      }
+      },
+      "wiki_pages": 43,
+      "aliases": [
+        "Hidayet Turkoglu"
+      ]
     },
     {
       "name": "Henri Drell",
@@ -35014,23 +34970,6 @@
         "minutes": 32034
       },
       "wiki_pages": 20
-    },
-    {
-      "name": "Hidayet Turkoglu",
-      "country": "Turkey",
-      "teams": [
-        "LA Clippers",
-        "Orlando Magic",
-        "Phoenix Suns",
-        "Sacramento Kings",
-        "San Antonio Spurs",
-        "Toronto Raptors"
-      ],
-      "seasons": [
-        2001,
-        2015
-      ],
-      "wiki_pages": 43
     },
     {
       "name": "Hilton Armstrong",
@@ -35645,7 +35584,7 @@
     },
     {
       "name": "Ike Diogu",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Golden State Warriors",
         "Indiana Pacers",
@@ -35661,24 +35600,11 @@
       "stats": {
         "games": 225,
         "minutes": 2795
-      }
-    },
-    {
-      "name": "Ikechukwa Somotochukwa Diogu",
-      "country": "USA",
-      "teams": [
-        "Golden State Warriors",
-        "Indiana Pacers",
-        "LA Clippers",
-        "Portland Trail Blazers",
-        "Sacramento Kings",
-        "San Antonio Spurs"
-      ],
-      "seasons": [
-        2006,
-        2007
-      ],
-      "wiki_pages": 20
+      },
+      "wiki_pages": 20,
+      "aliases": [
+        "Ikechukwa Somotochukwa Diogu"
+      ]
     },
     {
       "name": "Iman Shumpert",
@@ -38203,15 +38129,11 @@
       "stats": {
         "games": 595,
         "minutes": 13320
-      }
-    },
-    {
-      "name": "Jakob Poltl",
-      "country": "Austria",
-      "teams": [
-        "Toronto Raptors"
-      ],
-      "wiki_pages": 25
+      },
+      "wiki_pages": 25,
+      "aliases": [
+        "Jakob Poltl"
+      ]
     },
     {
       "name": "Jaky mur",
@@ -38708,7 +38630,10 @@
         "games": 664,
         "minutes": 22044
       },
-      "wiki_pages": 22
+      "wiki_pages": 22,
+      "aliases": [
+        "Keith Wilkes"
+      ]
     },
     {
       "name": "Jamal Cain",
@@ -39243,7 +39168,10 @@
         "games": 1151,
         "minutes": 40011
       },
-      "wiki_pages": 54
+      "wiki_pages": 54,
+      "aliases": [
+        "The Beard"
+      ]
     },
     {
       "name": "James Hardy",
@@ -39335,22 +39263,6 @@
       "wiki_pages": 8
     },
     {
-      "name": "James McAdoo",
-      "country": "USA",
-      "teams": [
-        "Golden State Warriors"
-      ],
-      "seasons": [
-        2016,
-        2017
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      },
-      "college": "North Carolina"
-    },
-    {
       "name": "James Michael McAdoo",
       "country": "USA",
       "teams": [
@@ -39368,7 +39280,15 @@
         "games": 111,
         "minutes": 874
       },
-      "wiki_pages": 18
+      "wiki_pages": 18,
+      "draft": {
+        "round": 0,
+        "pick": 0
+      },
+      "college": "North Carolina",
+      "aliases": [
+        "James McAdoo"
+      ]
     },
     {
       "name": "James Nunnally",
@@ -42063,7 +41983,18 @@
       "teams": [
         "Atlanta Hawks"
       ],
-      "wiki_pages": 8
+      "wiki_pages": 8,
+      "seasons": [
+        1999,
+        1999
+      ],
+      "stats": {
+        "games": 18,
+        "minutes": 185
+      },
+      "aliases": [
+        "Jeffrey Sheppard"
+      ]
     },
     {
       "name": "Jeff Slade",
@@ -42075,7 +42006,7 @@
     },
     {
       "name": "Jeff Taylor",
-      "country": "",
+      "country": "Sweden",
       "teams": [
         "Charlotte Hornets"
       ],
@@ -42088,7 +42019,11 @@
         "minutes": 2566
       },
       "born": "1989",
-      "pos": "SF"
+      "pos": "SF",
+      "wiki_pages": 22,
+      "aliases": [
+        "Jeffery Taylor"
+      ]
     },
     {
       "name": "Jeff Taylor",
@@ -42241,33 +42176,6 @@
         "minutes": 2072
       },
       "wiki_pages": 19
-    },
-    {
-      "name": "Jeffery Taylor",
-      "country": "Sweden",
-      "teams": [
-        "Charlotte Hornets"
-      ],
-      "seasons": [
-        2013,
-        2015
-      ],
-      "wiki_pages": 22
-    },
-    {
-      "name": "Jeffrey Sheppard",
-      "country": "",
-      "teams": [
-        "Atlanta Hawks"
-      ],
-      "seasons": [
-        1999,
-        1999
-      ],
-      "stats": {
-        "games": 18,
-        "minutes": 185
-      }
     },
     {
       "name": "Jelani McCoy",
@@ -44244,7 +44152,10 @@
         "games": 869,
         "minutes": 28790
       },
-      "wiki_pages": 42
+      "wiki_pages": 42,
+      "aliases": [
+        "Jimmy Buckets"
+      ]
     },
     {
       "name": "Jimmy Carruth",
@@ -48678,7 +48589,11 @@
       "stats": {
         "games": 4,
         "minutes": 28
-      }
+      },
+      "wiki_pages": 8,
+      "aliases": [
+        "Joshua Reaves"
+      ]
     },
     {
       "name": "Josh Richardson",
@@ -48781,14 +48696,6 @@
       }
     },
     {
-      "name": "Joshua Reaves",
-      "country": "USA",
-      "teams": [
-        "Dallas Mavericks"
-      ],
-      "wiki_pages": 8
-    },
-    {
       "name": "Jrue Holiday",
       "country": "USA",
       "teams": [
@@ -48852,30 +48759,6 @@
       "wiki_pages": 14
     },
     {
-      "name": "Juan Hernangomez",
-      "country": "Spain",
-      "teams": [
-        "Boston Celtics",
-        "Denver Nuggets",
-        "Minnesota Timberwolves",
-        "San Antonio Spurs",
-        "Toronto Raptors",
-        "Utah Jazz"
-      ],
-      "seasons": [
-        2017,
-        2023
-      ],
-      "draft": {
-        "round": 1,
-        "pick": 15
-      },
-      "stats": {
-        "games": 339,
-        "minutes": 5269
-      }
-    },
-    {
       "name": "Juan Ignacio Sanchez",
       "country": "Argentina",
       "teams": [
@@ -48917,19 +48800,30 @@
     },
     {
       "name": "Juancho Hernangomez",
-      "country": "",
+      "country": "Spain",
       "teams": [
+        "Boston Celtics",
         "Denver Nuggets",
-        "Minnesota Timberwolves"
+        "Minnesota Timberwolves",
+        "San Antonio Spurs",
+        "Toronto Raptors",
+        "Utah Jazz"
       ],
       "seasons": [
         2017,
-        2020
+        2023
       ],
       "stats": {
-        "games": 205,
-        "minutes": 3310
-      }
+        "games": 339,
+        "minutes": 5269
+      },
+      "draft": {
+        "round": 1,
+        "pick": 15
+      },
+      "aliases": [
+        "Juan Hernangomez"
+      ]
     },
     {
       "name": "Juaquin Hawkins",
@@ -49155,7 +49049,10 @@
         "games": 836,
         "minutes": 28677
       },
-      "wiki_pages": 51
+      "wiki_pages": 51,
+      "aliases": [
+        "Dr. J"
+      ]
     },
     {
       "name": "Julius Hodge",
@@ -50026,7 +49923,10 @@
         "games": 1560,
         "minutes": 57446
       },
-      "wiki_pages": 87
+      "wiki_pages": 87,
+      "aliases": [
+        "Lew Alcindor"
+      ]
     },
     {
       "name": "Kareem Rush",
@@ -50108,7 +50008,10 @@
         "games": 1476,
         "minutes": 54852
       },
-      "wiki_pages": 59
+      "wiki_pages": 59,
+      "aliases": [
+        "The Mailman"
+      ]
     },
     {
       "name": "Karl-Anthony Towns",
@@ -50134,7 +50037,10 @@
         "games": 645,
         "minutes": 21972
       },
-      "wiki_pages": 39
+      "wiki_pages": 39,
+      "aliases": [
+        "KAT"
+      ]
     },
     {
       "name": "Karlo Matkovic",
@@ -52182,7 +52088,10 @@
       "stats": {
         "games": 1123,
         "minutes": 41237
-      }
+      },
+      "aliases": [
+        "KD"
+      ]
     },
     {
       "name": "Kevin Edwards",
@@ -53436,7 +53345,10 @@
         "games": 1346,
         "minutes": 48637
       },
-      "wiki_pages": 114
+      "wiki_pages": 114,
+      "aliases": [
+        "Black Mamba"
+      ]
     },
     {
       "name": "Kobe Bufkin",
@@ -54850,7 +54762,10 @@
         "games": 897,
         "minutes": 34443
       },
-      "wiki_pages": 79
+      "wiki_pages": 79,
+      "aliases": [
+        "Larry Legend"
+      ]
     },
     {
       "name": "Larry Cannon",
@@ -55594,7 +55509,10 @@
         "games": 1562,
         "minutes": 59041
       },
-      "wiki_pages": 112
+      "wiki_pages": 112,
+      "aliases": [
+        "King James"
+      ]
     },
     {
       "name": "LeRon Ellis",
@@ -56816,22 +56734,6 @@
       "wiki_pages": 8
     },
     {
-      "name": "Lou Amundson",
-      "country": "USA",
-      "teams": [
-        "Phoenix Suns"
-      ],
-      "seasons": [
-        2010,
-        2010
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      },
-      "college": "Nevada-Las Vegas"
-    },
-    {
       "name": "Lou Hudson",
       "country": "USA",
       "teams": [
@@ -56973,7 +56875,10 @@
         "games": 428,
         "minutes": 5507
       },
-      "wiki_pages": 22
+      "wiki_pages": 22,
+      "aliases": [
+        "Lou Amundson"
+      ]
     },
     {
       "name": "Louis King",
@@ -57118,23 +57023,10 @@
         "games": 689,
         "minutes": 16038
       },
-      "wiki_pages": 20
-    },
-    {
-      "name": "Luc Richard Mbah a Moute",
-      "country": "Cameroon",
-      "teams": [
-        "LA Clippers"
-      ],
-      "seasons": [
-        2016,
-        2017
-      ],
-      "draft": {
-        "round": 2,
-        "pick": 7
-      },
-      "college": "UCLA"
+      "wiki_pages": 20,
+      "aliases": [
+        "Luc Richard Mbah a Moute"
+      ]
     },
     {
       "name": "Luca Vildoza",
@@ -57264,14 +57156,6 @@
       "wiki_pages": 24
     },
     {
-      "name": "Luis David Montero",
-      "country": "Dominican Republic",
-      "teams": [
-        "Miami Heat"
-      ],
-      "wiki_pages": 8
-    },
-    {
       "name": "Luis Flores",
       "country": "Dominican Republic",
       "teams": [
@@ -57290,9 +57174,10 @@
     },
     {
       "name": "Luis Montero",
-      "country": "",
+      "country": "Dominican Republic",
       "teams": [
         "Detroit Pistons",
+        "Miami Heat",
         "Portland Trail Blazers"
       ],
       "seasons": [
@@ -57302,7 +57187,11 @@
       "stats": {
         "games": 14,
         "minutes": 50
-      }
+      },
+      "wiki_pages": 8,
+      "aliases": [
+        "Luis David Montero"
+      ]
     },
     {
       "name": "Luis Scola",
@@ -57728,14 +57617,6 @@
       "wiki_pages": 7
     },
     {
-      "name": "Lynbert \"Cheese\" Johnson",
-      "country": "USA",
-      "teams": [
-        "Golden State Warriors"
-      ],
-      "wiki_pages": 5
-    },
-    {
       "name": "Lynn Greer",
       "country": "USA",
       "teams": [
@@ -57920,7 +57801,10 @@
         "games": 906,
         "minutes": 33245
       },
-      "wiki_pages": 83
+      "wiki_pages": 83,
+      "aliases": [
+        "Earvin Johnson"
+      ]
     },
     {
       "name": "Mahmoud Abdul-Rauf",
@@ -57946,7 +57830,10 @@
         "games": 586,
         "minutes": 15628
       },
-      "wiki_pages": 27
+      "wiki_pages": 27,
+      "aliases": [
+        "Chris Jackson"
+      ]
     },
     {
       "name": "Major Jones",
@@ -58604,7 +58491,10 @@
         "games": 1057,
         "minutes": 26859
       },
-      "wiki_pages": 47
+      "wiki_pages": 47,
+      "aliases": [
+        "Emanuel Ginobili"
+      ]
     },
     {
       "name": "Manute Bol",
@@ -58762,18 +58652,10 @@
       "wiki_pages": 11
     },
     {
-      "name": "Marcelinho Huertas",
-      "country": "Brazil",
-      "teams": [
-        "Houston Rockets",
-        "Los Angeles Lakers"
-      ],
-      "wiki_pages": 25
-    },
-    {
       "name": "Marcelo Huertas",
       "country": "Brazil",
       "teams": [
+        "Houston Rockets",
         "Los Angeles Lakers"
       ],
       "seasons": [
@@ -58787,7 +58669,11 @@
       "stats": {
         "games": 76,
         "minutes": 1106
-      }
+      },
+      "wiki_pages": 25,
+      "aliases": [
+        "Marcelinho Huertas"
+      ]
     },
     {
       "name": "Marcin Gortat",
@@ -62009,20 +61895,6 @@
       "wiki_pages": 16
     },
     {
-      "name": "Metta Sandiford-Artest",
-      "country": "USA",
-      "teams": [
-        "Indiana Pacers",
-        "Los Angeles Lakers",
-        "New York Knicks"
-      ],
-      "seasons": [
-        2003,
-        2014
-      ],
-      "wiki_pages": 45
-    },
-    {
       "name": "Metta World Peace",
       "country": "USA",
       "teams": [
@@ -62050,7 +61922,13 @@
       "stats": {
         "games": 991,
         "minutes": 31440
-      }
+      },
+      "wiki_pages": 45,
+      "aliases": [
+        "Metta Artest",
+        "Metta Sandiford-Artest",
+        "Ron Artest"
+      ]
     },
     {
       "name": "Meyers Leonard",
@@ -64418,9 +64296,25 @@
       "name": "Mitch Creek",
       "country": "Australia",
       "teams": [
-        "Brooklyn Nets"
+        "Brooklyn Nets",
+        "Minnesota Timberwolves"
       ],
-      "wiki_pages": 11
+      "wiki_pages": 11,
+      "seasons": [
+        2019,
+        2019
+      ],
+      "stats": {
+        "games": 5,
+        "minutes": 48
+      },
+      "draft": {
+        "round": 0,
+        "pick": 0
+      },
+      "aliases": [
+        "Mitchell Creek"
+      ]
     },
     {
       "name": "Mitch Kupchak",
@@ -64516,26 +64410,6 @@
       "wiki_pages": 6
     },
     {
-      "name": "Mitchell Creek",
-      "country": "Australia",
-      "teams": [
-        "Brooklyn Nets",
-        "Minnesota Timberwolves"
-      ],
-      "seasons": [
-        2019,
-        2019
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      },
-      "stats": {
-        "games": 5,
-        "minutes": 48
-      }
-    },
-    {
       "name": "Mitchell Robinson",
       "country": "USA",
       "teams": [
@@ -64618,7 +64492,10 @@
         "games": 364,
         "minutes": 6115
       },
-      "wiki_pages": 17
+      "wiki_pages": 17,
+      "aliases": [
+        "Mohamed Bamba"
+      ]
     },
     {
       "name": "Mo Howard",
@@ -64684,7 +64561,10 @@
         "games": 818,
         "minutes": 23872
       },
-      "wiki_pages": 28
+      "wiki_pages": 28,
+      "aliases": [
+        "Maurice Williams"
+      ]
     },
     {
       "name": "Moe Barr",
@@ -65218,7 +65098,10 @@
         "games": 889,
         "minutes": 25429
       },
-      "wiki_pages": 36
+      "wiki_pages": 36,
+      "aliases": [
+        "Tyrone Bogues"
+      ]
     },
     {
       "name": "Mustafa Shakur",
@@ -65560,13 +65443,27 @@
       "country": "USA",
       "teams": [
         "Boston Celtics",
+        "Brooklyn Nets",
+        "Milwaukee Bucks",
         "Sacramento Kings"
       ],
       "seasons": [
         1971,
-        1983
+        1984
       ],
-      "wiki_pages": 31
+      "wiki_pages": 31,
+      "awards": [
+        "all_nba",
+        "champion"
+      ],
+      "stats": {
+        "games": 443,
+        "minutes": 13639
+      },
+      "aliases": [
+        "Tiny",
+        "Tiny Archibald"
+      ]
     },
     {
       "name": "Nate Barnett",
@@ -66171,22 +66068,10 @@
         "games": 965,
         "minutes": 25237
       },
-      "wiki_pages": 34
-    },
-    {
-      "name": "Nene Hilario",
-      "country": "Brazil",
-      "teams": [
-        "Denver Nuggets"
-      ],
-      "seasons": [
-        2010,
-        2010
-      ],
-      "draft": {
-        "round": 0,
-        "pick": 0
-      }
+      "wiki_pages": 34,
+      "aliases": [
+        "Nene Hilario"
+      ]
     },
     {
       "name": "Nerlens Noel",
@@ -66721,7 +66606,10 @@
         "games": 745,
         "minutes": 23649
       },
-      "wiki_pages": 52
+      "wiki_pages": 52,
+      "aliases": [
+        "The Joker"
+      ]
     },
     {
       "name": "Nikola Jovic",
@@ -67448,16 +67336,6 @@
       "wiki_pages": 19
     },
     {
-      "name": "Oliver Mack",
-      "country": "USA",
-      "teams": [
-        "Chicago Bulls",
-        "Dallas Mavericks",
-        "Los Angeles Lakers"
-      ],
-      "wiki_pages": 6
-    },
-    {
       "name": "Oliver Miller",
       "country": "USA",
       "teams": [
@@ -67572,7 +67450,7 @@
     },
     {
       "name": "Ollie Mack",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Chicago Bulls",
         "Dallas Mavericks",
@@ -67585,7 +67463,11 @@
       "stats": {
         "games": 128,
         "minutes": 2513
-      }
+      },
+      "wiki_pages": 6,
+      "aliases": [
+        "Oliver Mack"
+      ]
     },
     {
       "name": "Ollie Taylor",
@@ -67699,14 +67581,6 @@
       "wiki_pages": 34
     },
     {
-      "name": "Omer Faruk Yurtseven",
-      "country": "Uzbekistan",
-      "teams": [
-        "Miami Heat"
-      ],
-      "wiki_pages": 17
-    },
-    {
       "name": "Omer Yurtseven",
       "country": "Uzbekistan",
       "teams": [
@@ -67725,7 +67599,11 @@
       "stats": {
         "games": 113,
         "minutes": 1334
-      }
+      },
+      "wiki_pages": 17,
+      "aliases": [
+        "Omer Faruk Yurtseven"
+      ]
     },
     {
       "name": "Omri Casspi",
@@ -68823,7 +68701,7 @@
     },
     {
       "name": "Patrick Ewing",
-      "country": "",
+      "country": "USA",
       "teams": [
         "New Orleans Pelicans"
       ],
@@ -68836,7 +68714,11 @@
         "minutes": 19
       },
       "born": "1984",
-      "pos": "SF"
+      "pos": "SF",
+      "wiki_pages": 11,
+      "aliases": [
+        "Patrick Ewing, Jr."
+      ]
     },
     {
       "name": "Patrick Ewing",
@@ -68866,14 +68748,6 @@
       "wiki_pages": 44,
       "born": "1962-08-05",
       "pos": "C"
-    },
-    {
-      "name": "Patrick Ewing, Jr.",
-      "country": "USA",
-      "teams": [
-        "New Orleans Pelicans"
-      ],
-      "wiki_pages": 11
     },
     {
       "name": "Patrick McCaw",
@@ -69623,7 +69497,10 @@
         "games": 804,
         "minutes": 26966
       },
-      "wiki_pages": 43
+      "wiki_pages": 43,
+      "aliases": [
+        "Predrag Stojakovic"
+      ]
     },
     {
       "name": "Pelle Larsson",
@@ -69644,23 +69521,6 @@
         "games": 55,
         "minutes": 782
       }
-    },
-    {
-      "name": "Penny Hardaway",
-      "country": "USA",
-      "teams": [
-        "Orlando Magic"
-      ],
-      "seasons": [
-        1996,
-        1996
-      ],
-      "draft": {
-        "round": 1,
-        "pick": 3
-      },
-      "college": "Memphis",
-      "wiki_pages": 34
     },
     {
       "name": "Pepe Sanchez",
@@ -69854,7 +69714,10 @@
         "games": 215,
         "minutes": 7870
       },
-      "wiki_pages": 39
+      "wiki_pages": 39,
+      "aliases": [
+        "Pistol Pete"
+      ]
     },
     {
       "name": "Pete Myers",
@@ -69907,7 +69770,7 @@
     },
     {
       "name": "Pete Verhoeven",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Golden State Warriors",
         "Indiana Pacers",
@@ -69921,7 +69784,11 @@
       "stats": {
         "games": 282,
         "minutes": 3220
-      }
+      },
+      "wiki_pages": 5,
+      "aliases": [
+        "Peter Verhoeven"
+      ]
     },
     {
       "name": "Pete Williams",
@@ -69984,17 +69851,6 @@
         "minutes": 992
       },
       "wiki_pages": 4
-    },
-    {
-      "name": "Peter Verhoeven",
-      "country": "USA",
-      "teams": [
-        "Golden State Warriors",
-        "Indiana Pacers",
-        "Portland Trail Blazers",
-        "Sacramento Kings"
-      ],
-      "wiki_pages": 5
     },
     {
       "name": "Petey Rosenberg",
@@ -73893,7 +73749,7 @@
     },
     {
       "name": "Rob Rose",
-      "country": "",
+      "country": "USA",
       "teams": [
         "LA Clippers"
       ],
@@ -73904,7 +73760,11 @@
       "stats": {
         "games": 2,
         "minutes": 3
-      }
+      },
+      "wiki_pages": 6,
+      "aliases": [
+        "Robert Rose"
+      ]
     },
     {
       "name": "Rob Williams",
@@ -74141,14 +74001,6 @@
         "minutes": 25109
       },
       "wiki_pages": 8
-    },
-    {
-      "name": "Robert Rose",
-      "country": "USA",
-      "teams": [
-        "LA Clippers"
-      ],
-      "wiki_pages": 6
     },
     {
       "name": "Robert Sacre",
@@ -74843,21 +74695,11 @@
       "stats": {
         "games": 518,
         "minutes": 9147
-      }
-    },
-    {
-      "name": "Roger Mason, Jr.",
-      "country": "USA",
-      "teams": [
-        "Chicago Bulls",
-        "Miami Heat",
-        "New Orleans Pelicans",
-        "New York Knicks",
-        "San Antonio Spurs",
-        "Toronto Raptors",
-        "Washington Wizards"
-      ],
-      "wiki_pages": 16
+      },
+      "wiki_pages": 16,
+      "aliases": [
+        "Roger Mason, Jr."
+      ]
     },
     {
       "name": "Roger Phegley",
@@ -75013,22 +74855,6 @@
         "minutes": 15112
       },
       "wiki_pages": 10
-    },
-    {
-      "name": "Ron Artest",
-      "country": "USA",
-      "teams": [
-        "Los Angeles Lakers"
-      ],
-      "seasons": [
-        2010,
-        2010
-      ],
-      "draft": {
-        "round": 1,
-        "pick": 16
-      },
-      "college": "St. John's"
     },
     {
       "name": "Ron Baker",
@@ -75201,7 +75027,7 @@
     },
     {
       "name": "Ron Grandison",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Atlanta Hawks",
         "Boston Celtics",
@@ -75216,7 +75042,16 @@
       "stats": {
         "games": 105,
         "minutes": 872
-      }
+      },
+      "wiki_pages": 5,
+      "draft": {
+        "round": 5,
+        "pick": 8
+      },
+      "college": "New Orleans",
+      "aliases": [
+        "Ronnie Grandison"
+      ]
     },
     {
       "name": "Ron Harper",
@@ -75535,23 +75370,6 @@
         "minutes": 11539
       },
       "wiki_pages": 19
-    },
-    {
-      "name": "Ronnie Grandison",
-      "country": "USA",
-      "teams": [
-        "Miami Heat"
-      ],
-      "seasons": [
-        1996,
-        1996
-      ],
-      "draft": {
-        "round": 5,
-        "pick": 8
-      },
-      "college": "New Orleans",
-      "wiki_pages": 5
     },
     {
       "name": "Ronnie Lester",
@@ -77318,22 +77136,14 @@
         "games": 363,
         "minutes": 8123
       },
-      "wiki_pages": 37
-    },
-    {
-      "name": "Sarunas Marciulonis",
-      "country": "Lithuania",
-      "teams": [
-        "Sacramento Kings"
-      ],
-      "seasons": [
-        1996,
-        1996
-      ],
+      "wiki_pages": 37,
       "draft": {
         "round": 6,
         "pick": 13
-      }
+      },
+      "aliases": [
+        "Sarunas Marciulonis"
+      ]
     },
     {
       "name": "Sasha Danilovic",
@@ -78931,7 +78741,10 @@
         "games": 1207,
         "minutes": 41918
       },
-      "wiki_pages": 85
+      "wiki_pages": 85,
+      "aliases": [
+        "Shaq"
+      ]
     },
     {
       "name": "Shareef Abdur-Rahim",
@@ -80518,7 +80331,10 @@
         "games": 1026,
         "minutes": 34975
       },
-      "wiki_pages": 77
+      "wiki_pages": 77,
+      "aliases": [
+        "Steph Curry"
+      ]
     },
     {
       "name": "Stephen Graham",
@@ -83761,27 +83577,6 @@
       }
     },
     {
-      "name": "Tiny Archibald",
-      "country": "",
-      "teams": [
-        "Boston Celtics",
-        "Brooklyn Nets",
-        "Milwaukee Bucks"
-      ],
-      "seasons": [
-        1977,
-        1984
-      ],
-      "awards": [
-        "all_nba",
-        "champion"
-      ],
-      "stats": {
-        "games": 443,
-        "minutes": 13639
-      }
-    },
-    {
       "name": "Tiny Ron Taylor",
       "country": "USA",
       "teams": [
@@ -84186,7 +83981,7 @@
     },
     {
       "name": "Tom Burleson",
-      "country": "",
+      "country": "USA",
       "teams": [
         "Atlanta Hawks",
         "Oklahoma City Thunder",
@@ -84199,7 +83994,11 @@
       "stats": {
         "games": 282,
         "minutes": 4890
-      }
+      },
+      "wiki_pages": 14,
+      "aliases": [
+        "Tommy Burleson"
+      ]
     },
     {
       "name": "Tom Chambers",
@@ -84651,15 +84450,6 @@
         "minutes": 809
       },
       "wiki_pages": 6
-    },
-    {
-      "name": "Tommy Burleson",
-      "country": "USA",
-      "teams": [
-        "Atlanta Hawks",
-        "Sacramento Kings"
-      ],
-      "wiki_pages": 14
     },
     {
       "name": "Tommy Byrnes",
@@ -85487,7 +85277,10 @@
       "stats": {
         "games": 938,
         "minutes": 30658
-      }
+      },
+      "aliases": [
+        "T-Mac"
+      ]
     },
     {
       "name": "Tracy Moore",
@@ -85870,7 +85663,10 @@
         "games": 1156,
         "minutes": 24028
       },
-      "wiki_pages": 13
+      "wiki_pages": 13,
+      "aliases": [
+        "Wayne Rollins"
+      ]
     },
     {
       "name": "Tremaine Fowlkes",
@@ -88157,7 +87953,10 @@
         "games": 1541,
         "minutes": 46367
       },
-      "wiki_pages": 44
+      "wiki_pages": 44,
+      "aliases": [
+        "Vinsanity"
+      ]
     },
     {
       "name": "Vince Taylor",
@@ -88674,9 +88473,12 @@
         "games": 155,
         "minutes": 1767
       },
-      "wiki_pages": 5,
+      "wiki_pages": 6,
       "born": "1960-10-26",
-      "pos": "PG"
+      "pos": "PG",
+      "aliases": [
+        "Walker Russell, Jr."
+      ]
     },
     {
       "name": "Walker Russell",
@@ -88694,14 +88496,6 @@
       },
       "born": "1982",
       "pos": "PG"
-    },
-    {
-      "name": "Walker Russell, Jr.",
-      "country": "USA",
-      "teams": [
-        "Detroit Pistons"
-      ],
-      "wiki_pages": 6
     },
     {
       "name": "Wallace Bryant",
@@ -88845,7 +88639,10 @@
         "games": 142,
         "minutes": 4657
       },
-      "wiki_pages": 34
+      "wiki_pages": 34,
+      "aliases": [
+        "Clyde Frazier"
+      ]
     },
     {
       "name": "Walt Gilmore",
@@ -89035,6 +88832,7 @@
       "name": "Walter Lemon Jr.",
       "country": "USA",
       "teams": [
+        "Boston Celtics",
         "Chicago Bulls",
         "New Orleans Pelicans"
       ],
@@ -89050,15 +88848,11 @@
       "stats": {
         "games": 11,
         "minutes": 202
-      }
-    },
-    {
-      "name": "Walter Lemon, Jr.",
-      "country": "USA",
-      "teams": [
-        "Boston Celtics"
-      ],
-      "wiki_pages": 9
+      },
+      "wiki_pages": 9,
+      "aliases": [
+        "Walter Lemon, Jr."
+      ]
     },
     {
       "name": "Walter McCarty",
@@ -90536,7 +90330,10 @@
         "games": 815,
         "minutes": 25772
       },
-      "wiki_pages": 15
+      "wiki_pages": 15,
+      "aliases": [
+        "Lloyd Free"
+      ]
     },
     {
       "name": "Worthy Patterson",
@@ -91243,7 +91040,10 @@
         "games": 1116,
         "minutes": 34616
       },
-      "wiki_pages": 28
+      "wiki_pages": 28,
+      "aliases": [
+        "Z-Bo"
+      ]
     },
     {
       "name": "Zaid Abdul-Aziz",

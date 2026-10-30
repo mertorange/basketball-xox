@@ -86,7 +86,7 @@ export function renderBoard(game, league, fresh = null) {
   $('panel-x').classList.toggle('active-turn', !over && turn === 'X');
   $('panel-o').classList.toggle('active-turn', !over && turn === 'O');
   const corner = $('corner-mark');
-  corner.textContent = over ? '' : turn;
+  corner.innerHTML = over ? '' : `<span class="turn-letter">${turn}</span>`;
   corner.className = `corner turn-${turn.toLowerCase()}`;
 
   // Plays between each team's answers, and the winning arrow. Measuring the boxes lays the

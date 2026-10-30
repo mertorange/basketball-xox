@@ -32,12 +32,11 @@ NBA_AWARD_POINTS = {
 }
 EUROLEAGUE_AWARD_POINTS = {"champion": 2.0, "final_four": 1.0}
 
-# Well known, but the EuroLeague stats (2000-01 on, under one spelling) don't show it
+# Well known, but the EuroLeague stats (2000-01 on) don't show it
 EUROLEAGUE_FAMOUS = {
     "Sarunas Jasikevicius", "Zeljko Rebraca",                # mostly before 2000-01, no stats kept
     "Alphonso Ford",                                         # top scorer whose prime was the 1990s
     "Andrei Kirilenko",                                      # one season, the 2012 MVP one
-    "Theo Papaloukas", "Edy Tavares", "Gigi Datome",         # second spellings of famous players
 }
 
 

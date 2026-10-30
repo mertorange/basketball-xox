@@ -11,17 +11,27 @@ const loaded = {};    // league -> entries, once they are here
 // Letters that don't split into a base letter and an accent
 const PLAIN = { 'ı': 'i', 'İ': 'i', 'ø': 'o', 'Ø': 'o', 'đ': 'd', 'Đ': 'd', 'ł': 'l', 'Ł': 'l', 'ß': 'ss', 'æ': 'ae' };
 
-/** Lower case without accents: 'Dončić' and 'Doncic' match the same name (the data is ASCII). */
+/**
+ * Lower case without accents or punctuation, hyphens as spaces: 'Dončić' finds Doncic,
+ * 'cj mccollum' finds C.J. McCollum and 'shaquille oneal' finds Shaquille O'Neal.
+ */
 export function fold(text) {
   return text.replace(/[ıİøØđĐłŁßæ]/g, ch => PLAIN[ch])
-    .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[.,'’"]/g, '').replace(/-/g, ' ');
 }
 
 export function loadNames(league) {
   if (!loading[league]) {
     loading[league] = api.playerNames(league)
-      .then(({ names, twins }) => {
-        loaded[league] = names.map(name => ({ name, folded: fold(name), twins: twins[name] || null }));
+      .then(({ names, twins, aliases }) => {
+        const entries = names.map(name => ({ name, folded: fold(name), twins: twins[name] || null }));
+        // Other names (Ron Artest, Shaq) lead to the same player
+        for (const [alias, { name, key }] of Object.entries(aliases)) {
+          const all = twins[name] || [];
+          entries.push({ name, folded: fold(alias), aka: alias, twins: key ? all.filter(t => t.key === key) : null });
+        }
+        loaded[league] = entries.sort((a, b) => a.folded.localeCompare(b.folded));
         return loaded[league];
       })
       .catch(err => {
@@ -39,8 +49,8 @@ export function namesFor(league) {
 
 /**
  * Suggestions for what has been typed: names starting with it first, then names containing
- * it, alphabetically (the list comes sorted). Each same-named player is a suggestion of its
- * own: {name, key, born, pos}; other players have no key.
+ * it, alphabetically. Each same-named player is a suggestion of its own: {name, key, born,
+ * pos}; other players have no key. A match on another name adds aka: what was matched.
  */
 export function matchNames(entries, query, limit = 8) {
   const q = fold(query.trim());
@@ -53,9 +63,17 @@ export function matchNames(entries, query, limit = 8) {
     else if (at > 0) inside.push(entry);
   }
   const options = [];
+  const seen = new Set();
+  const add = (option) => {
+    const id = `${option.name}|${option.key}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    options.push(option);
+  };
   for (const entry of starts.concat(inside)) {
-    if (entry.twins) entry.twins.forEach(t => options.push({ name: entry.name, key: t.key, born: t.born, pos: t.pos }));
-    else options.push({ name: entry.name, key: null });
+    const aka = entry.aka || null;
+    if (entry.twins) entry.twins.forEach(t => add({ name: entry.name, key: t.key, born: t.born, pos: t.pos, aka }));
+    else add({ name: entry.name, key: null, aka });
     if (options.length >= limit) break;
   }
   return options.slice(0, limit);
