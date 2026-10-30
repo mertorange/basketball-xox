@@ -18,6 +18,7 @@ from .protocol import AnswerDraw, Focus, Join, Leave, OfferDraw, Pick, Ready, Re
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ"  # no I, L or O: easy to read out loud
 CODE_LENGTH = 4
 DISCONNECT_GRACE = 120.0  # seconds a player may be gone mid-game before forfeiting
+LOBBY_GRACE = 30.0        # seconds a seat is held before tip-off, for a reload or a dropped link
 IDLE_TTL = 30 * 60        # empty rooms nobody touched for this long are removed
 MAX_SPECTATORS = 20
 
@@ -61,9 +62,11 @@ class Room:
 
 class RoomManager:
     def __init__(self, games: GameManager, disconnect_grace: float = DISCONNECT_GRACE,
-                 idle_ttl: float = IDLE_TTL, game_max_age: Optional[float] = None):
+                 idle_ttl: float = IDLE_TTL, game_max_age: Optional[float] = None,
+                 lobby_grace: float = LOBBY_GRACE):
         self.games = games
         self.disconnect_grace = disconnect_grace
+        self.lobby_grace = lobby_grace
         self.idle_ttl = idle_ttl
         self.game_max_age = game_max_age
         self.rooms: Dict[str, Room] = {}
@@ -169,6 +172,10 @@ class RoomManager:
             if game and game.status == "in_progress":
                 room.forfeit_tasks[seat.mark] = asyncio.get_running_loop().create_task(
                     self._forfeit_later(room, seat.mark))
+            elif not room.game_id:
+                seat.ready = False  # the other player's Ready must not tip off against nobody
+                room.forfeit_tasks[seat.mark] = asyncio.get_running_loop().create_task(
+                    self._free_seat_later(room, seat))
             await self._event(room, "disconnected", seat.mark, f"{seat.name} lost connection")
             await self._broadcast(room)
 
@@ -379,6 +386,13 @@ class RoomManager:
             await self._finish(room, other_player(mark))
             await self._event(room, "forfeit", mark, f"{seat.name} did not come back")
             await self._broadcast(room)
+
+    async def _free_seat_later(self, room: Room, seat: Seat) -> None:
+        await asyncio.sleep(self.lobby_grace)
+        async with room.lock:
+            room.forfeit_tasks.pop(seat.mark, None)
+            if room.seats.get(seat.mark) is seat and not seat.connected and not room.game_id:
+                await self._on_leave(room, seat)
 
     # ---------- Messages ----------
 

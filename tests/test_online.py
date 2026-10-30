@@ -17,7 +17,7 @@ COLS = [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago 
 
 @pytest.fixture
 def online(manager):
-    rooms = RoomManager(manager, disconnect_grace=0.3)
+    rooms = RoomManager(manager, disconnect_grace=0.3, lobby_grace=0.3)
     app = FastAPI()
     app.include_router(build_online_router(rooms, RateLimiter({})))
     with TestClient(app) as client, ExitStack() as sockets:
@@ -48,6 +48,8 @@ def drop(ws):
     """Closes a connection the way a closed tab would."""
     if not getattr(ws, "dropped", False):
         ws.dropped = True
+        ws.close()
+        time.sleep(0.1)  # leaving the session cancels the server side: let it see the close first
         ws.__exit__(None, None, None)
 
 
@@ -156,6 +158,48 @@ def test_reconnect_keeps_the_seat(online):
     assert snap["seats"]["X"]["name"] == "Ann" and snap["phase"] == "playing"
     time.sleep(0.5)  # longer than the grace period: the cancelled forfeit must not fire
     assert manager.get_game(room.game_id).status == "in_progress"
+
+
+def test_seat_is_freed_when_its_player_leaves_before_tip_off(online):
+    client, rooms, _ = online
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    guest, _ = join(client, code, "Bea")
+    full, refused = join(client, code, "Cem")
+    assert refused["reason"] == "This room is full."
+    drop(guest)
+    recv_until(host, lambda m: m.get("kind") == "left")
+    assert room_msg(host)["phase"] == "waiting"
+    _, welcome = join(client, code, "Cem")
+    assert welcome["seat"] == "O"
+    assert room_msg(host, lambda m: "O" in m["seats"])["seats"]["O"]["name"] == "Cem"
+
+
+def test_a_quick_return_keeps_the_lobby_seat(online):
+    client, rooms, _ = online
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    guest, welcome = join(client, code, "Bea")
+    drop(guest)
+    _, back = join(client, code, "Bea", token=welcome["token"])
+    assert back["seat"] == "O"
+    time.sleep(0.5)  # past the grace: the cancelled timer must not free the seat
+    assert rooms.get(code).seats["O"].name == "Bea" and rooms.get(code).seats["O"].connected
+
+
+def test_ready_cannot_tip_off_against_a_player_who_dropped(online):
+    client, rooms, _ = online
+    rooms.lobby_grace = 30  # the seat must still be there when the host presses Ready
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    guest, _ = join(client, code, "Bea")
+    guest.send_json({"type": "ready"})
+    room_msg(host, lambda m: m["seats"].get("O", {}).get("ready"))
+    drop(guest)
+    room_msg(host, lambda m: m["seats"].get("O") and not m["seats"]["O"]["connected"])
+    host.send_json({"type": "ready"})
+    msg = room_msg(host, lambda m: m["seats"]["X"]["ready"])
+    assert msg["phase"] == "lobby" and msg["game"] is None
 
 
 def test_disconnect_forfeits_after_grace(online):

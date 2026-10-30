@@ -168,7 +168,7 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [x] Auto draw when neither team can complete a line.
 - [x] Fair turns in Custom grids, so Birth country no longer vanishes or crowds out other categories.
 - [x] Every decade gets a turn at Hard.
-- [ ] Free a lobby seat when its player leaves before tip-off.
+- [x] Free a lobby seat when its player leaves before tip-off.
 - [ ] A much bigger pool of boxes, so grids can't be memorised: team-and-decade headers ("Lakers, 2010s"), teammates ("Played with Kobe"), draft classes.
 
 ### If ads go in
