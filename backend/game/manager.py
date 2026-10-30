@@ -8,7 +8,7 @@ from ..catalog.criteria import CriteriaIndex, CriterionSpec
 from ..catalog.players import notability
 from ..models import Cell, Criterion, GameState, MoveResult
 from .board import BoardGenerator
-from .rules import is_full, other_player, winning_line
+from .rules import is_full, line_left, other_player, winning_line
 
 LEAGUE_LABELS = {"nba": "NBA", "euroleague": "EUROLEAGUE"}
 
@@ -141,10 +141,20 @@ class GameManager:
             game.status, game.winner = "finished", "DRAW"
             return MoveResult(success=True, message="Match Draw! All 9 boxes completed.", game_over=True,
                               winner="DRAW", cell=cell, current_player=game.current_player)
+        if not line_left(marks, lambda r, c: self._has_unused_answer(game, index, r, c)):
+            game.status, game.winner = "finished", "DRAW"
+            return MoveResult(success=True, message="Draw! Neither team can complete a line.", game_over=True,
+                              winner="DRAW", cell=cell, current_player=game.current_player)
 
         game.current_player = other_player(mover)
         return MoveResult(success=True, message=f"{player['name']} confirmed for {row_spec.label} & {col_spec.label}.",
                           current_player=game.current_player, cell=cell)
+
+    @staticmethod
+    def _has_unused_answer(game: GameState, index: CriteriaIndex, row: int, col: int) -> bool:
+        r, c = game.row_criteria[row], game.col_criteria[col]
+        answers = index.answers(index.get(r.type.value, r.value), index.get(c.type.value, c.value))
+        return any(player["key"] not in game.used_keys for player in answers)
 
     def answers(self, game_id: str, limit: int = 40) -> Optional[list]:
         """Every box's valid answers, best known first, once the game is over (None before)."""

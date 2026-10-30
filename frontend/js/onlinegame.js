@@ -2,7 +2,7 @@
 // forwards the local player's actions.
 
 import { renderActions } from './actions.js';
-import { lockBoard, renderBoard, showFocus } from './board.js';
+import { isFull, lockBoard, renderBoard, showFocus } from './board.js';
 import { RoomConnection } from './online.js';
 import { renderScores, setStatus } from './scoresheet.js';
 import { sfx } from './sound.js';
@@ -221,7 +221,7 @@ export class OnlineGame {
 
     if (this.spectator) waiting = null;
     const what = seriesWinner && bestOf > 1 ? 'the series' : 'the grid';
-    const verdict = winner === 'DRAW' ? 'Draw.' : winner === room.you ? `You win ${what}.` : `${this.nameOf(winner)} wins ${what}.`;
+    const verdict = winner === 'DRAW' ? (isFull(room.game) ? 'Draw.' : 'Draw. Neither team can complete a line.') : winner === room.you ? `You win ${what}.` : `${this.nameOf(winner)} wins ${what}.`;
     setStatus(this.note ? `${this.note.text} ${verdict}` : verdict, winner === room.you ? 'success' : '');
 
     const details = {
@@ -234,6 +234,7 @@ export class OnlineGame {
       waiting,
       canRematch: Boolean(them) && !(me && me.rematch),
       byForfeit: winner !== 'DRAW' && !room.game.winning_line,
+      boardFull: isFull(room.game),
       spectating: this.spectator
     };
     if (this.finalShownFor === room.game.game_id) {

@@ -1,6 +1,6 @@
 """Tic-tac-toe rules on the 3x3 grid."""
 
-from typing import List, Optional, Sequence
+from typing import Callable, List, Optional, Sequence
 
 LINES = (
     [[0, 0], [0, 1], [0, 2]], [[1, 0], [1, 1], [1, 2]], [[2, 0], [2, 1], [2, 2]],
@@ -24,3 +24,11 @@ def winning_line(marks: Sequence[Sequence[Optional[str]]]) -> Optional[List[List
 
 def is_full(marks: Sequence[Sequence[Optional[str]]]) -> bool:
     return all(mark for row in marks for mark in row)
+
+
+def line_left(marks: Sequence[Sequence[Optional[str]]], can_claim: Callable[[int, int], bool]) -> bool:
+    """Whether either team can still complete a line. A box counts for a team when it is
+    theirs, or open with `can_claim(row, col)` true (it still has an unused answer)."""
+    def possible(mark: str, line) -> bool:
+        return all(marks[r][c] == mark or (marks[r][c] is None and can_claim(r, c)) for r, c in line)
+    return any(possible(mark, line) for mark in ("X", "O") for line in LINES)

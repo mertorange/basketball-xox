@@ -51,6 +51,11 @@ function markSvg(mark, fresh, rand) {
   return `<svg class="mark mark-${mark.toLowerCase()}${fresh ? ' fresh' : ''}" viewBox="0 0 100 100" aria-hidden="true">${paths}</svg>`;
 }
 
+/** True when all nine boxes are claimed. */
+export function isFull(game) {
+  return game.grid.flat().every(cell => cell.claimed_by);
+}
+
 /**
  * @param {object} game     the server's GameState
  * @param {string} league   'nba' | 'euroleague'

@@ -1,6 +1,6 @@
 from backend.catalog.criteria import AWARD, TEAM
 from backend.game.manager import to_criterion
-from backend.game.rules import is_full, other_player, winning_line
+from backend.game.rules import is_full, line_left, other_player, winning_line
 
 
 def test_winning_line_and_draw():
@@ -122,3 +122,63 @@ def test_another_name_is_the_same_player(nba_catalog, nba_index):
     assert placed.success and placed.cell.player_name == "Alpha One"  # the box shows the real name
     again = manager.make_move(game.game_id, 0, 1, "Alpha One")        # O can't use the same player
     assert not again.success and "already picked" in again.message
+
+
+def test_line_left_needs_a_line_a_team_can_still_finish():
+    x, o, _ = "X", "O", None
+    blocked = [[x, o, x], [x, o, o], [o, x, _]]
+    assert not line_left(blocked, lambda r, c: True)
+    # One line open for O through (2, 1), as long as that box can still be claimed
+    one_left = [[x, o, x], [x, o, o], [o, _, _]]
+    assert line_left(one_left, lambda r, c: True)
+    assert not line_left(one_left, lambda r, c: (r, c) != (2, 1))
+    assert line_left([[_] * 3] * 3, lambda r, c: True)
+    assert not line_left([[_] * 3] * 3, lambda r, c: False)
+
+
+def fill(game, pattern):
+    for r, row in enumerate(pattern):
+        for c, mark in enumerate(row):
+            if mark:
+                game.grid[r][c].claimed_by = mark
+                game.grid[r][c].player_name = f"Filler {r}{c}"
+
+
+def test_grid_ends_in_a_draw_when_no_line_is_left(manager, nba_index):
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, nba_index,
+              [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
+              [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")])
+    x, o, _ = "X", "O", None
+    fill(game, [[x, o, x], [x, o, o], [o, _, _]])
+    game.current_player = "X"
+    result = manager.make_move(game.game_id, 2, 1, "Delta Four")  # X blocks O's last line
+    assert result.success and result.game_over and result.winner == "DRAW"
+    assert "complete a line" in result.message
+    assert game.status == "finished" and game.winner == "DRAW" and game.grid[2][2].claimed_by is None
+
+
+def test_play_goes_on_while_one_team_has_a_line(manager, nba_index):
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, nba_index,
+              [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
+              [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")])
+    x, o, _ = "X", "O", None
+    fill(game, [[x, o, x], [_, o, o], [o, _, _]])
+    game.current_player = "X"
+    result = manager.make_move(game.game_id, 2, 2, "Gamma Three")  # O still has (2, 1)
+    assert result.success and not result.game_over and game.status == "in_progress"
+
+
+def test_using_a_box_last_answer_can_end_the_grid(manager, nba_index):
+    game = manager.create_game("nba", grid_style="classic")
+    set_board(game, nba_index,
+              [(TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls"), (TEAM, "Miami Heat")],
+              [(TEAM, "Los Angeles Lakers"), (TEAM, "Boston Celtics"), (TEAM, "Chicago Bulls")])
+    x, o, _ = "X", "O", None
+    fill(game, [[x, o, x], [x, o, o], [o, _, _]])  # O's only line runs through (2, 1)
+    game.current_player = "X"
+    # Delta Four is the only Heat x Celtics answer; playing him elsewhere kills that box
+    result = manager.make_move(game.game_id, 2, 2, "Delta Four")
+    assert result.game_over and result.winner == "DRAW"
+    assert game.grid[2][1].claimed_by is None

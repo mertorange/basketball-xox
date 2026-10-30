@@ -365,3 +365,21 @@ def test_online_pick_carries_the_chosen_player(online):
     a.send_json({"type": "pick", "row": 0, "col": 0, "name": "Twin Name", "key": heat_twin["key"]})
     event = recv_until(b, lambda m: m["type"] == "event" and m["kind"] in ("move", "turnover"))
     assert event["kind"] == "turnover" and "did not play for Boston Celtics" in event["text"]
+
+
+def test_online_grid_ends_in_a_draw_when_no_line_is_left(online):
+    client, rooms, manager = online
+    code, room, a, b, _, _ = start_match(client, rooms, manager)
+    game = manager.get_game(room.game_id)
+    index = manager.indexes["nba"]
+    game.row_criteria = [to_criterion(index.get(TEAM, t)) for t in ("Boston Celtics", "Chicago Bulls", "Miami Heat")]
+    game.col_criteria = [to_criterion(index.get(TEAM, t)) for t in ("Los Angeles Lakers", "Boston Celtics", "Chicago Bulls")]
+    for r, row in enumerate(("XOX", "XOO", "O..")):
+        for c, mark in enumerate(row):
+            if mark != ".":
+                game.grid[r][c].claimed_by = mark
+                game.grid[r][c].player_name = f"Filler {r}{c}"
+    a.send_json({"type": "pick", "row": 2, "col": 1, "name": "Delta Four"})
+    final = room_msg(b, lambda m: m["phase"] == "final")
+    assert final["game"]["winner"] == "DRAW" and final["scores"] == {"X": 0, "O": 0}
+    assert final["game"]["grid"][2][2]["claimed_by"] is None

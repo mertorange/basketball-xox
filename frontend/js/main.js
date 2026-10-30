@@ -435,10 +435,11 @@ function seriesLine(names, scores, bestOf) {
  * winner: 'X' | 'O' | 'DRAW' for the grid; winnerName: shown in the title ('You' for the local
  * player online); seriesWinner: the mark that has taken the series, or null while it goes on;
  * waiting: online status line for the next grid; canRematch: false once the local player is ready;
- * byForfeit: the other side left; spectating: no next-grid button at all
+ * byForfeit: the other side left; boardFull: a draw with all nine boxes filled, rather than one
+ * called early because neither team could complete a line; spectating: no next-grid button at all
  */
 function showFinal({ winner, winnerName, names, scores, bestOf, seriesWinner = null, waiting = null,
-                     canRematch = true, byForfeit = false, spectating = false }) {
+                     canRematch = true, byForfeit = false, boardFull = true, spectating = false }) {
   renderActions({ visible: false });
   const stamp = $('go-stamp');
   stamp.className = 'stamp';
@@ -453,7 +454,8 @@ function showFinal({ winner, winnerName, names, scores, bestOf, seriesWinner = n
     stamp.textContent = 'Draw';
     stamp.classList.add('draw');
     $('go-title').textContent = 'No winner';
-    $('go-desc').textContent = `All nine boxes filled without a line.${tally}`;
+    const how = boardFull ? 'All nine boxes filled without a line.' : 'Neither team can complete a line.';
+    $('go-desc').textContent = `${how}${tally}`;
   }
   $('go-waiting').textContent = waiting || '';
   const next = $('btn-rematch-match');

@@ -12,7 +12,7 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 3. **Drafting a Player:** To claim a box, you must pick a basketball player who matches **BOTH** the row and column criteria. Country criteria use the player's country of birth (Kyrie Irving counts for Australia).
 4. **Fouls / Turnovers:** If you make an invalid guess or name a player that was already picked, you commit a turnover and forfeit your turn to your opponent!
 5. **No Re-use:** Each basketball player can only be picked once per match.
-6. **Winning:** The first player to get 3 claimed boxes in a row (horizontally, vertically, or diagonally) wins the game! If all 9 boxes are claimed without 3-in-a-row, it's a draw.
+6. **Winning:** The first player to get 3 claimed boxes in a row (horizontally, vertically, or diagonally) wins the game! If all 9 boxes are claimed without 3-in-a-row, it's a draw. The game also calls a draw as soon as neither team can complete a line: every line holds both marks, or needs an open box with no unused answer left.
 7. **Series:** a match is best of 1, 3, 5 or 7 grids (chosen in the menu). The first to win more than half takes it; drawn grids don't count.
 8. **Skip & draw:** *Skip turn* passes the ball to your opponent. *Draw this grid* writes the current grid off and deals a new one, with the series score unchanged: online the other player must accept the offer (Yes / No under the button); on one device, press it twice to confirm.
 

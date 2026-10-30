@@ -2,7 +2,7 @@
 
 import { renderActions } from './actions.js';
 import { api } from './api.js';
-import { renderBoard } from './board.js';
+import { isFull, renderBoard } from './board.js';
 import { $ } from './dom.js';
 import { renderScores, setStatus } from './scoresheet.js';
 import { sfx } from './sound.js';
@@ -215,7 +215,7 @@ export class HotSeatGame {
       const what = this.seriesWinner() && this.settings.bestOf > 1 ? 'the series' : 'the grid';
       setStatus(`${this.playerName(winner)} wins ${what}.`, 'success');
     } else {
-      setStatus('Draw. All nine boxes filled.');
+      setStatus(isFull(this.game) ? 'Draw. All nine boxes filled.' : 'Draw. Neither team can complete a line.');
     }
     setTimeout(() => this.ui.showFinal({
       winner,
@@ -223,7 +223,8 @@ export class HotSeatGame {
       names: this.names,
       scores: this.scores,
       bestOf: this.settings.bestOf,
-      seriesWinner: this.seriesWinner()
+      seriesWinner: this.seriesWinner(),
+      boardFull: isFull(this.game)
     }), 900);
   }
 
