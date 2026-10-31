@@ -9,7 +9,7 @@ from backend.app import create_app
 from backend.catalog.criteria import build_index
 from backend.catalog.players import DATA_DIR, PlayerCatalog
 from backend.ratelimit import RateLimiter
-from refresh_data import prune, switch_current, validate
+from refresh_data import IMAGE_MARKER, prune, publish_image_data, switch_current, validate
 
 from conftest import SAMPLE_NBA
 
@@ -73,8 +73,9 @@ def test_release_switch_and_prune(tmp_path):
     if not can_symlink(tmp_path):
         pytest.skip("this account can't create symlinks")
     releases = tmp_path / "releases"
-    for stamp in ["20260101-000000", "20260102-000000", "20260103-000000"]:
+    for age, stamp in enumerate(["20260101-000000", "20260102-000000", "20260103-000000"]):
         (releases / stamp).mkdir(parents=True)
+        os.utime(releases / stamp, (1_000_000 + age, 1_000_000 + age))  # prune goes by age
     switch_current(tmp_path, releases / "20260102-000000")
     assert os.readlink(tmp_path / "current") == "releases/20260102-000000"
     switch_current(tmp_path, releases / "20260103-000000")
@@ -152,3 +153,47 @@ def test_room_messages_are_limited(limited_client):
             socket.send_json({"type": "nonsense"})
             reasons.append(socket.receive_json()["reason"])
     assert reasons == ["Malformed message."] * 2 + ["Too many messages, slow down a little."]
+
+
+def image_folder(path, nba_players):
+    path.mkdir(parents=True, exist_ok=True)
+    (path / "nba_data.json").write_text(json.dumps({**SAMPLE_NBA, "players": nba_players}))
+    (path / "euroleague_data.json").write_text(json.dumps({"teams": [], "players": []}))
+    return path
+
+
+def test_image_data_is_published_once_per_image(tmp_path):
+    """First start and image updates publish the image's data; restarts keep refreshed data."""
+    if not can_symlink(tmp_path):
+        pytest.skip("this account can't create symlinks")
+    root = tmp_path / "data"
+    image_v1 = image_folder(tmp_path / "image-v1", SAMPLE_NBA["players"][:3])
+
+    first = publish_image_data(root, image_v1)
+    assert first and first.startswith("image-")
+    assert (root / "current").resolve() == (root / "releases" / first).resolve()
+    assert json.loads((root / "current" / "nba_data.json").read_text())["players"] == SAMPLE_NBA["players"][:3]
+
+    # A data refresh publishes a dated release; restarting the same image must keep it
+    refreshed = image_folder(root / "releases" / "20261101-050000", SAMPLE_NBA["players"])
+    switch_current(root, refreshed)
+    assert publish_image_data(root, image_v1) is None
+    assert (root / "current").resolve() == refreshed.resolve()
+
+    # A new image (new code, maybe new fields) brings new data: that goes live
+    image_v2 = image_folder(tmp_path / "image-v2", SAMPLE_NBA["players"][:4])
+    second = publish_image_data(root, image_v2)
+    assert second and second != first
+    assert (root / "current").resolve() == (root / "releases" / second).resolve()
+    assert (root / IMAGE_MARKER).read_text() == second.removeprefix("image-")
+
+
+def test_volumes_from_before_the_marker_take_the_image_data(tmp_path):
+    """A volume seeded by the old entrypoint has no marker: the image's data replaces it."""
+    if not can_symlink(tmp_path):
+        pytest.skip("this account can't create symlinks")
+    root = tmp_path / "data"
+    old = image_folder(root / "releases" / "seed", SAMPLE_NBA["players"][:2])
+    switch_current(root, old)
+    published = publish_image_data(root, image_folder(tmp_path / "image", SAMPLE_NBA["players"]))
+    assert published and (root / "current").resolve() == (root / "releases" / published).resolve()

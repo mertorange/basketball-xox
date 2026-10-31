@@ -39,7 +39,7 @@ Two players compete head-to-head on a 3x3 board. Each box is determined by the i
 cp .env.example .env        # set HOOPGRID_ADMIN_TOKEN at least
 docker compose up -d --build
 ```
-The game runs at **http://localhost:8000** (`HOOPGRID_PORT` changes the port). The image build runs the test suite and stops if a test fails. On first start the datasets baked into the image are copied to the `hoopgrid-data` volume.
+The game runs at **http://localhost:8000** (`HOOPGRID_PORT` changes the port). The image build runs the test suite and stops if a test fails. The datasets baked into the image go live on the `hoopgrid-data` volume on first start and again after every image update (new code may expect new fields); restarting the same image keeps whatever the last refresh published.
 
 Refresh the player data (new signings, trades) without stopping the game:
 ```bash
@@ -121,7 +121,7 @@ basketball-xox/
 ├── DATA.md                   # Data sources, pipeline, rules, gaps, licensing
 ├── Dockerfile                # Test stage + app image (non-root, one worker, healthcheck)
 ├── docker-compose.yml        # app, builder (data refresh), caddy (server profile)
-├── docker/                   # entrypoint (seeds the data volume), Caddyfile
+├── docker/                   # entrypoint (publishes the image's data when new), Caddyfile
 ├── .env.example
 ├── requirements.txt
 └── run.py                    # One-click launcher

@@ -1,14 +1,9 @@
 #!/bin/sh
-# First start on an empty data volume: publish the datasets baked into the image as the
-# first release, so the server has data before any refresh has run.
+# Publish the datasets baked into the image when the data volume has not seen them yet:
+# on the first start, and after an image update (its code may expect new fields). Restarting
+# the same image keeps whatever the last data refresh published.
 set -e
 
-DATA_ROOT="${HOOPGRID_DATA_ROOT:-/data}"
-if [ ! -e "$DATA_ROOT/current" ]; then
-    mkdir -p "$DATA_ROOT/releases/seed"
-    cp /app/backend/data/*.json "$DATA_ROOT/releases/seed/"
-    ln -s releases/seed "$DATA_ROOT/current"
-    echo "Data volume seeded from the image."
-fi
+python /app/backend/scripts/refresh_data.py --publish-image-data /app/backend/data
 
 exec "$@"

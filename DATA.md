@@ -171,6 +171,8 @@ düşmüşse, bir NBA takımında 100'den (EuroLeague'de 15'ten) az oyuncu kalm�
 adımda yeni sürüme çevrilir, son 7 sürüm saklanır ve sunucuya `/admin/reload` ile haber verilir;
 açık odalar ve süren oyunlar başladıkları veriyle devam eder.
 
+İmajın içindeki veri de aynı yoldan yayına girer: konteyner açılırken `refresh_data.py --publish-image-data` imajdaki dosyaların parmak izini volume'daki `.image-data` ile karşılaştırır. İlk açılışta ve imaj güncellendiğinde (yeni kod yeni alanlar bekleyebilir) imajın verisi `releases/image-<parmak izi>/` olarak yayınlanır; aynı imaj yeniden başladığında son yenilemenin verisi korunur. Sürümler oluşturulma zamanına göre temizlenir.
+
 Elle çalıştırırken önce başka bir klasöre üretip karşılaştırmak önerilir. Oyuncular isme, aynı adlılar takımlarına
 göre sıralanır; böylece kaynaklar değişmediyse iki çıktı arasındaki fark gerçek veri farkıdır.
 

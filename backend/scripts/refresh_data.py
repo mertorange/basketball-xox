@@ -8,13 +8,23 @@ deleted and the live data stays as it was.
     <data root>/releases/20261029-050000/{nba,euroleague}_data.json
     <data root>/current -> releases/20261029-050000
 
+The datasets shipped inside the Docker image are published the same way when a container
+starts (see docker/entrypoint.sh), but only when the volume has not seen them yet: on the
+first start and after an image update, whose code may expect new fields. Restarting the
+same image keeps whatever the last refresh published.
+
+    <data root>/releases/image-1a2b3c4d5e6f/   datasets from the image, by content
+    <data root>/.image-data                    fingerprint of the last image data published
+
 Usage:
     python backend/scripts/refresh_data.py [--data-root /data] [--keep 7] [--app-url URL] [--no-reload]
+    python backend/scripts/refresh_data.py --publish-image-data /app/backend/data
 
 The admin token for the reload call comes from HOOPGRID_ADMIN_TOKEN.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -114,10 +124,47 @@ def switch_current(root: Path, release: Path) -> None:
 
 
 def prune(releases: Path, keep: int, live: Path) -> None:
-    old = sorted((p for p in releases.iterdir() if p.is_dir()), reverse=True)[keep:]
+    """Keeps the `keep` newest releases (and the live one). Newest by creation time, not by
+    name: image releases ('image-…') would otherwise always sort after dated ones."""
+    old = sorted((p for p in releases.iterdir() if p.is_dir()), key=lambda p: p.stat().st_mtime,
+                 reverse=True)[keep:]
     for path in old:
         if path.resolve() != live.resolve():
             shutil.rmtree(path)
+
+
+IMAGE_MARKER = ".image-data"
+
+
+def data_fingerprint(folder: Path) -> str:
+    """Short hash of a folder's dataset files, names and contents."""
+    digest = hashlib.sha256()
+    for path in sorted(folder.glob("*.json")):
+        digest.update(path.name.encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()[:12]
+
+
+def publish_image_data(root: Path, image_data: Path, keep: int = 7):
+    """Publishes the image's datasets unless this volume already took these exact files.
+
+    Returns the release name when it switched `current`, None when nothing changed.
+    """
+    fingerprint = data_fingerprint(image_data)
+    marker = root / IMAGE_MARKER
+    seen = marker.read_text().strip() if marker.exists() else None
+    if (root / "current").exists() and seen == fingerprint:
+        return None
+    release = root / "releases" / f"image-{fingerprint}"
+    if not release.exists():
+        release.mkdir(parents=True)
+        for path in image_data.glob("*.json"):
+            shutil.copy2(path, release / path.name)
+        os.utime(release)  # newest for prune(), whatever the copied files' dates
+    switch_current(root, release)
+    marker.write_text(fingerprint)
+    prune(root / "releases", keep, release)
+    return release.name
 
 
 def reload_server(app_url: str) -> None:
@@ -139,9 +186,17 @@ def main():
     parser.add_argument("--keep", type=int, default=7, help="releases to keep for rollback")
     parser.add_argument("--app-url", default=os.environ.get("HOOPGRID_APP_URL", "http://app:8000"))
     parser.add_argument("--no-reload", action="store_true")
+    parser.add_argument("--publish-image-data", type=Path, metavar="DIR",
+                        help="publish the datasets in DIR if the volume has not seen them, then stop")
     args = parser.parse_args()
 
     root = args.data_root
+    if args.publish_image_data:
+        published = publish_image_data(root, args.publish_image_data, args.keep)
+        print(f"Live data is now {published} (from the image)." if published
+              else "Image data already published; keeping the live data.")
+        return 0
+
     releases = root / "releases"
     current = root / "current"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
