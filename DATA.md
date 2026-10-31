@@ -339,3 +339,19 @@ eski sürümle uyum için korunmuştur ("EA7 Emporio Armani Milan", "Virtus Sega
 | Koçlar, hakemler | `.../people?personType=E`, `/referees` | koç kriteri |
 | Sayı sayı akış, şut koordinatları | `https://live.euroleague.net/api/PlaybyPlay`, `/Points` (2007–) | — |
 | EuroCup | aynı uç noktalar, yarışma kodu `U` (2002–) | ikinci mod |
+
+## Birlikte oynama kutuları ("Played with")
+
+Veri kümeleri her oyuncu için `stints` alanını tutar: `{takım: [sezonlar]}`. İki oyuncu aynı sezonda aynı
+takımda göründüyse takım arkadaşı sayılır; sezon ortası takas nedeniyle aslında hiç birlikte oynamamış olsalar
+bile bu kural onları kabul eder. Sezon bilgisi olmayan oyuncular (eski dönemlerin bir kısmı) bu kutulara cevap
+olamaz.
+
+Kutulardaki oyuncular elle seçilir (`criteria.py` içindeki `PLAYED_WITH`). Karışık ızgaraların yaklaşık sekizde
+birinde görünür (`TEAMMATE_SHARE`).
+
+## EuroLeague ülke turları
+
+İtalya veya Türkiye gibi ülkelerin oyuncuları kulüplere dağıldığı için sıradan bir ızgarada üç kutuyu birden dolduramaz.
+Bu yüzden EuroLeague ızgaralarının yaklaşık beşte biri, en az 50 oyuncusu olan bir ülkenin etrafında kurulur
+(`country_share`, `BIG_COUNTRY_PLAYERS`). O ülkenin kutularında en az 3 cevap ve 1 tanınmış oyuncu yeterlidir.

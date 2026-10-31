@@ -120,6 +120,16 @@ def test_a_right_answer_marks_the_box_and_passes_the_turn(open_page, server):
     expect(page.locator("#panel-o")).to_have_class(re.compile("active-turn"))
 
 
+def test_a_custom_grid_can_ask_for_teammates(open_page):
+    page = open_page()
+    page.locator("input[name=style][value=custom]").check(force=True)
+    for box in page.locator("input[name=category]").all():
+        box.uncheck(force=True)
+    page.locator("input[name=category][value=teammate]").check(force=True)
+    tip_off(page)
+    expect(page.locator(".crit", has_text="Played with").first).to_be_visible()
+
+
 def test_a_typo_cannot_be_submitted(open_page):
     page = open_page()
     tip_off(page)
@@ -162,6 +172,38 @@ def test_three_in_a_row_wins_and_shows_the_answers(open_page, server):
     expect(page.locator("#win-stroke line, #win-stroke path")).to_have_count(1)
     page.click("#btn-show-answers")
     expect(page.locator("#answers-grid")).not_to_be_empty()
+
+
+def test_pressing_draw_over_and_over_never_locks_the_game(open_page):
+    page = open_page()
+    tip_off(page)
+    for _ in range(10):
+        page.evaluate("() => { const draw = document.getElementById('btn-draw'); for (let i = 0; i < 6; i++) draw.click(); }")
+        page.wait_for_timeout(30)
+    expect(page.locator("#btn-draw")).to_be_enabled()
+    expect(page.locator("#game-status-text")).to_contain_text("Grid drawn by agreement")
+    current = page.locator(".team.active-turn")
+    expect(current).to_have_count(1)
+    panel = current.get_attribute("id")
+    page.click("#btn-skip")
+    expect(page.locator(f"#{panel}")).not_to_have_class(re.compile("active-turn"))
+
+
+def test_a_refused_new_grid_keeps_the_one_on_screen(open_page):
+    page = open_page()
+    tip_off(page)
+    header = page.inner_text("#ch-0")
+    page.route("**/api/new-game", lambda route: route.fulfill(status=429, json={"detail": "slow down"}))
+    page.click("#btn-draw")
+    page.click("#btn-draw")
+    expect(page.locator("#game-status-text")).to_contain_text("Too many new grids")
+    assert page.inner_text("#ch-0") == header
+    page.click("#btn-skip")  # the grid is still alive on the server
+    expect(page.locator("#panel-o")).to_have_class(re.compile("active-turn"))
+    page.unroute("**/api/new-game")
+    page.click("#btn-draw")
+    page.click("#btn-draw")
+    expect(page.locator("#game-status-text")).to_contain_text("Grid drawn by agreement")
 
 
 def test_online_room_from_invite_link_to_tip_off(open_page):

@@ -1,10 +1,11 @@
 import random
+from collections import Counter
 
 import pytest
 
-from backend.catalog.criteria import TEAM, build_index
+from backend.catalog.criteria import COUNTRY, TEAM, build_index
 from backend.catalog.players import PlayerCatalog
-from backend.game.board import DIFFICULTIES, LEVELS, BoardGenerator, Level
+from backend.game.board import COUNTRY_BOX_KNOWN, DIFFICULTIES, LEVELS, BoardGenerator, Level
 
 
 def test_generated_board_is_solvable(nba_index):
@@ -56,11 +57,16 @@ def test_real_data_difficulty_levels(league):
         for _ in range(15):
             rows, cols = generator.generate("mixed", difficulty)
             counts = [k for _, k in generator.box_counts(rows, cols)]
-            assert min(counts) >= level.min_known, (difficulty, counts)
+            pairs = [(r, c) for r in rows for c in cols]
+            # A big country's turn sets its own boxes a lower floor and may pass the cap
+            country_turn = {s for s in rows + cols if s in generator.big_countries} if level.country_share else set()
+            plain = [k for k, (r, c) in zip(counts, pairs) if not country_turn & {r, c}]
+            assert min(counts) >= COUNTRY_BOX_KNOWN, (difficulty, counts)
+            assert min(plain) >= level.min_known, (difficulty, counts)
             if level.max_known is not None:
                 # At most loosened once; a decade's own boxes may go further at Hard
-                pairs = [(r, c) for r in rows for c in cols]
-                others = [k for k, (r, c) in zip(counts, pairs) if not (level.decade_turns and "era" in (r.kind, c.kind))]
+                others = [k for k, (r, c) in zip(counts, pairs)
+                          if not (level.decade_turns and "era" in (r.kind, c.kind)) and not country_turn & {r, c}]
                 assert max(others) <= 2 * level.max_known, (difficulty, counts)
             known += counts
         medians[difficulty] = sorted(known)[len(known) // 2]
@@ -150,3 +156,18 @@ def test_real_data_every_decade_gets_a_turn_at_hard(league):
         rows, cols = generator.generate("custom", "hard", ["era"])
         seen |= {s.key for s in rows + cols if s.kind == "era"}
     assert seen == {s.key for s in index.of_kind("era")}
+
+
+def test_euroleague_grids_give_big_countries_a_turn():
+    catalog = PlayerCatalog.load("euroleague")
+    if not catalog.players:
+        pytest.skip("dataset not built")
+    index = build_index(catalog)
+    generator = BoardGenerator(index, rng=random.Random(5))
+    seen = Counter()
+    for difficulty in ("easy", "medium", "hard"):
+        for _ in range(40):
+            rows, cols = generator.generate("mixed", difficulty)
+            assert generator.is_solvable(rows, cols, 1)
+            seen.update(spec.value for spec in rows + cols if spec.kind == COUNTRY)
+    assert seen["Italy"] and seen["Turkey"]

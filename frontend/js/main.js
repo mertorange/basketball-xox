@@ -43,6 +43,7 @@ window.addEventListener('DOMContentLoaded', setupHandlers);
 // What the category boxes mean, for the lobby line
 const CATEGORY_LABELS = {
   country: 'birth country', college: 'college', draft: 'draft slot', award: 'awards', career: 'career marks',
+  teammate: 'teammates',
   era: 'eras'
 };
 

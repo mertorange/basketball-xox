@@ -7,15 +7,22 @@ needs a builder function here.
 
 from collections import Counter
 from dataclasses import dataclass
-from typing import Callable, Dict, FrozenSet, List, Tuple
+from typing import Callable, Dict, FrozenSet, List, Set, Tuple
 
 from .players import Player, PlayerCatalog
 
 # Kinds in the order the board prefers them; "team" anchors every grid
 TEAM, COUNTRY, COLLEGE, DRAFT, AWARD, CAREER, ERA = "team", "country", "college", "draft", "award", "career", "era"
+TEAMMATE = "teammate"
 
 MIN_COUNTRY_PLAYERS = 3
 MIN_COLLEGE_PLAYERS = 20
+
+# "Played with" boxes, picked by hand. Spelled as in the datasets.
+PLAYED_WITH = {
+    "nba": ["Jeff Green", "Dennis Schroder", "Trevor Ariza", "Seth Curry", "Jamal Crawford", "LeBron James"],
+    "euroleague": ["Daniel Hackett", "Will Clyburn", "Nikola Mirotic"],
+}
 
 
 @dataclass(frozen=True)
@@ -137,6 +144,21 @@ def era_criteria(decades: List[int]) -> List[CriterionSpec]:
             for d in decades]
 
 
+def _stints(p: Player) -> Set[Tuple[str, int]]:
+    return {(team, season) for team, seasons in (p.get("stints") or {}).items() for season in seasons}
+
+
+def teammate_criteria(catalog: PlayerCatalog) -> List[CriterionSpec]:
+    """Teammates shared a team in a season. A trade mid-season counts as overlap, and the
+    player named is never an answer to their own box."""
+    def rule(p: Player, mate: Player, seasons: Set[Tuple[str, int]]) -> bool:
+        return p["key"] != mate["key"] and bool(seasons & _stints(p))
+    return [CriterionSpec(TEAMMATE, mate["key"], f"Played with {mate['name']}",
+                          f"never played with {mate['name']}",
+                          lambda p, m=mate, s=_stints(mate): rule(p, m, s))
+            for mate in catalog.players if mate["name"] in PLAYED_WITH[catalog.league]]
+
+
 # ---------- Per league ----------
 
 NBA_AWARDS = [
@@ -165,8 +187,10 @@ def build_index(catalog: PlayerCatalog) -> CriteriaIndex:
         specs += college_criteria(catalog) + draft_criteria() + award_criteria(NBA_AWARDS)
         specs += [franchise_count_criterion(5, "franchises")]
         specs += era_criteria([1960, 1970, 1980, 1990, 2000, 2010, 2020])
+        specs += teammate_criteria(catalog)
     else:
         specs += award_criteria(EUROLEAGUE_AWARDS) + career_stat_criteria(EUROLEAGUE_CAREER)
         specs += [franchise_count_criterion(3, "EuroLeague clubs")]
         specs += era_criteria([2000, 2010, 2020])
+        specs += teammate_criteria(catalog)
     return CriteriaIndex(catalog, specs)

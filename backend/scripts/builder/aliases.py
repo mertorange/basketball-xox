@@ -114,6 +114,11 @@ def _merge_into(keep, other):
     spans = [p["seasons"] for p in (keep, other) if p.get("seasons")]
     if spans:
         keep["seasons"] = [min(s[0] for s in spans), max(s[1] for s in spans)]
+    stints = dict(keep.get("stints") or {})
+    for team, seasons in (other.get("stints") or {}).items():
+        stints[team] = sorted(set(stints.get(team, ())) | set(seasons))
+    if stints:
+        keep["stints"] = dict(sorted(stints.items()))
     awards = set(keep.get("awards", ())) | set(other.get("awards", ()))
     if awards:
         keep["awards"] = sorted(awards)

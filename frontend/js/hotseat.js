@@ -173,19 +173,23 @@ export class HotSeatGame {
     this.renderActions();
   }
 
+  // The new grid comes first: if it can't be dealt, the one on screen is still in play
   async drawGrid() {
     this.pending = true;
+    this.renderActions();
     this.ui.clock.stop();
+    const drawn = this.game.game_id;
     try {
-      await api.endInDraw(this.game.game_id);
-      this.pending = false;
       await this.start('Grid drawn by agreement. New grid: ');
+      api.endInDraw(drawn).catch(console.error);
     } catch (err) {
       console.error(err);
-      setStatus('Could not reach the game server.', 'error');
+      setStatus(err.status === 429 ? 'Too many new grids. Wait a moment and try again.'
+        : 'Could not reach the game server.', 'error');
       this.ui.clock.start(this.settings.clock);
     } finally {
       this.pending = false;
+      this.renderActions();
     }
   }
 

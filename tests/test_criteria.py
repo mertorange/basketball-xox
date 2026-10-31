@@ -1,4 +1,8 @@
-from backend.catalog.criteria import AWARD, COLLEGE, COUNTRY, DRAFT, ERA, TEAM
+import pytest
+
+from backend.catalog import criteria
+from backend.catalog.criteria import AWARD, COLLEGE, COUNTRY, DRAFT, ERA, TEAM, TEAMMATE, build_index
+from backend.catalog.players import PlayerCatalog
 
 
 def names(players):
@@ -58,3 +62,32 @@ def test_exclusive_kinds(nba_index):
     assert nba_index.get(DRAFT, "undrafted").exclusive
     assert not nba_index.get(DRAFT, "top_10").exclusive
     assert not nba_index.get(TEAM, "Miami Heat").exclusive
+
+
+def teammates_index(monkeypatch):
+    monkeypatch.setitem(criteria.PLAYED_WITH, "nba", ["Road Warrior"])
+    teams = ["Boston Celtics", "Chicago Bulls", "Miami Heat"]
+    return build_index(PlayerCatalog("nba", {"league": "NBA", "teams": teams, "countries": ["USA"], "players": [
+        {"name": "Road Warrior", "country": "USA", "teams": teams,
+         "stints": {"Boston Celtics": [2001], "Chicago Bulls": [2002, 2003], "Miami Heat": [2004]}},
+        {"name": "Same Year", "country": "USA", "teams": ["Chicago Bulls"], "stints": {"Chicago Bulls": [2003]}},
+        {"name": "Other Year", "country": "USA", "teams": ["Chicago Bulls"], "stints": {"Chicago Bulls": [2010]}},
+    ]}))
+
+
+def test_played_with_needs_the_same_team_in_the_same_season(monkeypatch):
+    index = teammates_index(monkeypatch)
+    mate = index.of_kind(TEAMMATE)[0]
+    assert mate.label == "Played with Road Warrior"
+    assert mate.miss == "never played with Road Warrior"
+    bulls = index.get(TEAM, "Chicago Bulls")
+    assert names(index.answers(mate, bulls)) == ["Same Year"]  # not "Other Year", not the player named
+
+
+def test_every_played_with_pick_is_in_the_data_once():
+    for league, picks in criteria.PLAYED_WITH.items():
+        catalog = PlayerCatalog.load(league)
+        if not catalog.players:
+            pytest.skip("dataset not built")
+        labels = [spec.label for spec in build_index(catalog).of_kind(TEAMMATE)]
+        assert sorted(labels) == sorted(f"Played with {name}" for name in picks)

@@ -169,7 +169,8 @@ Full details (pipeline, merge rules, known gaps, licensing) are in [DATA.md](DAT
 - [x] Fair turns in Custom grids, so Birth country no longer vanishes or crowds out other categories.
 - [x] Every decade gets a turn at Hard.
 - [x] Free a lobby seat when its player leaves before tip-off.
-- [ ] A much bigger pool of boxes, so grids can't be memorised: team-and-decade headers ("Lakers, 2010s"), teammates ("Played with Kobe"), draft classes.
+- [x] "Played with" boxes for a hand-picked list of players (Jeff Green, Trevor Ariza, Daniel Hackett...).
+- [ ] A much bigger pool of boxes, so grids can't be memorised: team-and-decade headers ("Lakers, 2010s"), draft classes.
 
 ### If ads go in
 - [ ] Privacy policy page and a cookie consent banner (GDPR / KVKK).

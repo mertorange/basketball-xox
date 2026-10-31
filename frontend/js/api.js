@@ -2,7 +2,10 @@
 
 async function request(path, options = {}) {
   const res = await fetch(path, options);
-  if (!res.ok) throw new Error(`${options.method || 'GET'} ${path} failed with ${res.status}`);
+  if (!res.ok) {
+    throw Object.assign(new Error(`${options.method || 'GET'} ${path} failed with ${res.status}`),
+      { status: res.status });
+  }
   return res.json();
 }
 

@@ -53,7 +53,7 @@ COUNTRY_ALIASES = {
 
 NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv"}
 
-def http_get(url, retries=3):
+def http_get(url, retries=4):
     req = urllib.request.Request(url, headers={"User-Agent": "basketball-xox-builder"})
     for attempt in range(retries):
         try:
@@ -63,6 +63,9 @@ def http_get(url, retries=3):
             if e.code == 404:
                 return None
             err = e
+            if e.code == 429:  # the source asked us to slow down: a short retry only annoys it
+                time.sleep(int(e.headers.get("Retry-After") or 0) or 30 * (attempt + 1))
+                continue
         except (urllib.error.URLError, TimeoutError) as e:
             err = e
         time.sleep(2 * (attempt + 1))
@@ -145,6 +148,14 @@ def load_previous_players(filename):
         return []
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f).get("players", [])
+
+def season_lists(stints):
+    """(team, season) pairs as {team: [seasons]}, the shape the game reads for teammates."""
+    teams = defaultdict(set)
+    for team, season in stints:
+        teams[team].add(season)
+    return {team: sorted(seasons) for team, seasons in sorted(teams.items())}
+
 
 def mark_shared_names(players):
     """Players who share a name get `born` and `pos` so the game can tell them apart.

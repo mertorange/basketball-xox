@@ -5,7 +5,7 @@ ends, so the API's E2024 (2024-25) is season 2025.
 """
 
 from .aliases import apply_aliases
-from .common import clean_player_name, load_previous_players, name_key, write_dataset
+from .common import clean_player_name, load_previous_players, name_key, season_lists, write_dataset
 from .euroleague_clubs import STANDARD_EUROLEAGUE_CLUBS, normalize_euroleague_club
 from .sources.euroleague_api import (fetch_career_stats, fetch_champions, fetch_euroleague_people,
                                      fetch_final_four_clubs)
@@ -33,6 +33,7 @@ def build_euroleague_database(out_dir):
         seasons = [season for season, _ in entry["seasons"]]
         if seasons:
             player["seasons"] = [min(seasons) + 1, max(seasons) + 1]
+            player["stints"] = season_lists((club, season + 1) for season, club in entry["seasons"])
         awards = set()
         for season, club in entry["seasons"]:
             if champions.get(season) == club:

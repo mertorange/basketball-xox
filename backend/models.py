@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 Mark = Literal["X", "O"]
 GridStyle = Literal["classic", "mixed", "custom"]
 # Kinds a custom grid can mix with teams; which ones exist depends on the league
-Category = Literal["country", "college", "draft", "award", "career", "era"]
+Category = Literal["country", "college", "draft", "award", "career", "era", "teammate"]
 # How many well-known players fit each box (see backend/game/board.py)
 Difficulty = Literal["easy", "medium", "hard"]
 # Grids in a series; the first to win more than half takes it (drawn grids don't count)
@@ -23,6 +23,7 @@ class CriterionType(str, Enum):
     AWARD = "award"
     CAREER = "career"
     ERA = "era"
+    TEAMMATE = "teammate"
 
 
 class Criterion(BaseModel):
@@ -47,7 +48,7 @@ class NewGameRequest(BaseModel):
     difficulty: Difficulty = "medium"
     shot_clock: Optional[int] = Field(60, ge=0, le=600)
     grid_style: GridStyle = "mixed"
-    categories: Optional[List[Category]] = Field(None, max_length=6)  # custom grids only
+    categories: Optional[List[Category]] = Field(None, max_length=7)  # custom grids only
     first_player: Mark = "X"
 
 
@@ -56,7 +57,7 @@ class CreateRoomRequest(BaseModel):
     difficulty: Difficulty = "medium"
     shot_clock: int = Field(30, ge=0, le=600)
     grid_style: GridStyle = "mixed"
-    categories: Optional[List[Category]] = Field(None, max_length=6)  # custom grids only
+    categories: Optional[List[Category]] = Field(None, max_length=7)  # custom grids only
     best_of: BestOf = 3
 
 

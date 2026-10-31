@@ -12,7 +12,7 @@ from typing import Optional
 
 from .aliases import apply_aliases
 from .common import (base_name_key, canonical_country, clean_player_name, load_previous_players, name_key,
-                     resolve_birthplace, write_dataset)
+                     resolve_birthplace, season_lists, write_dataset)
 from .nba_teams import STANDARD_NBA_TEAMS
 from .sources.bbgm import champions_by_season, league_award_winners, load_snapshots
 from .sources.espn import load_espn_rosters
@@ -527,6 +527,7 @@ def export_player(person):
     seasons = [season for season, _, _ in person.stints]
     if seasons:
         player["seasons"] = [min(seasons), max(seasons)]
+        player["stints"] = season_lists((team, season) for season, team, _ in person.stints)
     if person.awards:
         player["awards"] = sorted(person.awards)
     if person.drafts:

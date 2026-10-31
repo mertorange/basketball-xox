@@ -11,7 +11,8 @@ const TYPE_LABELS = {
   draft: 'Draft',
   award: 'Award',
   career: 'Career',
-  era: 'Era'
+  era: 'Era',
+  teammate: 'Teammate'
 };
 
 function typeLabel(type, league) {
