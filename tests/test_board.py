@@ -158,16 +158,37 @@ def test_real_data_every_decade_gets_a_turn_at_hard(league):
     assert seen == {s.key for s in index.of_kind("era")}
 
 
-def test_euroleague_grids_give_big_countries_a_turn():
+def euroleague_generator(seed):
     catalog = PlayerCatalog.load("euroleague")
     if not catalog.players:
         pytest.skip("dataset not built")
-    index = build_index(catalog)
-    generator = BoardGenerator(index, rng=random.Random(5))
-    seen = Counter()
-    for difficulty in ("easy", "medium", "hard"):
-        for _ in range(40):
-            rows, cols = generator.generate("mixed", difficulty)
+    return BoardGenerator(build_index(catalog), rng=random.Random(seed))
+
+
+def test_a_country_turn_pairs_the_country_with_more_than_clubs():
+    generator = euroleague_generator(5)
+    level = LEVELS["euroleague"]["medium"]
+    lines = Counter()
+    for country in generator.big_countries:
+        generator.big_countries = [country]
+        for _ in range(12):
+            rows, cols = generator._country_grid(level, set(generator.other_kinds) - {COUNTRY})
             assert generator.is_solvable(rows, cols, 1)
-            seen.update(spec.value for spec in rows + cols if spec.kind == COUNTRY)
-    assert seen["Italy"] and seen["Turkey"]
+            lines[(country.value, tuple(sorted(spec.value for spec in cols)))] += 1
+            assert any(spec.kind != TEAM for spec in cols) or country.value != "Russia"
+    assert {country for country, _ in lines} >= {"Turkey", "Italy", "Spain", "Russia", "Israel"}
+    assert max(lines.values()) <= 4, lines.most_common(3)
+
+
+def test_a_custom_country_turn_keeps_to_the_ticked_kinds():
+    generator = euroleague_generator(6)
+    for _ in range(20):
+        rows, cols = generator._country_grid(LEVELS["euroleague"]["medium"], {"award"}) or ([], [])
+        assert {spec.kind for spec in rows + cols} <= {TEAM, COUNTRY, "award"}
+
+
+def test_a_classic_country_turn_is_clubs_only():
+    generator = euroleague_generator(7)
+    for _ in range(20):
+        rows, cols = generator._country_grid(LEVELS["euroleague"]["medium"], set()) or ([], [])
+        assert {spec.kind for spec in rows + cols} <= {TEAM, COUNTRY}

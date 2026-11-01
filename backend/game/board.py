@@ -11,7 +11,7 @@ can fill. A level the data can't meet is loosened a step at a time.
 import math
 import random
 from dataclasses import dataclass, replace
-from typing import Dict, FrozenSet, List, Optional, Tuple
+from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
 from ..catalog.criteria import COUNTRY, ERA, TEAM, TEAMMATE, CriteriaIndex, CriterionSpec
 from ..catalog.fame import is_well_known
@@ -43,8 +43,7 @@ class Level:
     min_known: int             # well-known answers every box needs
     max_known: Optional[int]   # and at most this many; None for no cap
     min_total: int             # answers of any fame every box needs
-    # Mixed grids: (non-team rows, non-team columns) to draw from. Columns stay mostly teams
-    # so every grid reads like a team sheet; rows carry the twists. Harder levels use more.
+    # Mixed grids: (non-team rows, non-team columns) to draw from. Harder levels use more.
     layouts: Tuple[Tuple[int, int], ...]
     # Eras only appear in grids built around one decade, chosen evenly. A team has too many
     # well-known players from recent decades for an ordinary draw to fit a tight cap, so
@@ -54,9 +53,10 @@ class Level:
     country_share: float = 0.0
 
 
-EASY_LAYOUTS = ((1, 0), (2, 0))
-MEDIUM_LAYOUTS = ((2, 0), (2, 0), (3, 0), (2, 1))
-HARD_LAYOUTS = ((2, 1), (3, 0), (3, 1))
+# Twists on both sides meet in the middle, so a box need not name a team (USA x MVP)
+EASY_LAYOUTS = ((1, 0), (2, 0), (1, 1), (1, 1), (2, 1))
+MEDIUM_LAYOUTS = ((2, 0), (3, 0), (1, 1), (2, 1), (2, 1), (2, 2))
+HARD_LAYOUTS = ((3, 0), (2, 1), (3, 1), (2, 2), (2, 2))
 
 # The EuroLeague has fewer players, so its boxes are smaller at the same difficulty
 LEVELS: Dict[str, Dict[str, Level]] = {
@@ -70,7 +70,8 @@ LEVELS: Dict[str, Dict[str, Level]] = {
         "medium": Level(min_known=2, max_known=25, min_total=4, layouts=MEDIUM_LAYOUTS, country_share=0.2),
         # Its twists (eras, Final Four) hold most of its well-known players, so a hard
         # EuroLeague grid leans on club pairs and uses fewer of them
-        "hard": Level(min_known=1, max_known=6, min_total=3, layouts=((1, 0), (1, 1), (2, 0)), decade_turns=True,
+        "hard": Level(min_known=1, max_known=6, min_total=3, layouts=((1, 0), (2, 0), (1, 1), (1, 1), (2, 1), (2, 2)),
+                      decade_turns=True,
                       country_share=0.2),
     },
 }
@@ -123,7 +124,9 @@ class BoardGenerator:
         levels = loosened(level)
         wants_country = style != "custom" or COUNTRY in (categories or ())
         if wants_country and self.rng.random() < level.country_share:
-            board = self._country_grid(level)
+            twists = {"custom": set(categories or ()), "classic": set(),
+                      "mixed": set(self.other_kinds) - {TEAMMATE}}[style] - {COUNTRY}
+            board = self._country_grid(level, twists)
             if board:
                 return board
         if style == "custom":
@@ -214,39 +217,45 @@ class BoardGenerator:
                 return board
         return None
 
-    def _country_grid(self, level: Level) -> Optional[Board]:
-        """A grid around one big country, each equally likely, against clubs it has answers
-        at. The other boxes keep to the level; the country's may go over its cap if they must."""
+    def _country_grid(self, level: Level, twists: Set[str]) -> Optional[Board]:
+        """A grid around one big country, each equally likely, against clubs and the kinds in
+        `twists` where it has answers. The other boxes keep to the level; the country's may
+        go over its cap if they must. Any grid that fits may be dealt, not only the most
+        even, or a country with few partners would keep getting the same line. With clubs
+        alone there are few partners at all, so those need no well-known answer."""
         if not self.big_countries:
             return None
         country = self.rng.choice(self.big_countries)
-        clubs = [team for team in self.teams
-                 if self.index.answer_count(country, team) >= COUNTRY_BOX_TOTAL
-                 and len(self.known[country.key] & self.known[team.key]) >= COUNTRY_BOX_KNOWN]
-        if len(clubs) < 3:
+        floor = COUNTRY_BOX_KNOWN if twists else 0
+        partners = [spec for spec in self.index.specs.values()
+                    if (spec.kind == TEAM or spec.kind in twists)
+                    and self.index.answer_count(country, spec) >= COUNTRY_BOX_TOTAL
+                    and len(self.known[country.key] & self.known[spec.key]) >= floor]
+        if len(partners) < 3:
             return None
         over = level.max_known and level.max_known * DECADE_OVER_CAP
         for step, cap in [(step, step.max_known) for step in loosened(level)] + [(level, over), (level, None)]:
             fits = []
             for _ in range(DECADE_ATTEMPTS):
-                cols = self.rng.sample(clubs, 3)
+                cols = self.rng.sample(partners, 3)
+                others = [spec.kind for spec in cols if spec.kind != TEAM]
+                if len(others) != len(set(others)):
+                    continue  # one twist of a kind per line, like a mixed grid
                 rows = [country] + self.rng.sample([team for team in self.teams if team not in cols], 2)
                 self.rng.shuffle(rows)
-                known = self._known_counts(rows, cols, step, country, cap, thin=True)
-                if known is not None:
-                    fits.append((self._spread(known), rows, cols))
+                if self._known_counts(rows, cols, step, country, cap, thin=floor) is not None:
+                    fits.append((rows, cols))
                     if len(fits) >= CANDIDATES:
                         break
-            board = self._most_even(fits)
-            if board:
-                return board
+            if fits:
+                return self.rng.choice(fits)
         return None
 
     def _known_counts(self, rows, cols, level: Level, special: Optional[CriterionSpec] = None,
-                      special_cap: Optional[int] = None, thin: bool = False) -> Optional[List[int]]:
+                      special_cap: Optional[int] = None, thin: Optional[int] = None) -> Optional[List[int]]:
         """Well-known answers per box, or None when a box falls outside the level. Boxes of
         the `special` criterion have `special_cap` as their cap instead (None: no cap), and
-        with `thin` the country box minimums too."""
+        with `thin` that many well-known answers as their floor, and COUNTRY_BOX_TOTAL answers."""
         counts = []
         for r in rows:
             for c in cols:
@@ -256,8 +265,8 @@ class BoardGenerator:
                 is_special = special is not None and special in (r, c)
                 cap = special_cap if is_special else level.max_known
                 min_known, min_total = level.min_known, level.min_total
-                if is_special and thin:
-                    min_known, min_total = COUNTRY_BOX_KNOWN, COUNTRY_BOX_TOTAL
+                if is_special and thin is not None:
+                    min_known, min_total = thin, COUNTRY_BOX_TOTAL
                 if known < min_known or (cap is not None and known > cap):
                     return None
                 if self.index.answer_count(r, c) < min_total:
