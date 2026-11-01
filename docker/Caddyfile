@@ -2,5 +2,19 @@
 # WebSocket upgrades through, so /ws/rooms/... needs nothing extra.
 {$HOOPGRID_DOMAIN} {
 	encode zstd gzip
-	reverse_proxy app:8000
+	request_body {
+		max_size 64KB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	# The data refresh and the health check reach the app directly, inside Docker
+	@internal path /admin/* /health
+	handle @internal {
+		respond 404
+	}
+	handle {
+		reverse_proxy app:8000
+	}
 }

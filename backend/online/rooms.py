@@ -8,19 +8,22 @@ room is sent to everyone in it (see protocol.py for the message shapes).
 import asyncio
 import secrets
 import time
+from collections import deque
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set
+from typing import Deque, Dict, Optional, Set
 
 from ..game.manager import GameManager
 from ..game.rules import other_player
 from .protocol import AnswerDraw, Focus, Join, Leave, OfferDraw, Pick, Ready, Rematch, Skip
 
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ"  # no I, L or O: easy to read out loud
-CODE_LENGTH = 4
+CODE_LENGTH = 5
 DISCONNECT_GRACE = 120.0  # seconds a player may be gone mid-game before forfeiting
 LOBBY_GRACE = 30.0        # seconds a seat is held before tip-off, for a reload or a dropped link
 IDLE_TTL = 30 * 60        # empty rooms nobody touched for this long are removed
 MAX_SPECTATORS = 20
+GRIDS_PER_MINUTE = 20     # a grid is the most expensive thing a room can ask for
+SEND_TIMEOUT = 3.0        # seconds a client that stopped reading can hold up its room
 
 
 class RoomError(Exception):
@@ -57,6 +60,7 @@ class Room:
     clock_task: Optional[asyncio.Task] = None
     forfeit_tasks: Dict[str, asyncio.Task] = field(default_factory=dict)
     last_activity: float = field(default_factory=time.monotonic)
+    grid_times: Deque[float] = field(default_factory=deque)  # when recent grids were dealt
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
 
@@ -136,7 +140,7 @@ class RoomManager:
                 await self._broadcast(room)
                 return None
             seat = next((s for s in room.seats.values()
-                         if msg.token and secrets.compare_digest(s.token, msg.token)), None)
+                         if msg.token and secrets.compare_digest(s.token.encode(), msg.token.encode())), None)
             returning = seat is not None
             if not returning:
                 free = [mark for mark in ("X", "O") if mark not in room.seats]
@@ -188,7 +192,8 @@ class RoomManager:
                 if isinstance(msg, Leave):
                     return
                 raise RoomError("Spectators can watch but not play.")
-            if seat.mark not in room.seats:
+            # By identity: someone new may hold the same mark after this seat was given up
+            if room.seats.get(seat.mark) is not seat:
                 raise RoomError("You are no longer in this room.")
             if isinstance(msg, Ready):
                 await self._on_ready(room, seat)
@@ -212,6 +217,8 @@ class RoomManager:
             return
         if len(room.seats) < 2:
             raise RoomError("Waiting for an opponent to join.")
+        if all(s.ready or s is seat for s in room.seats.values()):
+            self._spend_grid(room)
         seat.ready = True
         if all(s.ready for s in room.seats.values()):
             await self._start_game(room)
@@ -281,6 +288,7 @@ class RoomManager:
 
     async def _agree_draw(self, room: Room, game, seat: Seat) -> None:
         """An agreed draw writes off this grid only: a new one tips off and the series goes on."""
+        self._spend_grid(room)
         self.games.end_in_draw(game.game_id)
         self._stop_clock(room)
         await self._event(room, "grid_drawn", seat.mark, "Grid drawn by agreement")
@@ -296,6 +304,8 @@ class RoomManager:
     async def _on_rematch(self, room: Room, seat: Seat) -> None:
         if self.phase(room) != "final":
             return
+        if len(room.seats) == 2 and all(s.rematch or s is seat for s in room.seats.values()):
+            self._spend_grid(room)
         seat.rematch = True  # next grid, or a new series once this one is decided
         if len(room.seats) == 2 and all(s.rematch for s in room.seats.values()):
             if self.series_winner(room):
@@ -317,16 +327,30 @@ class RoomManager:
 
     # ---------- Games and the clock ----------
 
+    @staticmethod
+    def _spend_grid(room: Room) -> None:
+        """Refuses a new grid when the room has dealt too many; checked before anything
+        changes, so a refusal leaves the game as it was."""
+        now = time.monotonic()
+        while room.grid_times and now - room.grid_times[0] > 60:
+            room.grid_times.popleft()
+        if len(room.grid_times) >= GRIDS_PER_MINUTE:
+            raise RoomError("Too many new grids. Wait a moment and try again.")
+        room.grid_times.append(now)
+
     async def _start_game(self, room: Room) -> None:
-        if room.game_id:
-            self.games.discard(room.game_id)
         s = room.settings
-        game = self.games.create_game(
+        # In a worker thread: drawing a grid takes a noticeable moment, and on the event
+        # loop every other room would wait for it
+        game = await asyncio.to_thread(
+            self.games.create_game,
             league=s["league"], player1_name=room.seats["X"].name, player2_name=room.seats["O"].name,
             difficulty=s["difficulty"], shot_clock=s["shot_clock"], grid_style=s["grid_style"],
             categories=s.get("categories"),
             first_player=room.next_first, online=True,
         )
+        if room.game_id:
+            self.games.discard(room.game_id)
         room.game_id = game.game_id
         room.grid_no += 1
         room.next_first = other_player(room.next_first)
@@ -439,6 +463,8 @@ class RoomManager:
     @staticmethod
     async def _send(ws, message: dict) -> None:
         try:
-            await ws.send_json(message)
+            await asyncio.wait_for(ws.send_json(message), SEND_TIMEOUT)
+        except asyncio.TimeoutError:
+            asyncio.get_running_loop().create_task(ws.close())  # it stopped reading: let it go
         except Exception:
             pass  # the socket is closing; its own handler cleans up

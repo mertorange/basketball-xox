@@ -8,7 +8,7 @@ from backend import config
 from backend.app import create_app
 from backend.catalog.criteria import build_index
 from backend.catalog.players import DATA_DIR, PlayerCatalog
-from backend.ratelimit import RateLimiter
+from backend.ratelimit import RateLimiter, client_key
 from refresh_data import IMAGE_MARKER, prune, publish_image_data, switch_current, validate
 
 from conftest import SAMPLE_NBA
@@ -197,3 +197,45 @@ def test_volumes_from_before_the_marker_take_the_image_data(tmp_path):
     switch_current(root, old)
     published = publish_image_data(root, image_folder(tmp_path / "image", SAMPLE_NBA["players"]))
     assert published and (root / "current").resolve() == (root / "releases" / published).resolve()
+
+
+def test_one_ipv6_customer_counts_as_one_client():
+    assert client_key("2001:db8:1:2::a") == client_key("2001:db8:1:2:ffff::b")
+    assert client_key("2001:db8:1:3::a") != client_key("2001:db8:1:2::a")
+    assert client_key("1.2.3.4") == "1.2.3.4"
+    assert client_key("testclient") == "testclient" and client_key(None) == "unknown"
+
+
+def test_open_sockets_are_capped_per_client():
+    limiter = RateLimiter({}, max_sockets=2)
+    assert limiter.open_socket("a") and limiter.open_socket("a")
+    assert not limiter.open_socket("a")
+    assert limiter.open_socket("b")
+    limiter.close_socket("a")
+    assert limiter.open_socket("a")
+
+
+def test_pages_carry_security_headers_and_docs_are_off():
+    with TestClient(create_app()) as client:
+        page = client.get("/")
+        assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
+        assert page.headers["x-content-type-options"] == "nosniff"
+        assert client.get("/docs").status_code == 404
+        assert client.get("/openapi.json").status_code == 404
+
+
+def test_oversized_requests_are_refused_unread():
+    with TestClient(create_app()) as client:
+        body = {"game_id": "x" * (config.MAX_BODY_BYTES + 1), "row": 0, "col": 0, "player_name": "a"}
+        assert client.post("/api/move", json=body).status_code == 413
+
+
+def test_same_device_games_are_capped_and_rooms_are_kept(manager):
+    manager.max_same_device = 2
+    online = manager.create_game("nba", online=True)
+    first = manager.create_game("nba")
+    second = manager.create_game("nba")
+    third = manager.create_game("nba")
+    assert manager.get_game(first.game_id) is None
+    assert manager.get_game(second.game_id) and manager.get_game(third.game_id)
+    assert manager.get_game(online.game_id)

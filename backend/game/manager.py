@@ -18,8 +18,9 @@ def to_criterion(spec: CriterionSpec) -> Criterion:
 
 
 class GameManager:
-    def __init__(self, indexes: Dict[str, CriteriaIndex]):
+    def __init__(self, indexes: Dict[str, CriteriaIndex], max_same_device: Optional[int] = None):
         self.active_games: Dict[str, GameState] = {}
+        self.max_same_device = max_same_device
         # Each game keeps the criteria index it was created with, so a data reload
         # mid-game never changes the answers to a grid already on screen
         self.game_indexes: Dict[str, CriteriaIndex] = {}
@@ -39,6 +40,8 @@ class GameManager:
                     categories: Optional[List[str]] = None) -> GameState:
         if grid_style != "custom":
             categories = None
+        if not online:
+            self._make_room_for_one()
         rows, cols = self.generators[league].generate(grid_style, difficulty, categories)
         game = GameState(
             game_id=uuid.uuid4().hex[:8],
@@ -60,6 +63,15 @@ class GameManager:
         if online:
             self.online_games.add(game.game_id)
         return game
+
+    def _make_room_for_one(self) -> None:
+        """Drops the oldest same-device games once at the cap; a room's game is never dropped."""
+        if self.max_same_device is None:
+            return
+        excess = len(self.active_games) - len(self.online_games) - self.max_same_device + 1
+        if excess > 0:
+            for game_id in [gid for gid in self.active_games if gid not in self.online_games][:excess]:
+                self.discard(game_id)
 
     def get_game(self, game_id: str) -> Optional[GameState]:
         return self.active_games.get(game_id)

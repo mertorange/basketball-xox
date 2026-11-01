@@ -86,8 +86,8 @@ function setupHandlers() {
   form.querySelectorAll('input[name=mode], input[name=style], input[name=league]')
     .forEach(input => input.addEventListener('change', syncMenuMode));
 
-  // An invite link (?room=KQ7M) opens the menu in online mode with the code filled in;
-  // a watch link (?room=KQ7M&watch=1) goes straight in as a spectator
+  // An invite link (?room=KQRMZ) opens the menu in online mode with the code filled in;
+  // a watch link (?room=KQRMZ&watch=1) goes straight in as a spectator
   const params = new URLSearchParams(location.search);
   const invited = (params.get('room') || '').toUpperCase();
   if (invited) {
@@ -234,8 +234,8 @@ async function createRoom(settings) {
 async function joinRoom() {
   const code = $('join-code').value.trim().toUpperCase();
   $('menu-error').textContent = '';
-  if (code.length !== 4) {
-    $('menu-error').textContent = 'Room codes have four letters.';
+  if (code.length !== 5) {
+    $('menu-error').textContent = 'Room codes have five letters.';
     return;
   }
   try {

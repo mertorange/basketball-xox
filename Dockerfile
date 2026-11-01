@@ -1,7 +1,7 @@
 # Hoop-Tac-Toe: one image for the game server and the data builder.
 # The test stage must pass for the final image to build.
 
-FROM python:3.12-slim AS base
+FROM python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159 AS base
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -36,4 +36,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 ENTRYPOINT ["entrypoint.sh"]
 # One worker: rooms and running games live in this process's memory
 CMD ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", \
-     "--proxy-headers", "--forwarded-allow-ips", "*"]
+     "--proxy-headers", "--forwarded-allow-ips", "*", "--ws-max-size", "65536", "--no-server-header"]

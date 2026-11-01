@@ -57,7 +57,7 @@ def browser():
 
 @pytest.fixture
 def open_page(browser, server):
-    """Opens the site in a fresh browser profile; any uncaught script error fails the test."""
+    """Opens the site in a fresh browser profile; any uncaught script error or blocked resource fails the test."""
     contexts, errors = [], []
 
     def opener(path="/"):
@@ -65,6 +65,7 @@ def open_page(browser, server):
         contexts.append(context)
         page = context.new_page()
         page.on("pageerror", lambda error: errors.append(str(error)))
+        page.on("console", lambda msg: errors.append(msg.text) if "Content Security Policy" in msg.text else None)
         page.goto(server[1] + path)
         return page
 

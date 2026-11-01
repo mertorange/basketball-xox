@@ -10,7 +10,7 @@ name: hoopgrid
 
 x-env: &env
   HOOPGRID_ADMIN_TOKEN: ${HOOPGRID_ADMIN_TOKEN:-}
-  HOOPGRID_ALLOWED_ORIGINS: ${HOOPGRID_ALLOWED_ORIGINS:-*}
+  HOOPGRID_ALLOWED_ORIGINS: ${HOOPGRID_ALLOWED_ORIGINS:-}
 
 services:
   app:
@@ -38,7 +38,7 @@ services:
       - app
 
   caddy:
-    image: caddy:2.8
+    image: caddy:2.8@sha256:226d1f059b75399fe19182893c7184591c07b97afc8dfcf44eeb80c9a77a530f
     profiles: ["server"]
     restart: unless-stopped
     environment:

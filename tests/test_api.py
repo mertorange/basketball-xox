@@ -64,8 +64,8 @@ def test_skip_turn_and_draw(manager):
 
     drawn = client.post("/api/draw", json={"game_id": game_id}).json()
     assert drawn["status"] == "finished" and drawn["winner"] == "DRAW"
-    assert client.post("/api/skip-turn", json={"game_id": game_id}).status_code == 409
-    assert client.post("/api/draw", json={"game_id": game_id}).status_code == 409
+    assert client.post("/api/skip-turn", json={"game_id": game_id}).status_code == 404
+    assert client.post("/api/draw", json={"game_id": game_id}).status_code == 404
     assert client.post("/api/draw", json={"game_id": "missing"}).status_code == 404
 
 

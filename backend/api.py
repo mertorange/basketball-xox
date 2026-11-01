@@ -70,7 +70,9 @@ def build_router(game_manager) -> APIRouter:
     def end_in_draw(req: GameRequest):
         """Same device: both players are at the screen, so the button press is the agreement."""
         running_same_device_game(req.game_id)
-        return game_manager.end_in_draw(req.game_id)
+        game = game_manager.end_in_draw(req.game_id)
+        game_manager.discard(req.game_id)  # a new grid has replaced it: nobody comes back for it
+        return game
 
     @router.post("/shot-clock-violation")
     def handle_shot_clock_violation(req: GameRequest):

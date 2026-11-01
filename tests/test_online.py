@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 
 from backend.catalog.criteria import TEAM
 from backend.game.manager import to_criterion
+from backend.online import rooms as rooms_module
+from backend.online import ws as ws_module
 from backend.online.rooms import RoomManager
 from backend.online.ws import build_online_router
 from backend.ratelimit import RateLimiter
@@ -82,7 +84,7 @@ def start_match(client, rooms, manager, shot_clock=0):
 def test_room_codes_and_seats(online):
     client, rooms, _ = online
     code = create_room(client)
-    assert len(code) == 4 and code.isalpha() and not set(code) & set("ILO")
+    assert len(code) == 5 and code.isalpha() and not set(code) & set("ILO")
     assert client.get(f"/api/rooms/{code.lower()}").json()["phase"] == "waiting"
     assert client.get("/api/rooms/ZZZZ").status_code == 404
 
@@ -200,6 +202,85 @@ def test_ready_cannot_tip_off_against_a_player_who_dropped(online):
     host.send_json({"type": "ready"})
     msg = room_msg(host, lambda m: m["seats"]["X"]["ready"])
     assert msg["phase"] == "lobby" and msg["game"] is None
+
+
+def start_game(host, guest):
+    host.send_json({"type": "ready"})
+    guest.send_json({"type": "ready"})
+    return room_msg(host, lambda m: m["phase"] == "playing")
+
+
+def test_an_old_tab_cannot_play_the_seat_someone_new_took(online):
+    client, rooms, _ = online
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    tab1, welcome = join(client, code, "Bea")
+    tab2, _ = join(client, code, "Bea", token=welcome["token"])
+    tab1.send_json({"type": "leave"})
+    recv_until(host, lambda m: m.get("kind") == "left")
+    new, seat = join(client, code, "Cem")
+    assert seat["seat"] == "O"
+    game = start_game(host, new)["game"]
+    assert game["current_player"] == "X"
+    host.send_json({"type": "skip"})
+    room_msg(new, lambda m: m["game"] and m["game"]["current_player"] == "O")
+    tab2.send_json({"type": "skip"})
+    assert recv_until(tab2, lambda m: m["type"] == "error")["reason"] == "You are no longer in this room."
+    assert rooms.game(rooms.get(code)).current_player == "O"
+
+
+def test_broken_messages_get_an_error_and_keep_the_connection(online):
+    client, _, _ = online
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    for send in (lambda: host.send_text("{nope"), lambda: host.send_bytes(b"\x00\x01"),
+                 lambda: host.send_text("[" * 60000)):
+        send()
+        assert recv_until(host, lambda m: m["type"] == "error")["reason"] == "Malformed message."
+    host.send_json({"type": "ready"})
+    assert recv_until(host, lambda m: m["type"] == "error")["reason"] == "Waiting for an opponent to join."
+
+
+def test_a_token_that_is_not_ascii_is_just_a_new_player(online):
+    client, _, _ = online
+    code = create_room(client)
+    _, first = join(client, code, "Ann")
+    _, second = join(client, code, "Bea", token="t\u00f6ken")
+    assert (first["seat"], second["seat"]) == ("X", "O")
+
+
+def test_a_socket_that_never_joins_is_closed(online, monkeypatch):
+    client, _, _ = online
+    monkeypatch.setattr(ws_module, "JOIN_TIMEOUT", 0.1)
+    with client.websocket_connect(f"/ws/rooms/{create_room(client)}") as socket:
+        assert socket.receive_json()["reason"] == "Took too long to join."
+
+
+def test_another_site_cannot_open_a_room_socket(online):
+    client, _, _ = online
+    code = create_room(client)
+    with client.websocket_connect(f"/ws/rooms/{code}", headers={"origin": "https://evil.example"}) as socket:
+        assert socket.receive_json()["reason"] == "This page can't open a room."
+    with client.websocket_connect(f"/ws/rooms/{code}", headers={"origin": "http://testserver"}) as socket:
+        socket.send_json({"type": "join", "name": "Ann"})
+        assert socket.receive_json()["type"] == "welcome"
+
+
+def test_too_many_new_grids_leaves_the_current_one_running(online, monkeypatch):
+    client, rooms, _ = online
+    monkeypatch.setattr(rooms_module, "GRIDS_PER_MINUTE", 2)
+    code = create_room(client)
+    host, _ = join(client, code, "Ann")
+    guest, _ = join(client, code, "Bea")
+    first = start_game(host, guest)["game"]["game_id"]
+    for ws in (host, guest):
+        ws.send_json({"type": "offer_draw"})
+    second = room_msg(host, lambda m: m["game"]["game_id"] != first)["game"]["game_id"]
+    host.send_json({"type": "offer_draw"})
+    guest.send_json({"type": "offer_draw"})
+    assert recv_until(guest, lambda m: m["type"] == "error")["reason"].startswith("Too many new grids")
+    game = rooms.game(rooms.get(code))
+    assert game.game_id == second and game.status == "in_progress"
 
 
 def test_disconnect_forfeits_after_grace(online):

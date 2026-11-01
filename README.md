@@ -80,10 +80,10 @@ The browser smoke tests in `tests/test_browser.py` run only when Playwright is i
 | Variable | Purpose |
 |---|---|
 | `HOOPGRID_ADMIN_TOKEN` | Secret for `POST /admin/reload` (used by the data refresh); empty disables it |
-| `HOOPGRID_ALLOWED_ORIGINS` | CORS origins, comma separated (default `*`) |
+| `HOOPGRID_ALLOWED_ORIGINS` | Other sites allowed to call the API and open room sockets, comma separated (default: none) |
 | `HOOPGRID_DOMAIN` | Public host name for Caddy (server profile) |
 | `HOOPGRID_PORT` | Host port of the app container (bound to 127.0.0.1) |
-| `HOOPGRID_RATE_LIMIT` | `0` turns off the per-IP limits on rooms, joins, room messages, new games and search |
+| `HOOPGRID_RATE_LIMIT` | `0` turns off the per-IP limits on rooms, joins, open sockets, room messages, new games and search |
 | `HOOPGRID_DATA_DIR` | Where the server reads the datasets (Docker: `/data/current`) |
 
 ---
