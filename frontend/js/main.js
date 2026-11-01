@@ -180,11 +180,13 @@ function setupHandlers() {
     else if (isOpen(modals.rules)) closeModal(modals.rules);
   });
 
-  window.addEventListener('resize', () => {
-    const line = document.querySelector('#win-stroke line');
-    if (line && active && active.game) drawWinStroke(active.game.winning_line, active.game.winner);
-    if (active && active.game) drawPlays(active.game);
-  });
+  // The board resizes with the window and with what sits around it, like the buttons going
+  // away at the end of a grid
+  new ResizeObserver(() => {
+    if (!active || !active.game || !$('board-wrap').offsetWidth) return;
+    if (active.game.winning_line) drawWinStroke(active.game.winning_line, active.game.winner);
+    drawPlays(active.game);
+  }).observe($('board-wrap'));
 }
 
 function renderSoundButton() {

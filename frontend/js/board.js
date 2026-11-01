@@ -123,7 +123,10 @@ export function drawWinStroke(line, winner) {
   const length = Math.hypot(x2 - x1, y2 - y1) || 1;
   const ex = ((x2 - x1) / length) * markWidth * 0.4;
   const ey = ((y2 - y1) / length) * markWidth * 0.4;
-  $('win-stroke').innerHTML = `<path pathLength="1" d="M${x1 - ex} ${y1 - ey}L${x2 + ex} ${y2 + ey}"/>`;
+  const d = `M${x1 - ex} ${y1 - ey}L${x2 + ex} ${y2 + ey}`;
+  const stroke = $('win-stroke').querySelector('path');
+  if (stroke) stroke.setAttribute('d', d); // moved, not redrawn, so it doesn't animate again
+  else $('win-stroke').innerHTML = `<path pathLength="1" d="${d}"/>`;
 }
 
 /** Online: mark the box the player on the clock has open, and lock the grid when it isn't your turn. */

@@ -175,6 +175,27 @@ def test_three_in_a_row_wins_and_shows_the_answers(open_page, server):
     expect(page.locator("#answers-grid")).not_to_be_empty()
 
 
+def test_the_winning_stroke_runs_through_the_marks_on_a_phone(open_page, server):
+    page = open_page()
+    page.set_viewport_size({"width": 375, "height": 812})
+    tip_off(page)
+    for box in ((0, 0), (1, 0), (0, 1), (1, 1), (0, 2)):
+        page.click(f"#box-{box[0]}-{box[1]}")
+        page.fill("#search-player-input", unique_answer(server[0], *box))
+        page.press("#search-player-input", "Enter")
+        expect(page.locator(f"#box-{box[0]}-{box[1]}.claimed")).to_be_visible()
+    expect(page.locator("#modal-gameover")).to_be_visible()
+    missed_by = page.evaluate("""() => {
+      const wrap = document.getElementById('board-wrap').getBoundingClientRect();
+      const stroke = document.querySelector('#win-stroke path').getBBox();
+      return Math.max(...[0, 1, 2].map((col) => {
+        const mark = document.querySelector(`#box-0-${col} .mark`).getBoundingClientRect();
+        return Math.abs(mark.top + mark.height / 2 - wrap.top - (stroke.y + stroke.height / 2));
+      }));
+    }""")
+    assert missed_by < 2
+
+
 def test_pressing_draw_over_and_over_never_locks_the_game(open_page):
     page = open_page()
     tip_off(page)
