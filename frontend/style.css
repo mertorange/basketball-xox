@@ -1165,9 +1165,12 @@ button:disabled { cursor: not-allowed; }
 /* ---------- Arena details ---------- */
 
 .wordmark { display: inline-flex; align-items: center; gap: 0.22em; letter-spacing: 0.01em; }
-.ball { width: 0.82em; height: 0.82em; flex: none; }
-.ball circle { fill: var(--orange); stroke: var(--ink); stroke-width: 2; }
-.ball path { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+/* The logo: a ball played in the middle box of the grid */
+.logo { width: 1.12em; height: 1.12em; flex: none; }
+.logo path { fill: none; stroke-linecap: round; }
+.logo-grid { stroke: currentColor; stroke-width: 2; }
+.logo-ball { fill: var(--orange); stroke: var(--ink); stroke-width: 1.8; }
+.logo-seams { stroke: var(--ink); stroke-width: 1.2; }
 
 /* The scoreboard: a strip of the court floor, lighter than the floor around the sheet, set
    off by an ink rule above and an orange one below. Only the shot clock is electronic. */
@@ -1316,3 +1319,106 @@ button:disabled { cursor: not-allowed; }
 /* The winning three: a heavy marker arrow, then its head */
 /* The winning three: one straight red stroke, drawn on (no arrow) */
 .win-stroke path { stroke: var(--win-line); stroke-width: 6; fill: none; }
+
+/* ---------- The menu: the stage and the settings desk ---------- */
+
+/* Left, the stage: a flat panel in deep court blue, dotted like the shot clock's LEDs, with
+   the logo, a grid a few turns in and how a game goes. Right, the desk: the settings form. */
+:root {
+  --stage: #1f3b5c;
+  --stage-dot: #284a70;
+  --stage-text: #f3ede2;
+  --stage-soft: #c9d3df;
+}
+
+@media (min-width: 980px) {
+  .sheet:has(> #screen-menu:not(.hidden)) { max-width: 1240px; }
+  #screen-menu:not(.hidden) { display: grid; grid-template-columns: minmax(330px, 380px) minmax(0, 1fr); }
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 26px 26px 20px;
+  background-color: var(--stage);
+  background-image: radial-gradient(circle, var(--stage-dot) 1.2px, transparent 1.7px);
+  background-size: 6px 6px;
+  border-right: 2px solid var(--ink);
+}
+.stage .stage-brand { font-size: 38px; color: var(--stage-text); }
+.stage-pitch { max-width: 32ch; font-size: 17px; line-height: 1.45; color: var(--stage-text); }
+
+/* The grid as it looks a few turns in, on the paper of the game's board */
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: 46px;  /* the column headers */
+  grid-auto-rows: 66px;
+  gap: 2px;
+  padding: 2px;
+  background: var(--ink);
+  border-radius: 3px;
+  box-shadow: 0 8px 20px rgba(5, 15, 30, 0.35);
+}
+.stage-grid > span { display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 0; text-align: center; }
+.sg-corner { background: var(--ink); }
+.sg-head {
+  background: var(--paper-deep);
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.sg-head small { font-family: var(--label); font-weight: 500; font-size: 11px; text-transform: none; color: var(--ink-soft); }
+.sg-box { position: relative; background: var(--paper); gap: 2px; }
+.sg-box b { font-family: var(--label); font-weight: 600; font-size: 11px; line-height: 1.1; color: var(--ink); }
+.sg-mark { width: 34px; height: 34px; fill: none; stroke-width: 9; stroke-linecap: round; }
+.sg-x { stroke: var(--x); }
+.sg-o { stroke: var(--o); }
+
+/* How a game goes, in order */
+.stage-steps { list-style: none; counter-reset: step; display: grid; gap: 12px; margin-top: auto; }
+.stage-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 32px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--stage-soft);
+}
+.stage-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 0.85;
+  color: var(--led-on);
+}
+.stage-steps b { font-weight: 600; color: var(--stage-text); }
+.stage-note { font-family: var(--label); font-size: 11px; color: var(--stage-soft); }
+
+.desk { display: flex; flex-direction: column; min-width: 0; }
+.desk-head { padding: 22px 32px 14px; border-bottom: 2px solid var(--rule-strong); }
+.desk-title { font-family: var(--display); font-weight: 600; font-size: 34px; line-height: 1; text-transform: uppercase; padding-top: 4px; }
+.desk .setup { flex: 1; }
+
+/* Narrower screens: the stage shrinks to a band over the desk, with just the name and pitch */
+@media (max-width: 979px) {
+  .stage { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 20px; padding: 18px 24px; border-right: 0; border-bottom: 2px solid var(--ink); }
+  .stage-grid, .stage-steps { display: none; }
+  .stage .stage-brand { font-size: 40px; }
+  .stage-pitch { font-size: 15px; max-width: 46ch; }
+  .stage-note { flex-basis: 100%; }
+}
+@media (max-width: 640px) {
+  .stage { padding: 14px 16px; }
+  .stage .stage-brand { font-size: 34px; }
+  .stage-pitch { font-size: 14px; }
+  .desk-head { padding: 14px 16px 10px; }
+  .desk-title { font-size: 26px; }
+}

@@ -7,19 +7,50 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Teko:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=30">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css?v=35">
 </head>
 <body>
   <main class="sheet">
 
     <!-- PRE-GAME FORM -->
     <section class="screen" id="screen-menu">
-      <header class="form-head">
-        <div>
-          <h1 class="wordmark"><svg class="ball" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14"/><path d="M2 16h28M16 2v28M6.1 6.1c5.4 5.4 5.4 14.4 0 19.8M25.9 6.1c-5.4 5.4-5.4 14.4 0 19.8"/></svg>Hoop&#8209;Tac&#8209;Toe</h1>
-          <p class="form-sub">Unofficial fan game, not affiliated with the NBA, EuroLeague or any club</p>
+      <!-- The stage: what the game is, with a grid as it looks a few turns in -->
+      <div class="stage">
+        <h1 class="wordmark stage-brand"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path class="logo-grid" d="M10.6 2v28M21.4 2v28M2 10.6h28M2 21.4h28"/><circle class="logo-ball" cx="16" cy="16" r="8.2"/><path class="logo-seams" d="M16 7.8v16.4M7.8 16h16.4M10.2 10.2c2.6 2.8 2.6 8.8 0 11.6M21.8 10.2c-2.6 2.8-2.6 8.8 0 11.6"/></svg>Hoop&#8209;Tac&#8209;Toe</h1>
+        <p class="stage-pitch">A two-player basketball grid. Name a player who fits a box's row and column, and take three in a row.</p>
+
+        <div class="stage-grid" aria-hidden="true">
+          <span class="sg-corner"></span>
+          <span class="sg-head"><small>Team</small>Lakers</span>
+          <span class="sg-head"><small>Team</small>Celtics</span>
+          <span class="sg-head"><small>Award</small>MVP</span>
+          <span class="sg-head"><small>Born in</small>Spain</span>
+          <span class="sg-box"><svg class="sg-mark sg-x" viewBox="0 0 100 100"><path d="M20 17 C 40 38, 62 62, 82 85"/><path d="M81 14 C 60 40, 40 62, 20 86"/></svg><b>Pau Gasol</b></span>
+          <span class="sg-box"></span>
+          <span class="sg-box"></span>
+          <span class="sg-head"><small>College</small>Duke</span>
+          <span class="sg-box"></span>
+          <span class="sg-box"><svg class="sg-mark sg-o" viewBox="0 0 100 100"><path d="M54 15 C 77 14, 89 33, 87 53 C 85 75, 67 89, 47 87 C 26 85, 13 69, 14 48 C 15 28, 31 14, 58 17"/></svg><b>Jayson Tatum</b></span>
+          <span class="sg-box"></span>
+          <span class="sg-head"><small>Award</small>Champion</span>
+          <span class="sg-box"></span>
+          <span class="sg-box"></span>
+          <span class="sg-box"><svg class="sg-mark sg-x" viewBox="0 0 100 100"><path d="M20 17 C 40 38, 62 62, 82 85"/><path d="M81 14 C 60 40, 40 62, 20 86"/></svg><b>Tim Duncan</b></span>
         </div>
-        <span class="form-no">Form HTT&#8209;1</span>
+
+        <ol class="stage-steps">
+          <li><b>Every grid deals six categories,</b> three across and three down: teams, countries, awards and more.</li>
+          <li><b>Pick a box and name a player who fits both.</b> Each player counts once per grid.</li>
+          <li><b>Three in a row wins the grid,</b> and enough grids win the series.</li>
+        </ol>
+        <p class="stage-note">Unofficial fan game, not affiliated with the NBA, EuroLeague or any club.</p>
+      </div>
+
+      <!-- The settings, on the paper form -->
+      <div class="desk">
+      <header class="desk-head">
+        <h2 class="desk-title">Set up the game</h2>
       </header>
 
       <form class="setup" id="setup-form" autocomplete="off" data-mode="hotseat">
@@ -149,10 +180,7 @@
           <p class="form-error" id="menu-error" role="alert"></p>
         </div>
       </form>
-
-      <footer class="form-foot">
-        <span>Name a player who fits both the row and the column. Three in a row wins.</span>
-      </footer>
+      </div>
     </section>
 
     <!-- JOIN FROM A LINK: the room's settings are fixed, so only a name and Ready -->
@@ -224,7 +252,7 @@
     <!-- GAME SHEET -->
     <section class="screen hidden" id="screen-game">
       <header class="game-head">
-        <span class="wordmark wordmark-small"><svg class="ball" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14"/><path d="M2 16h28M16 2v28M6.1 6.1c5.4 5.4 5.4 14.4 0 19.8M25.9 6.1c-5.4 5.4-5.4 14.4 0 19.8"/></svg>Hoop&#8209;Tac&#8209;Toe</span>
+        <span class="wordmark wordmark-small"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path class="logo-grid" d="M10.6 2v28M21.4 2v28M2 10.6h28M2 21.4h28"/><circle class="logo-ball" cx="16" cy="16" r="8.2"/><path class="logo-seams" d="M16 7.8v16.4M7.8 16h16.4M10.2 10.2c2.6 2.8 2.6 8.8 0 11.6M21.8 10.2c-2.6 2.8-2.6 8.8 0 11.6"/></svg>Hoop&#8209;Tac&#8209;Toe</span>
         <dl class="meta">
           <div><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
           <div><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
