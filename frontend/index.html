@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Teko:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/style.css?v=35">
+  <link rel="stylesheet" href="/static/style.css?v=37">
 </head>
 <body>
   <main class="sheet">
@@ -254,8 +254,8 @@
       <header class="game-head">
         <span class="wordmark wordmark-small"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path class="logo-grid" d="M10.6 2v28M21.4 2v28M2 10.6h28M2 21.4h28"/><circle class="logo-ball" cx="16" cy="16" r="8.2"/><path class="logo-seams" d="M16 7.8v16.4M7.8 16h16.4M10.2 10.2c2.6 2.8 2.6 8.8 0 11.6M21.8 10.2c-2.6 2.8-2.6 8.8 0 11.6"/></svg>Hoop&#8209;Tac&#8209;Toe</span>
         <dl class="meta">
-          <div><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
-          <div><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
+          <div class="meta-quiet"><dt>Competition</dt><dd id="meta-league">NBA</dd></div>
+          <div class="meta-quiet"><dt>Game no.</dt><dd id="meta-game">&mdash;</dd></div>
           <div><dt>Series</dt><dd id="meta-series">&mdash;</dd></div>
           <div id="meta-room-wrap" hidden><dt>Room</dt><dd id="meta-room"></dd></div>
           <div id="meta-watch-wrap" hidden><dt>Watching</dt><dd id="meta-watch">0</dd></div>
@@ -309,8 +309,6 @@
         </div>
       </div>
 
-      <p class="status" id="game-status-text" role="status" aria-live="polite"></p>
-
       <div class="game-main">
       <div class="board-wrap" id="board-wrap">
         <div class="board" id="grid-table">
@@ -348,6 +346,7 @@
       </div>
 
       <div class="game-side">
+      <p class="status" id="game-status-text" role="status" aria-live="polite"></p>
       <div class="game-actions" id="game-actions" hidden>
         <button type="button" class="btn btn-line" id="btn-skip">Skip turn</button>
         <div class="draw-wrap">

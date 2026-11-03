@@ -325,11 +325,11 @@ button:disabled { cursor: not-allowed; }
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 14px 24px;
+  padding: 8px 20px;
   border-bottom: 2px solid var(--rule-strong);
 }
 
-.wordmark-small { font-size: 32px; }
+.wordmark-small { font-size: 26px; }
 
 .meta {
   display: flex;
@@ -338,6 +338,7 @@ button:disabled { cursor: not-allowed; }
 }
 
 .meta div { border-left: 1px solid var(--rule); padding-left: 12px; }
+.meta .meta-quiet { display: none; }  /* known from the menu; the grid needs the room */
 .meta dt { font-family: var(--label); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
 .meta dd { font-family: var(--label); font-size: 13px; font-weight: 600; }
 
@@ -368,7 +369,7 @@ button:disabled { cursor: not-allowed; }
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 24px 18px;
+  padding: 8px 20px 14px;
 }
 
 .team-o { flex-direction: row-reverse; text-align: right; }
@@ -376,7 +377,7 @@ button:disabled { cursor: not-allowed; }
 .team-mark {
   font-family: var(--varsity);
   font-weight: 400;
-  font-size: 54px;
+  font-size: 44px;
   line-height: 0.8;
   width: 40px;
   text-align: center;
@@ -416,7 +417,7 @@ button:disabled { cursor: not-allowed; }
 }
 .team-x .score-led { margin-left: auto; }
 .team-o .score-led { margin-right: auto; }  /* the O panel runs right to left */
-.score-digits { width: 26px; height: 44px; display: block; }
+.score-digits { width: 21px; height: 36px; display: block; }
 .score-digits polygon { fill: var(--led-off); }
 .score-digits polygon.on { fill: var(--led-on); }
 .score-label { font-family: var(--label); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: #8d8578; }
@@ -442,9 +443,9 @@ button:disabled { cursor: not-allowed; }
 /* The one electronic thing on the table */
 .clock {
   align-self: center;
-  margin: 10px 0;
+  margin: 6px 0;
   background: var(--device);
-  padding: 10px 16px 6px;
+  padding: 6px 12px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -452,19 +453,21 @@ button:disabled { cursor: not-allowed; }
   border-radius: 3px;
 }
 .clock.off { display: none; }
-.clock-digits { width: 74px; height: 63px; display: block; }
-.clock-digits.three { width: 111px; }
+.clock-digits { width: 58px; height: 49px; display: block; }
+.clock-digits.three { width: 87px; }
 .clock-digits polygon { fill: var(--led-off); }
 .clock-digits polygon.on { fill: var(--led-on); }
 .clock.warning .clock-digits polygon.on { fill: var(--led-warn); }
 .clock-label { font-family: var(--label); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #8d8578; }
 
+/* What just happened: beside the grid on wide screens, under it on tall ones, with room
+   for two lines so nothing moves when a message runs long */
 .status {
-  min-height: 42px;
-  padding: 11px 24px;
+  min-height: calc(2lh + 20px);
+  padding: 10px 16px;
   font-family: var(--label);
-  font-size: 13px;
-  border-bottom: 1px solid var(--rule);
+  font-size: 14px;
+  line-height: 1.35;
 }
 .status.success { color: var(--ink); }
 .status.error { color: var(--x); }
@@ -488,8 +491,10 @@ button:disabled { cursor: not-allowed; }
   min-height: 0;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr) 230px;
-  grid-template-areas: "log board actions";
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "log board status" "log board actions";
 }
+.game-side .status { grid-area: status; border-left: 1px solid var(--rule); }
 .board-wrap { grid-area: board; }
 .game-side { display: contents; }
 .game-side .pbp { grid-area: log; min-height: 0; overflow-y: auto; border-top: 0; border-right: 1px solid var(--rule); }
@@ -498,7 +503,7 @@ button:disabled { cursor: not-allowed; }
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  padding: 16px;
+  padding: 0 16px 16px;
   border-left: 1px solid var(--rule);
 }
 .game-side .game-actions .btn { width: 100%; min-width: 0; }
@@ -507,12 +512,16 @@ button:disabled { cursor: not-allowed; }
 @media (orientation: portrait) {
   .game-main {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto auto;
-    grid-template-areas: "board" "actions" "log";
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    grid-template-areas: "board" "status" "actions" "log";
   }
-  .game-side .game-actions { flex-direction: row; justify-content: center; border-left: 0; border-top: 1px solid var(--rule); padding-bottom: 8px; }
+  /* The grid right under the scoreboard, as big as the width allows while the buttons still
+     fit; the log takes whatever is left at the bottom */
+  .board-wrap { width: 100%; aspect-ratio: 1; max-height: calc(100dvh - 330px); }
+  .game-side .status { border-left: 0; border-top: 1px solid var(--rule); padding-bottom: 0; min-height: calc(2lh + 10px); }
+  .game-side .game-actions { flex-direction: row; justify-content: center; border-left: 0; padding-top: 6px; padding-bottom: 8px; }
   .game-side .game-actions > * { flex: 1; max-width: 240px; }
-  .game-side .pbp { max-height: 104px; border-right: 0; }
+  .game-side .pbp { border-right: 0; }
 }
 
 /* ---------- The grid ---------- */
@@ -985,10 +994,9 @@ button:disabled { cursor: not-allowed; }
   .form-error { margin: 0 16px 12px; }
   .form-foot { padding: 12px 16px; }
 
-  .game-head { flex-wrap: wrap; gap: 8px 16px; padding: 10px 16px; }
-  .wordmark-small { font-size: 26px; }
-  .meta { order: 3; width: 100%; }
-  .meta div:first-child { border-left: 0; padding-left: 0; }
+  .game-head { flex-wrap: wrap; gap: 6px 12px; padding: 6px 12px; }
+  .wordmark-small { font-size: 0; }
+  .wordmark-small .logo { width: 30px; height: 30px; }
   .head-actions { margin-left: auto; }
 
   /* Score, clock, score and two names share 375px: everything a size down */
@@ -1004,7 +1012,7 @@ button:disabled { cursor: not-allowed; }
   .score-digits { width: 16px; height: 27px; }
   .score-label { font-size: 7px; letter-spacing: 0.08em; }
 
-  .status { padding: 9px 16px; font-size: 12px; }
+  .status { padding: 8px 16px; font-size: 13px; }
   .sheet:has(> #screen-game:not(.hidden)) { height: 100dvh; margin: 0; }
   .board-wrap { padding: 8px; }
   .pbp { padding: 8px 16px 10px; }
@@ -1175,13 +1183,9 @@ button:disabled { cursor: not-allowed; }
 /* The scoreboard: a strip of the court floor, lighter than the floor around the sheet, set
    off by an ink rule above and an orange one below. Only the shot clock is electronic. */
 .table-row {
-  background-color: var(--maple);
-  background-image:
-    repeating-linear-gradient(90deg, rgba(90, 50, 15, 0.12) 0 1px, transparent 1px 64px),
-    repeating-linear-gradient(90deg, var(--maple) 0 64px, var(--maple-light) 64px 128px, var(--maple-dark) 128px 192px);
+  background: var(--paper);
   color: var(--ink);
-  border-top: 2px solid var(--ink);
-  border-bottom: 3px solid var(--orange);
+  border-bottom: 2px solid var(--rule-strong);
 }
 .table-row .team-label { color: var(--maple-ink); }
 .table-row .team.active-turn .team-name { background: none; box-shadow: inset 0 -4px 0 var(--orange-deep); }
